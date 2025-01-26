@@ -8,7 +8,9 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ onOpenPopup }) => {
   return (
     <div className="home-container">
-      <button onClick={onOpenPopup}>Open WebGL Popup</button>
+      <button onClick={onOpenPopup} className="openbtn">
+        Game Start
+      </button>
     </div>
   );
 };
