@@ -1,15 +1,21 @@
-.Title {
+.header {
   color: #fff;
-  font-size: 2rem;
-  text-align: center;
-  margin-top: 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
 }
-.Title span {
-  color: #ff4500;
+
+.title {
+  grid-column: 2;
+  justify-self: center;
 }
-p {
-  color: #fff;
-  font-size: 1.2rem;
-  text-align: center;
-  margin-top: 1rem;
+
+.current-time {
+  grid-column: 3;
+  padding-right: 1em;
+  justify-self: end;
 }

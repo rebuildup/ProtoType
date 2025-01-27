@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "../styles/header.css";
 
 const CurrentTime: React.FC = () => {
   const [currentTime, setCurrentTime] = useState<string>("");
@@ -25,9 +26,12 @@ const CurrentTime: React.FC = () => {
     return () => clearInterval(timerId);
   }, []);
 
+  // CurrentTime.tsx
   return (
-    <div>
-      <p>{currentTime}</p>
+    <div className="current-time">
+      {" "}
+      {/* クラス名を統一 */}
+      {currentTime}
     </div>
   );
 };

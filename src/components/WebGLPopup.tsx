@@ -44,7 +44,7 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
         const text = new PIXI.Text({
           text: "Hello, WebGL!",
           style: new PIXI.TextStyle({
-            fontFamily: "ShipporiGothicB2-OTF-Bold",
+            fontFamily: "零ゴシック",
             fontSize: 48,
             fill: 0xffffff,
             align: "center",
