@@ -29,8 +29,8 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
         appRef.current = app;
 
         await app.init({
-          width: 720,
-          height: 600,
+          width: 720 * 2,
+          height: 600 * 2,
           backgroundColor: 0x000000,
           autoStart: false,
         });

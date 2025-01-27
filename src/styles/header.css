@@ -1,0 +1,15 @@
+.Title {
+  color: #fff;
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+.Title span {
+  color: #ff4500;
+}
+p {
+  color: #fff;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-top: 1rem;
+}
