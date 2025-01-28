@@ -1,0 +1,12 @@
+/* ホーム画面用のスタイル */
+.home-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.openbtn {
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  transform: translateX(-50%) translateY(-50%);
+}

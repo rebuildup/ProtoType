@@ -27,13 +27,7 @@ const CurrentTime: React.FC = () => {
   }, []);
 
   // CurrentTime.tsx
-  return (
-    <div className="current-time">
-      {" "}
-      {/* クラス名を統一 */}
-      {currentTime}
-    </div>
-  );
+  return <div className="current-time"> {currentTime}</div>;
 };
 
 export default CurrentTime;

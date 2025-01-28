@@ -1,0 +1,7 @@
+.tab {
+  color: var(--MainColor);
+  position: absolute;
+  top: 50vh;
+  margin-left: 5vw;
+  transform: translateY(-50%);
+}

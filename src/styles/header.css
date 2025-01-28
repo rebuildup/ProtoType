@@ -1,5 +1,5 @@
 .header {
-  color: #fff;
+  color: var(--MainColor);
   position: fixed;
   top: 0;
   left: 0;
@@ -16,6 +16,7 @@
 
 .current-time {
   grid-column: 3;
+  transform: translateY(-0.5em);
   padding-right: 1em;
   justify-self: end;
 }

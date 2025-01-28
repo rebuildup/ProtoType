@@ -80,8 +80,16 @@
   font-weight: 800;
   font-style: normal;
 }
+
+:root {
+  --MainBG: #333;
+  --MainColor: #ffffff;
+  --MainAccent: #007bff;
+  --SecondAccent: #ff4081;
+}
+
 body {
   font-family: "Noto Sans JP", sans-serif;
   font-weight: bold;
-  background-color: #181818;
+  background-color: var(--MainBG);
 }
