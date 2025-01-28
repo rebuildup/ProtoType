@@ -93,3 +93,9 @@ body {
   font-weight: bold;
   background-color: var(--MainBG);
 }
+button {
+  color: var(--MainColor);
+  border: none;
+  background-color: rgba(0, 0, 0, 0);
+  font-size: 20px;
+}

@@ -43,21 +43,59 @@ const ColorPalette: React.FC = () => {
 
   return (
     <div className="p-4">
+      <h1>Color Theme</h1>
       <div className="flex gap-4">
         {themes.map((theme) => (
-          <button
-            key={theme.name}
-            onClick={() => applyTheme(theme)}
-            className="flex items-center gap-2 p-2 border rounded-lg hover:shadow-md"
-          >
-            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+          <button key={theme.name} onClick={() => applyTheme(theme)}>
+            <svg width="100" height="100" viewBox="-100 -100 200 200">
+              <filter id="invert">
+                <feColorMatrix
+                  values="-1 0 0 0 1 
+                            0 -1 0 0 1 
+                            0 0 -1 0 1 
+                            0 0 0 1 0"
+                />
+              </filter>
+
               <circle
-                cx="12"
-                cy="12"
-                r="10"
+                cx="0"
+                cy="0"
+                r="100"
+                fill={theme.colors["--MainBG"]}
+                stroke-width="2"
+                stroke="transparent"
+              />
+
+              <circle
+                cx="0"
+                cy="0"
+                r="100"
+                fill="none"
+                stroke={theme.colors["--MainBG"]} // 元の色をストロークに適用
+                stroke-width="2"
+                filter="url(#invert)" // フィルターで色反転
+              />
+
+              <circle
+                cx="-30"
+                cy="-20"
+                r="40"
+                fill={theme.colors["--MainColor"]}
+              />
+              <circle
+                cx="40"
+                cy="10"
+                r="25"
                 fill={theme.colors["--MainAccent"]}
               />
+              <circle
+                cx="0"
+                cy="45"
+                r="15"
+                fill={theme.colors["--SecondAccent"]}
+              />
             </svg>
+            <br />
             <span>{theme.name}</span>
           </button>
         ))}

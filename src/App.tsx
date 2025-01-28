@@ -42,15 +42,7 @@ const App: React.FC = () => {
     <div>
       <Header />
       <Tab onTabChange={setCurrentTab} />
-      <div
-        style={{
-          border: "1px solid #ccc",
-          padding: "20px",
-          borderRadius: "8px",
-        }}
-      >
-        {renderCurrentComponent()}
-      </div>
+      <div>{renderCurrentComponent()}</div>
       {showPopup && <WebGLPopup onClose={handleClosePopup} />}
     </div>
   );
