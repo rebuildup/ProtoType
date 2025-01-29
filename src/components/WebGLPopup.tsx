@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
 import "../styles/webglPopup.css";
 import { settings } from "../SiteInterface.ts";
+import { initializeGame } from "../gamesets/game_master.ts";
 
 interface WebGLPopupProps {
   onClose: () => void;
@@ -18,7 +19,6 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
     const initApp = async () => {
       try {
-        // 既存のキャンバスを削除
         if (popupRef.current) {
           const existingCanvas = popupRef.current.querySelector("canvas");
           if (existingCanvas) {
@@ -38,23 +38,10 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
         if (!isMounted || !popupRef.current) return;
 
-        // キャンバスを追加
         popupRef.current.appendChild(app.canvas);
 
-        // テキストオブジェクトの作成と追加
-        const text = new PIXI.Text({
-          text: settings.colorTheme.name,
-          style: new PIXI.TextStyle({
-            fontFamily: settings.fontTheme.fontFamily,
-            fontSize: 48,
-            fill: settings.colorTheme.colors.MainColor,
-            align: "center",
-          }),
-        });
-        text.anchor.set(0.5);
-        text.x = app.screen.width / 2;
-        text.y = app.screen.height / 2;
-        app.stage.addChild(text);
+        // Initialize the game logic
+        initializeGame(app);
 
         const animate = () => {
           app.render();
