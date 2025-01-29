@@ -3,30 +3,39 @@ import "../styles/colorpalette.css";
 
 const themes = [
   {
-    name: "Light",
+    name: "Dark",
     colors: {
-      "--MainBG": "#ffffff",
-      "--MainColor": "#333333",
+      "--MainBG": "#000000",
+      "--MainColor": "#ffffff",
+      "--MainAccent": "#ff0000",
+      "--SecondAccent": "#ffffff",
+    },
+  },
+  {
+    name: "Grey",
+    colors: {
+      "--MainBG": "#333333",
+      "--MainColor": "#eeeeee",
       "--MainAccent": "#007bff",
       "--SecondAccent": "#ff4081",
     },
   },
   {
-    name: "Dark",
+    name: "Dark Bule",
     colors: {
-      "--MainBG": "#333333",
-      "--MainColor": "#ffffff",
-      "--MainAccent": "#1e90ff",
-      "--SecondAccent": "#ff1493",
+      "--MainBG": "#000011",
+      "--MainColor": "#eeeeee",
+      "--MainAccent": "#EDE84C",
+      "--SecondAccent": "#0000ee",
     },
   },
   {
-    name: "Solarized",
+    name: "Light",
     colors: {
-      "--MainBG": "#fdf6e3",
-      "--MainColor": "#657b83",
-      "--MainAccent": "#268bd2",
-      "--SecondAccent": "#d33682",
+      "--MainBG": "#eeeeee",
+      "--MainColor": "#333333",
+      "--MainAccent": "#ff0000",
+      "--SecondAccent": "#0000ee",
     },
   },
 ];

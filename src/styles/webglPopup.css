@@ -6,8 +6,8 @@
   transform: translate(-50%, -50%);
   width: 720px;
   height: 600px;
-  background-color: black;
-  border: 1px solid black;
+  background-color: var(--MainBG);
+  border: 3px solid var(--MainColor);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }

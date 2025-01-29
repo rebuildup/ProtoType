@@ -82,10 +82,10 @@
 }
 
 :root {
-  --MainBG: #333;
+  --MainBG: #000000;
   --MainColor: #ffffff;
-  --MainAccent: #007bff;
-  --SecondAccent: #ff4081;
+  --MainAccent: #ff0000;
+  --SecondAccent: #ffffff;
 }
 
 body {
