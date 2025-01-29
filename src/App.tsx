@@ -10,7 +10,7 @@ import Tab from "./components/Tab.tsx";
 
 import "./index.css";
 
-import { loadFromCache } from "./SiteInterface.ts";
+import { loadFromCache, updateSetting } from "./SiteInterface.ts";
 import { themes } from "./components/ColorPalette.tsx";
 
 import { fonts } from "./components/FontSelector.tsx";
@@ -48,6 +48,8 @@ const App: React.FC = () => {
       "--First-font",
       cachedFont.fontFamily
     );
+    const cachedLayout = loadFromCache<string>("keyLayout", "QWERTY");
+    updateSetting("keyLayout", cachedLayout);
   }, []);
 
   const renderCurrentComponent = () => {
