@@ -86,10 +86,15 @@
   --MainColor: #ffffff;
   --MainAccent: #ff0000;
   --SecondAccent: #ffffff;
+  --First-font: "Arial", sans-serif;
+  --Second-font: "Noto Sans JP", sans-serif;
 }
 
+* {
+  font-family: var(--First-font);
+}
 body {
-  font-family: "Noto Sans JP", sans-serif;
+  font-family: var(--First-font);
   font-weight: bold;
   background-color: var(--MainBG);
 }
@@ -98,4 +103,26 @@ button {
   border: none;
   background-color: rgba(0, 0, 0, 0);
   font-size: 20px;
+  cursor: pointer;
+  font-family: var(--First-font);
+}
+.Components {
+  color: var(--MainColor);
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  width: 50vw;
+  height: 50vh;
+  border: 4px 4px 4px 4px solid var(--MainColor);
+  /*background-color: var(--MainAccent);*/
+}
+.mySiteLink {
+  color: var(--MainColor);
+  text-decoration: none;
+  z-index: 2000;
+  position: absolute;
+  bottom: 1em;
+  left: 50vw;
+  transform: translateX(-50%);
 }

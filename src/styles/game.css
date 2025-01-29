@@ -5,8 +5,11 @@
   align-items: center;
 }
 .openbtn {
-  position: absolute;
-  top: 50vh;
-  left: 50vw;
-  transform: translateX(-50%) translateY(-50%);
+  top: 50%;
+  position: fixed;
+  color: var(--MainColor);
+  border: none;
+  padding: 10px 20px;
+  font-size: 50px;
+  transform: translateY(-100%);
 }

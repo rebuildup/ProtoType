@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "../styles/colorpalette.css";
+import { updateSetting } from "../SiteInterface.ts";
 
-const themes = [
+export const themes = [
   {
     name: "Dark",
     colors: {
@@ -41,18 +42,27 @@ const themes = [
 ];
 
 const ColorPalette: React.FC = () => {
-  const [currentTheme, setCurrentTheme] = useState(themes[0].name);
+  const [, setCurrentTheme] = useState(themes[0].name);
 
   const applyTheme = (theme: (typeof themes)[0]) => {
     Object.entries(theme.colors).forEach(([key, value]) => {
       document.documentElement.style.setProperty(key, value);
     });
     setCurrentTheme(theme.name);
+    updateSetting("colorTheme", {
+      name: theme.name,
+      colors: {
+        MainBG: theme.colors["--MainBG"],
+        MainColor: theme.colors["--MainColor"],
+        MainAccent: theme.colors["--MainAccent"],
+        SecondAccent: theme.colors["--SecondAccent"],
+      },
+    });
   };
 
   return (
     <div className="p-4">
-      <h1>Color Theme</h1>
+      <h1>カラーテーマ</h1>
       <div className="flex gap-4">
         {themes.map((theme) => (
           <button key={theme.name} onClick={() => applyTheme(theme)}>
@@ -71,7 +81,7 @@ const ColorPalette: React.FC = () => {
                 cy="0"
                 r="100"
                 fill={theme.colors["--MainBG"]}
-                stroke-width="2"
+                strokeWidth="2"
                 stroke="transparent"
               />
 
@@ -81,7 +91,7 @@ const ColorPalette: React.FC = () => {
                 r="100"
                 fill="none"
                 stroke={theme.colors["--MainBG"]} // 元の色をストロークに適用
-                stroke-width="2"
+                strokeWidth="2"
                 filter="url(#invert)" // フィルターで色反転
               />
 

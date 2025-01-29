@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useLayoutEffect } from "react";
 
 import Game from "./components/Game.tsx";
-import PlayBook from "./components/PlayBook.tsx";
+import PlayRecord from "./components/PlayRecord.tsx";
 import Ranking from "./components/Ranking.tsx";
 import Setting from "./components/Setting.tsx";
 import WebGLPopup from "./components/WebGLPopup.tsx";
@@ -9,6 +9,11 @@ import Header from "./components/Header.tsx";
 import Tab from "./components/Tab.tsx";
 
 import "./index.css";
+
+import { loadFromCache } from "./SiteInterface.ts";
+import { themes } from "./components/ColorPalette.tsx";
+
+import { fonts } from "./components/FontSelector.tsx";
 
 const App: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -22,13 +27,35 @@ const App: React.FC = () => {
   };
   const [currentTab, setCurrentTab] = useState<string>("Game");
 
-  // 現在のタブに応じて表示するコンポーネントを切り替える
+  useLayoutEffect(() => {
+    const cachedTheme = loadFromCache<{
+      name: string;
+      colors: Record<string, string>;
+    }>("colorTheme", themes[0]);
+
+    if (cachedTheme && cachedTheme.colors) {
+      Object.entries(cachedTheme.colors).forEach(([key, value]) => {
+        document.documentElement.style.setProperty(
+          key.startsWith("--") ? key : `--${key}`,
+          value
+        );
+      });
+    }
+    const cachedFont = loadFromCache<{ fontFamily: string }>("fontTheme", {
+      fontFamily: fonts[0].value,
+    });
+    document.documentElement.style.setProperty(
+      "--First-font",
+      cachedFont.fontFamily
+    );
+  }, []);
+
   const renderCurrentComponent = () => {
     switch (currentTab) {
       case "Game":
         return <Game onOpenPopup={handleOpenPopup} />;
-      case "PlayBook":
-        return <PlayBook />;
+      case "PlayRecord":
+        return <PlayRecord />;
       case "Ranking":
         return <Ranking />;
       case "Setting":
@@ -42,8 +69,16 @@ const App: React.FC = () => {
     <div>
       <Header />
       <Tab onTabChange={setCurrentTab} />
-      <div>{renderCurrentComponent()}</div>
+      <div className="Components">{renderCurrentComponent()}</div>
       {showPopup && <WebGLPopup onClose={handleClosePopup} />}
+      <a
+        className="mySiteLink"
+        href="https://yusuke-kim.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        yusuke-kim.com
+      </a>
     </div>
   );
 };
