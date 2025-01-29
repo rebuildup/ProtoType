@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
 import "../styles/webglPopup.css";
+import { settings } from "../SiteInterface.ts";
 
 interface WebGLPopupProps {
   onClose: () => void;
@@ -31,7 +32,7 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
         await app.init({
           width: 720 * 2,
           height: 600 * 2,
-          backgroundColor: 0x1099bb,
+          backgroundColor: settings.colorTheme.colors.MainBG,
           autoStart: false,
         });
 
@@ -42,11 +43,11 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
         // テキストオブジェクトの作成と追加
         const text = new PIXI.Text({
-          text: "Hello, WebGL!",
+          text: settings.colorTheme.name,
           style: new PIXI.TextStyle({
-            fontFamily: "零ゴシック",
+            fontFamily: settings.fontTheme.fontFamily,
             fontSize: 48,
-            fill: 0xffffff,
+            fill: settings.colorTheme.colors.MainColor,
             align: "center",
           }),
         });
@@ -55,7 +56,6 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
         text.y = app.screen.height / 2;
         app.stage.addChild(text);
 
-        // レンダリングループの開始
         const animate = () => {
           app.render();
           animationFrameRef.current = requestAnimationFrame(animate);
@@ -72,16 +72,13 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
     return () => {
       isMounted = false;
-      // アニメーションフレームのキャンセル
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
-      // キャンバス要素の明示的削除
       if (popupRef.current) {
         const canvas = popupRef.current.querySelector("canvas");
         if (canvas) canvas.remove();
       }
-      // アプリケーションの破棄
       if (appRef.current && isInitialized) {
         appRef.current.destroy(true);
         appRef.current = null;
@@ -93,7 +90,7 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
     <div className="webgl-popup" ref={popupRef}>
       <button
         onClick={onClose}
-        style={{ position: "absolute", top: "10px", right: "10px" }}
+        style={{ position: "absolute", top: "-60px", right: "-20px" }}
       >
         Close
       </button>

@@ -49,7 +49,7 @@ const App: React.FC = () => {
       cachedFont.fontFamily
     );
     const cachedLayout = loadFromCache<string>("keyLayout", "QWERTY");
-    updateSetting("keyLayout", cachedLayout);
+    updateSetting("gameData", { keylayout: cachedLayout });
   }, []);
 
   const renderCurrentComponent = () => {

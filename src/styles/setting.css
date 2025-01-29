@@ -10,7 +10,7 @@
   right: 15px;
   width: 10px;
   height: 7px;
-  background-color: #535353;
+  background-color: var(--MainColor);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   content: "";
   pointer-events: none;
@@ -23,8 +23,8 @@
   padding: 0.4em calc(0.8em + 30px) 0.4em 0.8em;
   border: none;
   border-bottom: 2px solid var(--MainColor);
-  background-color: #fff;
-  color: #333333;
+  background-color: var(--MainBG);
+  color: var(--MainColor);
   font-size: 1em;
   cursor: pointer;
 }

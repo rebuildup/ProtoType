@@ -29,14 +29,39 @@ export const loadFromCache = <T>(key: string, defaultValue: T): T => {
   return cachedData ? JSON.parse(cachedData) : defaultValue;
 };
 
-// 設定を更新する関数
-export const updateSetting = <T>(key: string, newValue: T) => {
+export const updateSetting = <K extends keyof typeof settings>(
+  key: K,
+  newValue: (typeof settings)[K]
+) => {
+  settings[key] = newValue;
   saveToCache(key, newValue);
   console.log(`${key} updated:`, newValue);
 };
+export const settings = {
+  colorTheme: loadFromCache<ColorTheme>("colorTheme", {
+    name: "default",
+    colors: {
+      MainBG: "#ffffff",
+      MainColor: "#000000",
+      MainAccent: "#ff0000",
+      SecondAccent: "#00ff00",
+    },
+  }),
+  fontTheme: loadFromCache<FontTheme>("fontTheme", {
+    fontFamily: "Arial",
+    fontSize: 16,
+  }),
+  user: loadFromCache<User>("user", {
+    id: 0,
+    name: "Guest",
+    isLoggedin: false,
+  }),
+  gameData: loadFromCache<GameData>("gameData", {
+    keylayout: "QWERTY",
+  }),
+};
 
 /*
-// 使用例
 updateSetting("colorTheme", {
   name: "dark",
   colors: {
@@ -45,20 +70,5 @@ updateSetting("colorTheme", {
     MainAccent: "#ff9900",
     SecondAccent: "#0099ff",
   },
-});
-
-updateSetting("fontTheme", {
-  fontFamily: "Roboto",
-  fontSize: 18,
-});
-
-updateSetting("user", {
-  id: 2,
-  name: "Alice",
-  isLoggedin: true,
-});
-
-updateSetting("gameData", {
-  keylayout: "AZERTY",
 });
 */
