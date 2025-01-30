@@ -3,6 +3,7 @@ import * as PIXI from "pixi.js";
 import "../styles/webglPopup.css";
 import { settings } from "../SiteInterface";
 import { initializeGame } from "../gamesets/game_master";
+import { createNewSession } from "../gamesets/gameConfig";
 
 interface WebGLPopupProps {
   onClose: () => void;
@@ -11,6 +12,7 @@ interface WebGLPopupProps {
 const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<PIXI.Application | null>(null);
+  const gameConfig = useRef(createNewSession());
 
   useEffect(() => {
     let isMounted = true;
@@ -37,7 +39,7 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
         appRef.current = app;
         popupRef.current.appendChild(app.canvas);
-        initializeGame(app);
+        initializeGame(app, gameConfig.current);
       } catch (error) {
         console.error("PixiJS initialization failed:", error);
         app?.destroy(true);
@@ -48,6 +50,7 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
     return () => {
       isMounted = false;
+      gameConfig.current.reset();
       if (appRef.current) {
         appRef.current.destroy(true);
         appRef.current = null;

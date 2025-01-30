@@ -41,6 +41,15 @@ const App: React.FC = () => {
         );
       });
     }
+    updateSetting("colorTheme", {
+      name: cachedTheme.name,
+      colors: {
+        MainBG: cachedTheme.colors["--MainBG"],
+        MainColor: cachedTheme.colors["--MainColor"],
+        MainAccent: cachedTheme.colors["--MainAccent"],
+        SecondAccent: cachedTheme.colors["--SecondAccent"],
+      },
+    });
     const cachedFont = loadFromCache<{ fontFamily: string }>("fontTheme", {
       fontFamily: fonts[0].value,
     });
@@ -48,6 +57,10 @@ const App: React.FC = () => {
       "--First-font",
       cachedFont.fontFamily
     );
+    updateSetting("fontTheme", {
+      fontFamily: cachedFont.fontFamily,
+      fontSize: 16,
+    });
     const cachedLayout = loadFromCache<string>("keyLayout", "QWERTY");
     updateSetting("gameData", { keylayout: cachedLayout });
   }, []);

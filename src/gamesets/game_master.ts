@@ -1,5 +1,6 @@
 // game_master.ts
 import * as PIXI from "pixi.js";
+import { GameSessionConfig } from "./gameConfig";
 
 type MoveState = {
   text: PIXI.Text;
@@ -8,7 +9,11 @@ type MoveState = {
   moveRange: { minX: number; maxX: number };
 };
 
-export function initializeGame(app: PIXI.Application) {
+export function initializeGame(
+  app: PIXI.Application,
+  config: GameSessionConfig
+) {
+  console.log("Current Scene:", config.sceneName);
   // テキストスタイル設定
   const textStyle = new PIXI.TextStyle({
     fontFamily: "Arial",
