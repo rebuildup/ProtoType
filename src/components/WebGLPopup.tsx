@@ -3,7 +3,7 @@ import * as PIXI from "pixi.js";
 import "../styles/webglPopup.css";
 import { settings } from "../SiteInterface";
 import { initializeGame } from "../gamesets/game_master";
-import { createNewSession } from "../gamesets/gameConfig";
+import { setProp } from "../gamesets/gameConfig";
 
 interface WebGLPopupProps {
   onClose: () => void;
@@ -12,7 +12,6 @@ interface WebGLPopupProps {
 const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<PIXI.Application | null>(null);
-  const gameConfig = useRef(createNewSession());
 
   useEffect(() => {
     let isMounted = true;
@@ -39,7 +38,14 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
         appRef.current = app;
         popupRef.current.appendChild(app.canvas);
-        initializeGame(app, gameConfig.current);
+        function extractFontName(fontFamily: string) {
+          const match = fontFamily.match(/["']([^"']+)["']/);
+          return match ? match[1] : fontFamily;
+        }
+        const fixedFont = extractFontName(settings.fontTheme.fontFamily);
+        setProp("FontFamily", fixedFont);
+        setProp("KeyLayout", settings.gameData.keylayout);
+        initializeGame(app);
       } catch (error) {
         console.error("PixiJS initialization failed:", error);
         app?.destroy(true);
@@ -50,7 +56,6 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
     return () => {
       isMounted = false;
-      gameConfig.current.reset();
       if (appRef.current) {
         appRef.current.destroy(true);
         appRef.current = null;
@@ -60,6 +65,7 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
   return (
     <div className="webgl-popup" ref={popupRef}>
+      <div className="webGL-BG" onClick={onClose} />
       <button
         onClick={onClose}
         style={{ position: "absolute", top: "-60px", right: "-20px" }}

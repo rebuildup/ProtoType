@@ -115,7 +115,6 @@ button {
   width: 50vw;
   height: 50vh;
   border: 4px 4px 4px 4px solid var(--MainColor);
-  /*background-color: var(--MainAccent);*/
   overflow-y: auto;
   scrollbar-width: thin;
 }

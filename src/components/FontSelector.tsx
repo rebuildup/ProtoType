@@ -27,6 +27,7 @@ export default function FontSelector() {
     document.documentElement.style.setProperty("--First-font", font);
     updateSetting("fontTheme", {
       fontFamily: font,
+      fontSize: 16,
     });
   };
 

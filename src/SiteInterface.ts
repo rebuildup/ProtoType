@@ -19,7 +19,6 @@ export type User = {
 export type GameData = {
   keylayout: string;
 };
-// キャッシュに保存・取得・更新を管理するユーティリティ関数
 export const saveToCache = (key: string, data: any) => {
   localStorage.setItem(key, JSON.stringify(data));
 };

@@ -1,75 +1,51 @@
-// ゲーム状態インターフェース
-interface GameStatus {
-  score: number;
-  accuracy: number;
-  missCount: number;
-}
+let SceneName = "Opening";
+let FontFamily = "Noto Sans JP";
+let KeyLayout = "QUERTY";
+let Score = 0;
+let Accuracy = 100.0;
+let Miss = 0;
 
-// シーン名の型定義
-type SceneName = "Title" | "Game" | "Result" | "Settings";
-
-// キーレイアウトの型定義
-type KeyLayout = "QWERTY" | "DVORAK" | "AZERTY";
-
-// ゲームモードの型定義
-type GameMode = "Normal" | "Hard" | "Endless";
-
-export class GameSessionConfig {
-  // デフォルト値
-  private _sceneName: SceneName = "Title";
-  private _keyLayout: KeyLayout = "QWERTY";
-  private _gameMode: GameMode = "Normal";
-  private _gameStatus: GameStatus = {
-    score: 0,
-    accuracy: 0,
-    missCount: 0,
-  };
-
-  // Getter/Setter
-  get sceneName(): SceneName {
-    return this._sceneName;
+export const getProp = (option: string): any => {
+  switch (option) {
+    case "SceneName":
+      return SceneName;
+    case "FontFamily":
+      return FontFamily;
+    case "KeyLayout":
+      return KeyLayout;
+    case "Score":
+      return Score;
+    case "Accuracy":
+      return Accuracy;
+    case "Miss":
+      return Miss;
+    default:
+      return null;
   }
+};
 
-  set sceneName(value: SceneName) {
-    this._sceneName = value;
+export const setProp = (option: string, input: any) => {
+  switch (option) {
+    case "SceneName":
+      SceneName = input;
+      break;
+    case "FontFamily":
+      FontFamily = input;
+      break;
+    case "KeyLayout":
+      KeyLayout = input;
+      break;
+    case "Score":
+      Score = input;
+      break;
+    case "Accuracy":
+      Accuracy = input;
+      break;
+    case "Miss":
+      Miss = input;
+      break;
+    default:
+      console.warn(`Unknown property: ${option}`);
+      break;
   }
-
-  get keyLayout(): KeyLayout {
-    return this._keyLayout;
-  }
-
-  set keyLayout(value: KeyLayout) {
-    this._keyLayout = value;
-  }
-
-  get gameMode(): GameMode {
-    return this._gameMode;
-  }
-
-  set gameMode(value: GameMode) {
-    this._gameMode = value;
-  }
-
-  get gameStatus(): GameStatus {
-    return this._gameStatus;
-  }
-
-  set gameStatus(value: GameStatus) {
-    this._gameStatus = value;
-  }
-
-  // リセットメソッド
-  reset(): void {
-    this._sceneName = "Title";
-    this._keyLayout = "QWERTY";
-    this._gameMode = "Normal";
-    this._gameStatus = {
-      score: 0,
-      accuracy: 0,
-      missCount: 0,
-    };
-  }
-}
-
-// WebGL起動時にインスタンスを生成
-export const createNewSession = () => new GameSessionConfig();
+};
