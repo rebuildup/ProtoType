@@ -28,28 +28,27 @@ const App: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<string>("Game");
 
   useLayoutEffect(() => {
-    const cachedTheme = loadFromCache<{
-      name: string;
-      colors: Record<string, string>;
-    }>("colorTheme", themes[0]);
-
-    if (cachedTheme && cachedTheme.colors) {
-      Object.entries(cachedTheme.colors).forEach(([key, value]) => {
-        document.documentElement.style.setProperty(
-          key.startsWith("--") ? key : `--${key}`,
-          value
-        );
-      });
+    const cachedTheme = loadFromCache<(typeof themes)[0]>(
+      "colorTheme",
+      themes[0]
+    );
+    let colorIndex = 0;
+    for (let i = 0; i < themes.length; i++) {
+      if (themes[i].name == cachedTheme.name) colorIndex = i;
     }
+    Object.entries(themes[colorIndex].colors).forEach(([key, value]) => {
+      document.documentElement.style.setProperty(key, value);
+    });
     updateSetting("colorTheme", {
       name: cachedTheme.name,
       colors: {
-        MainBG: cachedTheme.colors["--MainBG"],
-        MainColor: cachedTheme.colors["--MainColor"],
-        MainAccent: cachedTheme.colors["--MainAccent"],
-        SecondAccent: cachedTheme.colors["--SecondAccent"],
+        MainBG: themes[colorIndex].colors["--MainBG"],
+        MainColor: themes[colorIndex].colors["--MainColor"],
+        MainAccent: themes[colorIndex].colors["--MainAccent"],
+        SecondAccent: themes[colorIndex].colors["--SecondAccent"],
       },
     });
+
     const cachedFont = loadFromCache<{ fontFamily: string }>("fontTheme", {
       fontFamily: fonts[0].value,
     });
@@ -62,7 +61,7 @@ const App: React.FC = () => {
       fontSize: 16,
     });
     const cachedLayout = loadFromCache<string>("keyLayout", "QWERTY");
-    updateSetting("gameData", { keylayout: cachedLayout });
+    updateSetting("keyLayout", cachedLayout);
   }, []);
 
   const renderCurrentComponent = () => {

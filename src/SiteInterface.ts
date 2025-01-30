@@ -16,9 +16,7 @@ export type User = {
   name: string;
   isLoggedin: boolean;
 };
-export type GameData = {
-  keylayout: string;
-};
+export type keylayout = string;
 export const saveToCache = (key: string, data: any) => {
   localStorage.setItem(key, JSON.stringify(data));
 };
@@ -34,7 +32,7 @@ export const updateSetting = <K extends keyof typeof settings>(
 ) => {
   settings[key] = newValue;
   saveToCache(key, newValue);
-  console.log(`${key} updated:`, newValue);
+  //console.log(`${key} updated:`, newValue);
 };
 export const settings = {
   colorTheme: loadFromCache<ColorTheme>("colorTheme", {
@@ -55,9 +53,7 @@ export const settings = {
     name: "Guest",
     isLoggedin: false,
   }),
-  gameData: loadFromCache<GameData>("gameData", {
-    keylayout: "QWERTY",
-  }),
+  keyLayout: loadFromCache<keylayout>("keyLayout", "QWERTY"),
 };
 
 /*

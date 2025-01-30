@@ -44,7 +44,7 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
         }
         const fixedFont = extractFontName(settings.fontTheme.fontFamily);
         setProp("FontFamily", fixedFont);
-        setProp("KeyLayout", settings.gameData.keylayout);
+        setProp("KeyLayout", settings.keyLayout);
         initializeGame(app);
       } catch (error) {
         console.error("PixiJS initialization failed:", error);
