@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
 import "../styles/webglPopup.css";
-import { settings } from "../SiteInterface.ts";
-import { initializeGame } from "../gamesets/game_master.ts";
+import { settings } from "../SiteInterface";
+import { initializeGame } from "../gamesets/game_master";
 
 interface WebGLPopupProps {
   onClose: () => void;
@@ -11,47 +11,36 @@ interface WebGLPopupProps {
 const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<PIXI.Application | null>(null);
-  const animationFrameRef = useRef<number>();
-  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
+    let app: PIXI.Application | null = null;
 
     const initApp = async () => {
       try {
-        if (popupRef.current) {
-          const existingCanvas = popupRef.current.querySelector("canvas");
-          if (existingCanvas) {
-            existingCanvas.remove();
-          }
-        }
+        if (!popupRef.current) return;
 
-        const app = new PIXI.Application();
-        appRef.current = app;
+        // 既存のCanvasをクリーンアップ
+        popupRef.current.querySelector("canvas")?.remove();
 
+        // PIXI.Applicationの初期化
+        app = new PIXI.Application();
         await app.init({
           width: 720 * 2,
           height: 600 * 2,
           backgroundColor: settings.colorTheme.colors.MainBG,
-          autoStart: false,
+          autoStart: true,
+          resizeTo: popupRef.current,
         });
 
         if (!isMounted || !popupRef.current) return;
 
+        appRef.current = app;
         popupRef.current.appendChild(app.canvas);
-
-        // Initialize the game logic
         initializeGame(app);
-
-        const animate = () => {
-          app.render();
-          animationFrameRef.current = requestAnimationFrame(animate);
-        };
-        animate();
-
-        setIsInitialized(true);
       } catch (error) {
-        if (isMounted) console.error("PixiJS initialization failed:", error);
+        console.error("PixiJS initialization failed:", error);
+        app?.destroy(true);
       }
     };
 
@@ -59,19 +48,12 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
     return () => {
       isMounted = false;
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      if (popupRef.current) {
-        const canvas = popupRef.current.querySelector("canvas");
-        if (canvas) canvas.remove();
-      }
-      if (appRef.current && isInitialized) {
+      if (appRef.current) {
         appRef.current.destroy(true);
         appRef.current = null;
       }
     };
-  }, [isInitialized]);
+  }, []);
 
   return (
     <div className="webgl-popup" ref={popupRef}>
