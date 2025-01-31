@@ -41,7 +41,7 @@ export const keybords = [
   [26, 28, 408, 76],
   [26, 28, 446, 76],
   [26, 28, 484, 76],
-  [36, 66, 522, 38],
+  [36, 38, 522, 66],
   [70, 28, 0, 114],
   [26, 28, 82, 114],
   [26, 28, 120, 114],
@@ -91,6 +91,7 @@ export function Keyboard(app: PIXI.Application) {
     keybords[36][0] + 4,
     keybords[36][1] + 4
   ).fill(replaceHash(settings.colorTheme.colors.MainAccent));
+  g.alpha = 0.3;
 
   // Draw the remaining rectangles with the main color from settings
   for (let i = 0; i < keybords.length; i++) {
