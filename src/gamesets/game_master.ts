@@ -100,7 +100,6 @@ export function initializeGame(app: PIXI.Application) {
   app.stage.addChild(progressDot);
   Keyboard(app);
   playAudio(Sound);
-  keyInputLoop();
 }
 export function replaceHash(color: string): string {
   if (typeof color !== "string") return "";
@@ -125,41 +124,35 @@ function playAudio(url: string): Promise<void> {
     audio.onerror = () => reject(new Error("Failed to load audio"));
   });
 }
-const keyQueue: string[] = [];
-
-// Persistent keydown listener to capture key presses
-window.addEventListener("keydown", (event: KeyboardEvent) => {
-  // Prevent default behavior for specific special keys
-  if (["Control", "Tab", "Shift", "Alt", "Meta"].includes(event.key)) {
-    event.preventDefault();
-  }
-  // Only push non-repeated keydown events into the queue
-  if (!event.repeat) {
-    keyQueue.push(event.key);
-  }
-});
-
-// Function that returns a Promise resolving with the next key input (from keydown)
-function waitForKeyInput(): Promise<string> {
+function getLatestKey(): Promise<string> {
   return new Promise((resolve) => {
-    // Poll the keyQueue every 10ms for a new input
-    const interval = setInterval(() => {
-      if (keyQueue.length > 0) {
-        clearInterval(interval);
-        resolve(keyQueue.shift()!);
-      }
-    }, 500);
+    const handler = (event: KeyboardEvent) => {
+      window.removeEventListener("keydown", handler); // イベントリスナーを解除
+      resolve(event.code);
+    };
+    window.addEventListener("keydown", handler);
   });
 }
 
-// Asynchronous loop to continuously process key inputs
-async function keyInputLoop(): Promise<void> {
+// 非同期でキー入力を監視
+async function keyLogger() {
   while (true) {
-    const key = await waitForKeyInput();
-    console.log(key);
-    playAudio(Sound);
-    // Additional processing for the key input can be done here
+    const keyCode = await getLatestKey();
+    console.log(`Pressed: ${keyCode}`);
+
+    // 終了条件の例（Escapeキーで終了）
+    if (keyCode === "Escape") {
+      console.log("終了します");
+      break;
+    }
   }
 }
+/*
+こうしますよ
+直近のkeydownを受け取って返す関数を作りたいです
+今回はwhile文の中でその関数を実行して返り値をコンソールに出力するようにしてください
 
-// Start the key input loop
+
+
+
+*/
