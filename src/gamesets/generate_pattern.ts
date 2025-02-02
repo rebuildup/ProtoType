@@ -1,263 +1,240 @@
-type RomajiMap = { [key: string]: string[] };
+export function getRomajiPatterns(input: string): string[] {
+  // If input does not contain any hiragana, assume it's already converted and return it unchanged.
+  if (!/[\u3040-\u309F]/.test(input)) {
+    return [input];
+  }
 
-// 拡張したローマ字変換マップ
-const ROMAJI_MAP: RomajiMap = {
-  あ: ["a"],
-  い: ["i"],
-  う: ["u"],
-  え: ["e"],
-  お: ["o"],
-  か: ["ka", "ca"],
-  き: ["ki"],
-  く: ["ku", "cu"],
-  け: ["ke"],
-  こ: ["ko", "co"],
-  さ: ["sa"],
-  し: ["shi", "si"],
-  す: ["su"],
-  せ: ["se"],
-  そ: ["so"],
-  た: ["ta"],
-  ち: ["chi", "ti"],
-  つ: ["tsu", "tu"],
-  て: ["te"],
-  と: ["to"],
-  な: ["na"],
-  に: ["ni"],
-  ぬ: ["nu"],
-  ね: ["ne"],
-  の: ["no"],
-  は: ["ha"],
-  ひ: ["hi"],
-  ふ: ["fu", "hu"],
-  へ: ["he"],
-  ほ: ["ho"],
-  ま: ["ma"],
-  み: ["mi"],
-  む: ["mu"],
-  め: ["me"],
-  も: ["mo"],
-  や: ["ya"],
-  ゆ: ["yu"],
-  よ: ["yo"],
-  ら: ["ra"],
-  り: ["ri"],
-  る: ["ru"],
-  れ: ["re"],
-  ろ: ["ro"],
-  わ: ["wa"],
-  を: ["wo"],
-  ん: ["n", "nn"],
-  が: ["ga"],
-  ぎ: ["gi"],
-  ぐ: ["gu"],
-  げ: ["ge"],
-  ご: ["go"],
-  ざ: ["za"],
-  じ: ["ji", "zi"],
-  ず: ["zu"],
-  ぜ: ["ze"],
-  ぞ: ["zo"],
-  だ: ["da"],
-  ぢ: ["ji", "di"],
-  づ: ["zu", "du"],
-  で: ["de"],
-  ど: ["do"],
-  ば: ["ba"],
-  び: ["bi"],
-  ぶ: ["bu"],
-  べ: ["be"],
-  ぼ: ["bo"],
-  ぱ: ["pa"],
-  ぴ: ["pi"],
-  ぷ: ["pu"],
-  ぺ: ["pe"],
-  ぽ: ["po"],
+  // Convert input into a pattern string where "j" marks a Japanese (hiragana) character and "e" marks a non‐Japanese character.
+  let pattern = "";
+  for (const ch of input) {
+    pattern += isHiragana(ch) ? "j" : "e";
+  }
+  return generatePatterns(input, pattern);
+}
 
-  // 拗音
-  ゃ: ["xya"],
-  ゅ: ["xyu"],
-  ょ: ["xyo"],
-  きゃ: ["kya"],
-  きゅ: ["kyu"],
-  きょ: ["kyo"],
-  しゃ: ["sha", "sya"],
-  しゅ: ["shu", "syu"],
-  しょ: ["sho", "syo"],
-  ちゃ: ["cha", "tya"],
-  ちゅ: ["chu", "tyu"],
-  ちょ: ["cho", "tyo"],
-  にゃ: ["nya"],
-  にゅ: ["nyu"],
-  にょ: ["nyo"],
-  ひゃ: ["hya"],
-  ひゅ: ["hyu"],
-  ひょ: ["hyo"],
-  みゃ: ["mya"],
-  みゅ: ["myu"],
-  みょ: ["myo"],
-  りゃ: ["rya"],
-  りゅ: ["ryu"],
-  りょ: ["ryo"],
-  ぎゃ: ["gya"],
-  ぎゅ: ["gyu"],
-  ぎょ: ["gyo"],
-  じゃ: ["ja", "zya"],
-  じゅ: ["ju", "zyu"],
-  じょ: ["jo", "zyo"],
-  びゃ: ["bya"],
-  びゅ: ["byu"],
-  びょ: ["byo"],
-  ぴゃ: ["pya"],
-  ぴゅ: ["pyu"],
-  ぴょ: ["pyo"],
+// Helper: Check if a character is hiragana.
+function isHiragana(ch: string): boolean {
+  return /[\u3040-\u309F]/.test(ch);
+}
 
-  // 特殊音節
-  ふぁ: ["fa"],
-  ふぃ: ["fi"],
-  ふぇ: ["fe"],
-  ふぉ: ["fo"],
-  つぁ: ["tsa"],
-  つぃ: ["tsi"],
-  つぇ: ["tse"],
-  つぉ: ["tso"],
-  てぃ: ["ti"],
-  でぃ: ["di"],
-  てゅ: ["tyu"],
-  でゅ: ["dyu"],
-  っ: [""],
-};
+// Helper: Check if every character in a string is Japanese (hiragana).
+function isAllHiragana(str: string): boolean {
+  for (const ch of str) {
+    if (!isHiragana(ch)) return false;
+  }
+  return true;
+}
 
-const SMALL_TSU = "っ";
+// Main recursive function: Processes the remaining text and pattern.
+function generatePatterns(text: string, pat: string): string[] {
+  if (text.length === 0) return [""];
+  let results: string[] = [];
 
-// 文字列を可能な全ての分割パターンで分割
-function getAllPossibleSplits(hiragana: string): string[][] {
-  const memo = new Map<number, string[][]>();
-
-  function helper(start: number): string[][] {
-    if (start >= hiragana.length) return [[]];
-    if (memo.has(start)) return memo.get(start)!;
-
-    const results: string[][] = [];
-
-    // 3文字、2文字、1文字の順で試す
-    for (let len = 3; len >= 1; len--) {
-      const end = start + len;
-      if (end > hiragana.length) continue;
-
-      const current = hiragana.slice(start, end);
-      if (ROMAJI_MAP[current] || current === SMALL_TSU) {
-        const remaining = helper(end);
-        for (const split of remaining) {
-          results.push([current, ...split]);
-        }
-      }
+  // If current char is non-Japanese, output it directly.
+  if (pat[0] === "e") {
+    const tail = generatePatterns(text.slice(1), pat.slice(1));
+    for (const t of tail) {
+      results.push(text[0] + t);
     }
-
-    memo.set(start, results);
     return results;
   }
 
-  return helper(0);
-}
+  // Handle special case for small tsu ("っ")
+  if (text[0] === "っ") {
+    if (text.length > 1 && isHiragana(text[1])) {
+      const nextConvs = getKanaPossibilities(text[1]);
+      let doubled: string[] = [];
+      for (const conv of nextConvs) {
+        // Standard doubling: prepend the first consonant.
+        doubled.push(conv[0] + conv);
+        if (conv === "ta") {
+          doubled.push("l" + "tuta"); // yields "ltuta"
+          doubled.push("x" + "tuta"); // yields "xtuta"
+          doubled.push("ltsuta"); // yields "ltsuta"
+        }
+      }
+      const tail = generatePatterns(text.slice(2), pat.slice(2));
+      for (const d of doubled) {
+        for (const t of tail) {
+          results.push(d + t);
+        }
+      }
+      return results;
+    } else {
+      return generatePatterns(text.slice(1), pat.slice(1));
+    }
+  }
 
-// 促音処理を考慮してローマ字変換
-function processSmallTsu(splits: string[][]): string[][] {
-  return splits.map((split) => {
-    const processed: string[] = [];
-    for (let i = 0; i < split.length; i++) {
-      const current = split[i];
-      if (current === SMALL_TSU && i + 1 < split.length) {
-        const next = split[i + 1];
-        const options = ROMAJI_MAP[next] || [next];
-        const consonants = options.map((opt) => {
-          const firstConsonant = opt.match(/^([^aeiou]*)/i)?.[0] || "";
-          return firstConsonant.repeat(2);
-        });
-        processed.push(...consonants);
-        i++; // 次の文字をスキップ
-      } else {
-        processed.push(current);
+  // Try to match 2-character kana (digraph) if possible.
+  if (text.length >= 2 && isAllHiragana(text.slice(0, 2))) {
+    const twoChar = text.slice(0, 2);
+    const possibilities2 = getKanaPossibilities(twoChar);
+    if (possibilities2.length > 0) {
+      const tail = generatePatterns(text.slice(2), pat.slice(2));
+      for (const conv of possibilities2) {
+        for (const t of tail) {
+          results.push(conv + t);
+        }
       }
     }
-    return processed;
-  });
-}
-
-// 全ての組み合わせを生成
-function generateAllCombinations(parts: string[][]): string[] {
-  return parts.reduce<string[]>(
-    (acc, current) =>
-      acc.length === 0
-        ? current
-        : acc.flatMap((a) => current.map((c) => a + c)),
-    []
-  );
-}
-
-function getRomajiCombinations(hiragana: string): string[] {
-  const splits = getAllPossibleSplits(hiragana);
-  const processedSplits = processSmallTsu(splits);
-
-  const allCombinations = new Set<string>();
-
-  for (const split of processedSplits) {
-    const partsOptions = split.map((part) =>
-      part === SMALL_TSU ? [""] : ROMAJI_MAP[part] || [part]
-    );
-
-    generateAllCombinations(partsOptions).forEach((c) =>
-      allCombinations.add(c)
-    );
   }
-
-  return Array.from(allCombinations);
-}
-
-// 統合処理関数
-export function generateRomanji(input: string, flags: string): string[] {
-  const [japaneseParts] = splitByFlag(input, flags);
-  let results: string[] = [""];
-
-  for (const part of japaneseParts) {
-    if (!part) continue;
-    const combinations = getRomajiCombinations(part);
-    results = results.flatMap((r) => combinations.map((c) => r + c));
+  // Also process single-character kana.
+  const oneChar = text[0];
+  if (isHiragana(oneChar)) {
+    const possibilities1 = getKanaPossibilities(oneChar);
+    const tail = generatePatterns(text.slice(1), pat.slice(1));
+    for (const conv of possibilities1) {
+      for (const t of tail) {
+        results.push(conv + t);
+      }
+    }
   }
-
   return results;
 }
-function splitByFlag(input: string, flags: string): string[][] {
-  const japaneseParts: string[] = [];
-  let currentJapanesePart = "";
+// Mapping function: Returns all possible romaji conversions for a given hiragana sequence.
+function getKanaPossibilities(kana: string): string[] {
+  const mapping: { [key: string]: string[] } = {
+    ぁ: ["la", "xa"],
+    ぃ: ["li", "xi"],
+    ぅ: ["lu", "xu"],
+    ぇ: ["le", "xe"],
+    ぉ: ["lo", "xo"],
+    // Vowels
+    あ: ["a"],
+    い: ["i"],
+    う: ["u"],
+    え: ["e"],
+    お: ["o"],
+    // K-group
+    か: ["ka"],
+    き: ["ki"],
+    く: ["ku"],
+    け: ["ke"],
+    こ: ["ko", "co"],
+    // S-group
+    さ: ["sa"],
+    し: ["shi", "si"],
+    す: ["su"],
+    せ: ["se"],
+    そ: ["so"],
+    // T-group
+    た: ["ta"],
+    ち: ["chi", "ti"],
+    つ: ["tsu", "tu"],
+    て: ["te"],
+    と: ["to"],
+    // N-group
+    な: ["na"],
+    に: ["ni"],
+    ぬ: ["nu"],
+    ね: ["ne"],
+    の: ["no"],
+    // H-group
+    は: ["ha"],
+    ひ: ["hi"],
+    ふ: ["fu", "hu"],
+    へ: ["he"],
+    ほ: ["ho"],
+    // M-group
+    ま: ["ma"],
+    み: ["mi"],
+    む: ["mu"],
+    め: ["me"],
+    も: ["mo"],
+    // Y-group
+    や: ["ya"],
+    ゆ: ["yu"],
+    よ: ["yo"],
 
-  for (let i = 0; i < input.length; i++) {
-    if (flags[i] === "j") {
-      currentJapanesePart += input[i];
-    } else {
-      if (currentJapanesePart) {
-        japaneseParts.push(currentJapanesePart);
-        currentJapanesePart = "";
-      }
-      japaneseParts.push(input[i]); // Treat non-japanese characters as individual parts.  Alternatively, could group consecutive 'e' chars too if needed.
-    }
-  }
-  if (currentJapanesePart) {
-    japaneseParts.push(currentJapanesePart);
-  }
-  return [japaneseParts]; // Return as array of arrays to match original generateRomanji structure.
+    ゃ: ["lya", "xya"],
+    ゅ: ["lyu", "xyu"],
+    ょ: ["lyo", "xyo"],
+    // R-group
+    ら: ["ra"],
+    り: ["ri"],
+    る: ["ru"],
+    れ: ["re"],
+    ろ: ["ro"],
+    // W-group
+    わ: ["wa"],
+    を: ["wo"],
+    // N
+    ん: ["n", "nn"],
+    // Voiced (dakuten) and semi-voiced (handakuten) characters
+    が: ["ga"],
+    ぎ: ["gi"],
+    ぐ: ["gu"],
+    げ: ["ge"],
+    ご: ["go"],
+    ざ: ["za"],
+    じ: ["ji", "zi"],
+    ず: ["zu"],
+    ぜ: ["ze"],
+    ぞ: ["zo"],
+    だ: ["da"],
+    ぢ: ["di"],
+    づ: ["zu", "du"],
+    で: ["de"],
+    ど: ["do"],
+    ば: ["ba"],
+    び: ["bi"],
+    ぶ: ["bu"],
+    べ: ["be"],
+    ぼ: ["bo"],
+    ぱ: ["pa"],
+    ぴ: ["pi"],
+    ぷ: ["pu"],
+    ぺ: ["pe"],
+    ぽ: ["po"],
+    // Digraphs and contracted sounds
+    きゃ: ["kya", "kilya", "kixya"],
+    きゅ: ["kyu", "kilyu", "kixyu"],
+    きょ: ["kyo", "kilyo", "kixyo"],
+    しゃ: ["sha", "sya", "silya", "sixya", "shilya", "shixya"],
+    しゅ: ["shu", "syu", "silyu", "sixyu"],
+    しょ: ["sho", "syo", "silyo", "sixyo"],
+    ちゃ: ["cha", "tya", "cya", "tilya", "tixya", "chilya", "chixya"],
+    ちゅ: ["chu", "tyu", "cyu", "tilyu", "tixyu", "chilyu", "chixyu"],
+    ちょ: ["cho", "tyo", "cyo", "tilyo", "tixyo", "chilyo", "chixyo"],
+    にゃ: ["nya", "nilya", "nixya"],
+    にゅ: ["nyu"],
+    にょ: ["nyo"],
+    ひゃ: ["hya"],
+    ひゅ: ["hyu"],
+    ひょ: ["hyo"],
+    みゃ: ["mya"],
+    みゅ: ["myu"],
+    みょ: ["myo"],
+    りゃ: ["rya"],
+    りゅ: ["ryu"],
+    りょ: ["ryo"],
+    ぎゃ: ["gya"],
+    ぎゅ: ["gyu"],
+    ぎょ: ["gyo"],
+    じゃ: ["ja", "jya", "zya"],
+    じゅ: ["ju", "jyu", "zyu"],
+    じょ: ["jo", "jyo", "zyo"],
+    ぢゃ: ["ja", "dya"],
+    ぢゅ: ["ju", "dyu"],
+    ぢょ: ["jo", "dyo"],
+    びゃ: ["bya"],
+    びゅ: ["byu"],
+    びょ: ["byo"],
+    ぴゃ: ["pya"],
+    ぴゅ: ["pyu"],
+    ぴょ: ["pyo"],
+
+    // Special patterns like handling "ppa" (which should become "っぱ")
+    // are managed via the small tsu ("っ") handling in generatePatterns.
+  };
+  return mapping[kana] || [];
 }
-// 使用例
-console.log(generateRomanji("じゃ", "jj"));
-// 出力: ['ja', 'zya', 'jixya', 'zixya']
-//例えば入力が「こじまapple?,jjjeeeeee」だった場合は「kozimaapple?,kojimaapple?,cozimaapple?,cojimaapple?」の入った配列を返すような動作です
-//じゃ 「zya,ja,zixya,jixya」
 /*
 
 typescriptで文字列の入力から全てのローマ字パターンを返す関数を考えてください
 まずひらがなと英語や記号混じった文字列から日本語の文字を"j"、日本語以外の文字を"e"に変換した文字列を取得します
 次に「ひらがな/英文字/数字/記号が混ざった文字列」と「日本語ならj/日本語以外ならeになった入力と同じ長さの文字列」で出力が「入力の文字列をローマ字にした場合の全ての文字列のパターンが入った配列」になるようにしてください。
-子音を２つ続けた後に母音を入力すれば"っ◯"になるパターンや"cha","cya","tsa"などの特別な入力など
+子音を２つ続けた後に母音を入力すれば"っ◯"になるパターンや"cha","cya","tsa"などの特別な入力,"n"の次に子音が出る場合は"nn"で"ん",そうでない場合は"n"と"nn"両方"ん"になるなど
 windowsとmac両方で入力できる本当に全てのパターンに対応するようにしてください
 例
 入力「こじまapple?」出力「kozimaapple?,kojimaapple?,cozimaapple?,cojimaapple?」

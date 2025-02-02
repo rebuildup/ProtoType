@@ -6,14 +6,15 @@ import { playCollect, playMiss } from "./soundplay";
 
 import { fetchGASData } from "./textget";
 
-import { generateRomanji } from "./generate_pattern";
+import { getRomajiPatterns } from "./generate_pattern";
 
 export function initializeGame(app: PIXI.Application) {
   game_scene(app);
   fetchGASData();
   playCollect();
   playMiss();
-  console.log(generateRomanji("ちゅっぱちゃっぷす", "jjjjjjjjj"));
+  console.log("totemo");
+  console.log(getRomajiPatterns("こんなん"));
 }
 export function replaceHash(color: string): string {
   if (typeof color !== "string") return "";
