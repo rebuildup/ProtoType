@@ -11,6 +11,4 @@ export async function fetchGASData() {
   }
 }
 
-// 実行
-fetchGASData();
 //https://script.google.com/macros/s/AKfycbzamJduXgtsdlXrvG3wmkcS3tlYTNAVzNzJaKPDMmz035vzvbYD7wvrB2YDAQdFsgOh/exec
