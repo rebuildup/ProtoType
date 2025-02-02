@@ -4,8 +4,11 @@ import { game_scene } from "./game_scene";
 
 import { playCollect, playMiss } from "./soundplay";
 
+import { fetchGASData } from "./textget";
+
 export function initializeGame(app: PIXI.Application) {
   game_scene(app);
+  fetchGASData();
   playCollect();
   playMiss();
 }
