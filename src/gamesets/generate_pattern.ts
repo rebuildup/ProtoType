@@ -1,245 +1,1022 @@
-export function getRomajiPatterns(input: string): string[] {
-  // If input does not contain any hiragana, assume it's already converted and return it unchanged.
-  if (!/[\u3040-\u309F]/.test(input)) {
-    return [input];
-  }
-
-  // Convert input into a pattern string where "j" marks a Japanese (hiragana) character and "e" marks a non‐Japanese character.
-  let pattern = "";
-  for (const ch of input) {
-    pattern += isHiragana(ch) ? "j" : "e";
-  }
-  return generatePatterns(input, pattern);
+export function TextToRomaji(input: string) {
+  return extractAllPatterns(hiraganaToRomans(input));
 }
 
-// Helper: Check if a character is hiragana.
-function isHiragana(ch: string): boolean {
-  return /[\u3040-\u309F]/.test(ch);
+export const hiraganaToRomans = (hiraganas: string) => {
+  const startRoman = new Roman("");
+  addNextChild(hiraganas, startRoman);
+
+  return startRoman;
+};
+
+const addNextChild = (
+  remainingHiraganas: string,
+  parentRoman: Roman,
+  duplicateFirstLetter?: true
+) => {
+  // 空文字の場合は最後の文字なので何もしない
+  if (!remainingHiraganas) {
+    return;
+  }
+
+  const firstChar = remainingHiraganas[0];
+
+  if (!isHiragana(firstChar)) {
+    // ひらがな以外の文字の場合、そのままローマ字として扱う
+    const nextRoman = new Roman(firstChar);
+    parentRoman.addChild(nextRoman);
+    const nextHiraganas = remainingHiraganas.slice(1);
+    addNextChild(nextHiraganas, nextRoman);
+    return; // ひらがな以外の文字の場合はここで処理を終える
+  }
+
+  // 「っ」の時はその次の文字を重ねたやつもいける
+  if (isAllowDuplicateFirstLetter(remainingHiraganas)) {
+    const nextHiraganas = remainingHiraganas.slice(1);
+    addNextChild(nextHiraganas, parentRoman, true);
+  }
+
+  // 「ん」の時は次がnから始まらないならn一個で入力ができるので追加する
+  if (isAllowOneNInput(remainingHiraganas)) {
+    const nextRoman = new Roman("n");
+    parentRoman.addChild(nextRoman);
+    const nextHiraganas = remainingHiraganas.slice(1);
+    addNextChild(nextHiraganas, nextRoman);
+  }
+
+  // キーから始まる設定を探す
+  const matchKeyConfigs = KEY_CONFIGS.filter((keyConfig) =>
+    remainingHiraganas.startsWith(keyConfig.key)
+  );
+  // キーから始まる設定の、ローマ字の組み合わせを子ノードとして追加する
+  matchKeyConfigs.forEach((matchKeyConfig) => {
+    matchKeyConfig.origins.forEach((origin) => {
+      // 重ねて入力するフラグが立っている場合は、最初の文字を重ねて入力する
+      const nextRoman = duplicateFirstLetter
+        ? new Roman(origin[0] + origin)
+        : new Roman(origin);
+      parentRoman.addChild(nextRoman);
+      const nextHiraganas = remainingHiraganas.slice(matchKeyConfig.key.length);
+      addNextChild(nextHiraganas, nextRoman);
+    });
+  });
+};
+
+const isAllowDuplicateFirstLetter = (remainingHiraganas: string): boolean => {
+  return (
+    remainingHiraganas.startsWith("っ") &&
+    !isNextStartWithN(remainingHiraganas) &&
+    hasNextHiraganas(remainingHiraganas) &&
+    !isNextStartWithConsonant(remainingHiraganas)
+  );
+};
+
+const isAllowOneNInput = (remainingHiraganas: string): boolean => {
+  // 「ん」から始まってない場合はだめ
+  if (!remainingHiraganas.startsWith("ん")) {
+    return false;
+  }
+
+  return (
+    remainingHiraganas.startsWith("ん") &&
+    !isNextStartWithN(remainingHiraganas) &&
+    hasNextHiraganas(remainingHiraganas) &&
+    !isNextStartWithConsonant(remainingHiraganas)
+  );
+};
+
+const hasNextHiraganas = (remainingHiraganas: string): boolean => {
+  const nextHiraganas = remainingHiraganas.slice(1);
+  return !!nextHiraganas;
+};
+
+const isNextStartWithN = (remainingHiraganas: string): boolean => {
+  const nextHiraganas = remainingHiraganas.slice(1);
+  if (!nextHiraganas) return false;
+
+  const matchKeyConfigs = KEY_CONFIGS.filter((keyConfig) =>
+    nextHiraganas.startsWith(keyConfig.key)
+  );
+  return matchKeyConfigs.some((matchKeyConfig) =>
+    matchKeyConfig.origins.some((origin) => origin.startsWith("n"))
+  );
+};
+
+const isNextStartWithConsonant = (remainingHiraganas: string): boolean => {
+  const nextHiraganas = remainingHiraganas.slice(1);
+  if (!nextHiraganas) return false;
+
+  const matchKeyConfigs = KEY_CONFIGS.filter((keyConfig) =>
+    nextHiraganas.startsWith(keyConfig.key)
+  );
+  return matchKeyConfigs.some((matchKeyConfig) =>
+    matchKeyConfig.origins.some((origin) => isConsonant(origin[0]))
+  );
+};
+
+const isConsonant = (char: string): boolean => {
+  return ["a", "i", "u", "e", "o", "y"].includes(char);
+};
+
+const isHiragana = (char: string): boolean => {
+  const charCode = char.charCodeAt(0);
+  return charCode >= 0x3041 && charCode <= 0x3096;
+};
+
+export class Roman {
+  roma: string;
+  children: Roman[] = [];
+  parent: Roman | undefined;
+
+  constructor(roma: string) {
+    this.roma = roma;
+  }
+
+  addChild(roman: Roman): void {
+    this.children.push(roman);
+    roman.parent = this;
+  }
 }
 
-// Helper: Check if every character in a string is Japanese (hiragana).
-function isAllHiragana(str: string): boolean {
-  for (const ch of str) {
-    if (!isHiragana(ch)) return false;
-  }
-  return true;
+export const findConfig = (
+  configs: KeyConfigs,
+  key: string
+): KeyConfig | undefined => {
+  return configs.find((config) => config.key === key);
+};
+
+export const KEY_CONFIGS: KeyConfigs = [
+  {
+    key: "あ",
+    origins: ["a"],
+  },
+  {
+    key: "い",
+    origins: ["i", "yi"],
+  },
+  {
+    key: "う",
+    origins: ["u", "wu", "whu"],
+  },
+  {
+    key: "え",
+    origins: ["e"],
+  },
+  {
+    key: "お",
+    origins: ["o"],
+  },
+  {
+    key: "か",
+    origins: ["ka", "ca"],
+  },
+  {
+    key: "き",
+    origins: ["ki"],
+  },
+  {
+    key: "く",
+    origins: ["ku", "cu", "qu"],
+  },
+  {
+    key: "け",
+    origins: ["ke"],
+  },
+  {
+    key: "こ",
+    origins: ["ko", "co"],
+  },
+  {
+    key: "さ",
+    origins: ["sa"],
+  },
+  {
+    key: "し",
+    origins: ["si", "ci", "shi"],
+  },
+  {
+    key: "す",
+    origins: ["su"],
+  },
+  {
+    key: "せ",
+    origins: ["se", "ce"],
+  },
+  {
+    key: "そ",
+    origins: ["so"],
+  },
+  {
+    key: "た",
+    origins: ["ta"],
+  },
+  {
+    key: "ち",
+    origins: ["ti", "chi"],
+  },
+  {
+    key: "つ",
+    origins: ["tu", "tsu"],
+  },
+  {
+    key: "て",
+    origins: ["te"],
+  },
+  {
+    key: "と",
+    origins: ["to"],
+  },
+  {
+    key: "な",
+    origins: ["na"],
+  },
+  {
+    key: "に",
+    origins: ["ni"],
+  },
+  {
+    key: "ぬ",
+    origins: ["nu"],
+  },
+  {
+    key: "ね",
+    origins: ["ne"],
+  },
+  {
+    key: "の",
+    origins: ["no"],
+  },
+  {
+    key: "は",
+    origins: ["ha"],
+  },
+  {
+    key: "ひ",
+    origins: ["hi"],
+  },
+  {
+    key: "ふ",
+    origins: ["fu", "hu"],
+  },
+  {
+    key: "へ",
+    origins: ["he"],
+  },
+  {
+    key: "ほ",
+    origins: ["ho"],
+  },
+  {
+    key: "ま",
+    origins: ["ma"],
+  },
+  {
+    key: "み",
+    origins: ["mi"],
+  },
+  {
+    key: "む",
+    origins: ["mu"],
+  },
+  {
+    key: "め",
+    origins: ["me"],
+  },
+  {
+    key: "も",
+    origins: ["mo"],
+  },
+  {
+    key: "や",
+    origins: ["ya"],
+  },
+  {
+    key: "ゆ",
+    origins: ["yu"],
+  },
+  {
+    key: "よ",
+    origins: ["yo"],
+  },
+  {
+    key: "ら",
+    origins: ["ra"],
+  },
+  {
+    key: "り",
+    origins: ["ri"],
+  },
+  {
+    key: "る",
+    origins: ["ru"],
+  },
+  {
+    key: "れ",
+    origins: ["re"],
+  },
+  {
+    key: "ろ",
+    origins: ["ro"],
+  },
+  {
+    key: "わ",
+    origins: ["wa"],
+  },
+  {
+    key: "を",
+    origins: ["wo"],
+  },
+  {
+    key: "ん",
+    origins: ["nn", "n'", "xn"],
+  },
+  {
+    key: "が",
+    origins: ["ga"],
+  },
+  {
+    key: "ぎ",
+    origins: ["gi"],
+  },
+  {
+    key: "ぐ",
+    origins: ["gu"],
+  },
+  {
+    key: "げ",
+    origins: ["ge"],
+  },
+  {
+    key: "ご",
+    origins: ["go"],
+  },
+  {
+    key: "ざ",
+    origins: ["za"],
+  },
+  {
+    key: "じ",
+    origins: ["zi", "ji"],
+  },
+  {
+    key: "ず",
+    origins: ["zu"],
+  },
+  {
+    key: "ぜ",
+    origins: ["ze"],
+  },
+  {
+    key: "ぞ",
+    origins: ["zo"],
+  },
+  {
+    key: "だ",
+    origins: ["da"],
+  },
+  {
+    key: "ぢ",
+    origins: ["di"],
+  },
+  {
+    key: "づ",
+    origins: ["du"],
+  },
+  {
+    key: "で",
+    origins: ["de"],
+  },
+  {
+    key: "ど",
+    origins: ["do"],
+  },
+  {
+    key: "ば",
+    origins: ["ba"],
+  },
+  {
+    key: "び",
+    origins: ["bi"],
+  },
+  {
+    key: "ぶ",
+    origins: ["bu"],
+  },
+  {
+    key: "べ",
+    origins: ["be"],
+  },
+  {
+    key: "ぼ",
+    origins: ["bo"],
+  },
+  {
+    key: "ぱ",
+    origins: ["pa"],
+  },
+  {
+    key: "ぴ",
+    origins: ["pi"],
+  },
+  {
+    key: "ぷ",
+    origins: ["pu"],
+  },
+  {
+    key: "ぺ",
+    origins: ["pe"],
+  },
+  {
+    key: "ぽ",
+    origins: ["po"],
+  },
+  {
+    key: "ぁ",
+    origins: ["la", "xa"],
+  },
+  {
+    key: "ぃ",
+    origins: ["li", "xi"],
+  },
+  {
+    key: "ぅ",
+    origins: ["lu", "xu"],
+  },
+  {
+    key: "ぇ",
+    origins: ["le", "xe"],
+  },
+  {
+    key: "ぉ",
+    origins: ["lo", "xo"],
+  },
+  {
+    key: "ゃ",
+    origins: ["lya", "xya"],
+  },
+  {
+    key: "ゅ",
+    origins: ["lyu", "xyu"],
+  },
+  {
+    key: "ょ",
+    origins: ["lyo", "xyo"],
+  },
+  {
+    key: "ヵ",
+    origins: ["lka", "xka"],
+  },
+  {
+    key: "ヶ",
+    origins: ["lke", "xke"],
+  },
+  {
+    key: "ゎ",
+    origins: ["lwa", "xwa"],
+  },
+  {
+    key: "っ",
+    origins: ["ltu", "xtu", "ltsu", "xtsu"],
+  },
+  {
+    key: "ゔ",
+    origins: ["vu"],
+  },
+  {
+    key: "ー",
+    origins: ["-"],
+  },
+  {
+    key: "？",
+    origins: ["?"],
+  },
+  {
+    key: "！",
+    origins: ["!"],
+  },
+  {
+    key: "、",
+    origins: [",", "、"],
+  },
+  {
+    key: "。",
+    origins: [".", "。"],
+  },
+  {
+    key: "うぁ",
+    origins: ["wha"],
+  },
+  {
+    key: "うぃ",
+    origins: ["whi", "wi"],
+  },
+  {
+    key: "うぇ",
+    origins: ["whe", "we"],
+  },
+  {
+    key: "うぉ",
+    origins: ["who"],
+  },
+  {
+    key: "うぉ",
+    origins: ["who"],
+  },
+  {
+    key: "いぇ",
+    origins: ["ye"],
+  },
+  {
+    key: "きゃ",
+    origins: ["kya"],
+  },
+  {
+    key: "きぃ",
+    origins: ["kyi"],
+  },
+  {
+    key: "きゅ",
+    origins: ["kyu"],
+  },
+  {
+    key: "きぇ",
+    origins: ["kye"],
+  },
+  {
+    key: "きょ",
+    origins: ["kyo"],
+  },
+  {
+    key: "くゃ",
+    origins: ["qya"],
+  },
+  {
+    key: "くゅ",
+    origins: ["qyu"],
+  },
+  {
+    key: "くょ",
+    origins: ["qyo"],
+  },
+  {
+    key: "くぁ",
+    origins: ["qwa", "qa", "kwa"],
+  },
+  {
+    key: "くぃ",
+    origins: ["qwi", "qi", "qyi"],
+  },
+  {
+    key: "くぅ",
+    origins: ["qwu"],
+  },
+  {
+    key: "くぇ",
+    origins: ["qwe", "qe", "qye"],
+  },
+  {
+    key: "くぉ",
+    origins: ["qwo", "qo"],
+  },
+  {
+    key: "ぐぁ",
+    origins: ["gwa"],
+  },
+  {
+    key: "ぐぃ",
+    origins: ["gwi"],
+  },
+  {
+    key: "ぐぅ",
+    origins: ["gwu"],
+  },
+  {
+    key: "ぐぇ",
+    origins: ["gwe"],
+  },
+  {
+    key: "くぉ",
+    origins: ["gwo"],
+  },
+  {
+    key: "しゃ",
+    origins: ["sya", "sha"],
+  },
+  {
+    key: "しぃ",
+    origins: ["syi"],
+  },
+  {
+    key: "しゅ",
+    origins: ["syu", "shu"],
+  },
+  {
+    key: "しぇ",
+    origins: ["sye", "she"],
+  },
+  {
+    key: "しょ",
+    origins: ["syo", "sho"],
+  },
+  {
+    key: "すぁ",
+    origins: ["swa"],
+  },
+  {
+    key: "すぃ",
+    origins: ["swi"],
+  },
+  {
+    key: "すぅ",
+    origins: ["swu"],
+  },
+  {
+    key: "すぇ",
+    origins: ["swe"],
+  },
+  {
+    key: "すぉ",
+    origins: ["swo"],
+  },
+  {
+    key: "ちゃ",
+    origins: ["tya", "cya", "cha"],
+  },
+  {
+    key: "ちぃ",
+    origins: ["tyi", "cyi"],
+  },
+  {
+    key: "ちゅ",
+    origins: ["tyu", "cyu", "chu"],
+  },
+  {
+    key: "ちぇ",
+    origins: ["tye", "cye", "che"],
+  },
+  {
+    key: "ちょ",
+    origins: ["tyo", "cyo", "cho"],
+  },
+  {
+    key: "つぁ",
+    origins: ["tsa"],
+  },
+  {
+    key: "つぃ",
+    origins: ["tsi"],
+  },
+  {
+    key: "つぇ",
+    origins: ["tse"],
+  },
+  {
+    key: "つぉ",
+    origins: ["tso"],
+  },
+  {
+    key: "てぁ",
+    origins: ["tha"],
+  },
+  {
+    key: "てぃ",
+    origins: ["thi"],
+  },
+  {
+    key: "てゅ",
+    origins: ["thu"],
+  },
+  {
+    key: "てぇ",
+    origins: ["the"],
+  },
+  {
+    key: "てょ",
+    origins: ["tho"],
+  },
+  {
+    key: "とぁ",
+    origins: ["twa"],
+  },
+  {
+    key: "とぃ",
+    origins: ["twi"],
+  },
+  {
+    key: "とぅ",
+    origins: ["twu"],
+  },
+  {
+    key: "とぇ",
+    origins: ["twe"],
+  },
+  {
+    key: "とぉ",
+    origins: ["two"],
+  },
+  {
+    key: "にゃ",
+    origins: ["nya"],
+  },
+  {
+    key: "にぃ",
+    origins: ["nyi"],
+  },
+  {
+    key: "にゅ",
+    origins: ["nyu"],
+  },
+  {
+    key: "にぇ",
+    origins: ["nyu"],
+  },
+  {
+    key: "にょ",
+    origins: ["nyu"],
+  },
+  {
+    key: "ひゃ",
+    origins: ["hya"],
+  },
+  {
+    key: "ひぃ",
+    origins: ["hyi"],
+  },
+  {
+    key: "ひゅ",
+    origins: ["hyu"],
+  },
+  {
+    key: "ひぇ",
+    origins: ["hye"],
+  },
+  {
+    key: "ひょ",
+    origins: ["hyo"],
+  },
+  {
+    key: "みゃ",
+    origins: ["mya"],
+  },
+  {
+    key: "みぃ",
+    origins: ["myi"],
+  },
+  {
+    key: "みゅ",
+    origins: ["myu"],
+  },
+  {
+    key: "みぇ",
+    origins: ["mye"],
+  },
+  {
+    key: "みょ",
+    origins: ["myo"],
+  },
+  {
+    key: "りゃ",
+    origins: ["rya"],
+  },
+  {
+    key: "りぃ",
+    origins: ["ryi"],
+  },
+  {
+    key: "りゅ",
+    origins: ["ryu"],
+  },
+  {
+    key: "りぇ",
+    origins: ["rye"],
+  },
+  {
+    key: "りょ",
+    origins: ["ryo"],
+  },
+  {
+    key: "ふぁ",
+    origins: ["fa", "fwa"],
+  },
+  {
+    key: "ふぃ",
+    origins: ["fi", "fwi", "fyi"],
+  },
+  {
+    key: "ふぅ",
+    origins: ["fwu"],
+  },
+  {
+    key: "ふぇ",
+    origins: ["fe", "fwe", "fye"],
+  },
+  {
+    key: "ふぉ",
+    origins: ["fo", "fwo"],
+  },
+  {
+    key: "ふゃ",
+    origins: ["fya"],
+  },
+  {
+    key: "ふゅ",
+    origins: ["fyu"],
+  },
+  {
+    key: "ふょ",
+    origins: ["fyo"],
+  },
+  {
+    key: "ぎゃ",
+    origins: ["gya"],
+  },
+  {
+    key: "ぎぃ",
+    origins: ["gyi"],
+  },
+  {
+    key: "ぎゅ",
+    origins: ["gyu"],
+  },
+  {
+    key: "ぎぇ",
+    origins: ["gye"],
+  },
+  {
+    key: "ぎょ",
+    origins: ["gyo"],
+  },
+  {
+    key: "じゃ",
+    origins: ["zya", "ja", "jya"],
+  },
+  {
+    key: "じぃ",
+    origins: ["zyi", "jyi"],
+  },
+  {
+    key: "じゅ",
+    origins: ["zyu", "ju", "jyu"],
+  },
+  {
+    key: "じぇ",
+    origins: ["zye", "je", "jye"],
+  },
+  {
+    key: "じょ",
+    origins: ["zyo", "jo", "jyo"],
+  },
+  {
+    key: "ぢゃ",
+    origins: ["dya"],
+  },
+  {
+    key: "ぢぃ",
+    origins: ["dyi"],
+  },
+  {
+    key: "ぢゅ",
+    origins: ["dyu"],
+  },
+  {
+    key: "ぢぇ",
+    origins: ["dye"],
+  },
+  {
+    key: "ぢょ",
+    origins: ["dyo"],
+  },
+  {
+    key: "びゃ",
+    origins: ["bya"],
+  },
+  {
+    key: "びぃ",
+    origins: ["byi"],
+  },
+  {
+    key: "びゅ",
+    origins: ["byu"],
+  },
+  {
+    key: "びぇ",
+    origins: ["bye"],
+  },
+  {
+    key: "びょ",
+    origins: ["byo"],
+  },
+  {
+    key: "ぴゃ",
+    origins: ["pya"],
+  },
+  {
+    key: "ぴぃ",
+    origins: ["pyi"],
+  },
+  {
+    key: "ぴゅ",
+    origins: ["pyu"],
+  },
+  {
+    key: "ぴぇ",
+    origins: ["pye"],
+  },
+  {
+    key: "ぴょ",
+    origins: ["pyo"],
+  },
+  {
+    key: "ゔぁ",
+    origins: ["va"],
+  },
+  {
+    key: "ゔぃ",
+    origins: ["vi", "vyi"],
+  },
+  {
+    key: "ゔぇ",
+    origins: ["ve", "vye"],
+  },
+  {
+    key: "ゔぉ",
+    origins: ["vo"],
+  },
+  {
+    key: "ゔゃ",
+    origins: ["vya"],
+  },
+  {
+    key: "ゔゅ",
+    origins: ["vyu"],
+  },
+  {
+    key: "ゔょ",
+    origins: ["vyo"],
+  },
+  {
+    key: "でゃ",
+    origins: ["dha"],
+  },
+  {
+    key: "でぃ",
+    origins: ["dhi"],
+  },
+  {
+    key: "でゅ",
+    origins: ["dhu"],
+  },
+  {
+    key: "でぇ",
+    origins: ["dhe"],
+  },
+  {
+    key: "でょ",
+    origins: ["dho"],
+  },
+  {
+    key: "どぁ",
+    origins: ["dwa"],
+  },
+  {
+    key: "どぃ",
+    origins: ["dwi"],
+  },
+  {
+    key: "どぅ",
+    origins: ["dwu"],
+  },
+  {
+    key: "どぇ",
+    origins: ["dwe"],
+  },
+  {
+    key: "どぉ",
+    origins: ["dwo"],
+  },
+];
+export type KeyConfigs = Array<KeyConfig>;
+
+export interface KeyConfig {
+  key: string;
+  origins: string[];
 }
+export const extractAllPatterns = (root: Roman): string[] => {
+  const results: string[] = [];
 
-// Main recursive function: Processes the remaining text and pattern.
-function generatePatterns(text: string, pat: string): string[] {
-  if (text.length === 0) return [""];
-  let results: string[] = [];
-
-  // If current char is non-Japanese, output it directly.
-  if (pat[0] === "e") {
-    const tail = generatePatterns(text.slice(1), pat.slice(1));
-    for (const t of tail) {
-      results.push(text[0] + t);
+  // Recursive DFS to build complete romanization strings
+  const traverse = (node: Roman, current: string) => {
+    const updated = current + node.roma;
+    // If no children, we've reached a complete pattern
+    if (node.children.length === 0) {
+      results.push(updated);
+      return;
     }
-    return results;
-  }
-
-  // Handle special case for small tsu ("っ")
-  if (text[0] === "っ") {
-    if (text.length > 1 && isHiragana(text[1])) {
-      const nextConvs = getKanaPossibilities(text[1]);
-      let doubled: string[] = [];
-      for (const conv of nextConvs) {
-        // Standard doubling: prepend the first consonant.
-        doubled.push(conv[0] + conv);
-        if (conv === "ta") {
-          doubled.push("l" + "tuta"); // yields "ltuta"
-          doubled.push("x" + "tuta"); // yields "xtuta"
-          doubled.push("ltsuta"); // yields "ltsuta"
-        }
-      }
-      const tail = generatePatterns(text.slice(2), pat.slice(2));
-      for (const d of doubled) {
-        for (const t of tail) {
-          results.push(d + t);
-        }
-      }
-      return results;
-    } else {
-      return generatePatterns(text.slice(1), pat.slice(1));
-    }
-  }
-
-  // Try to match 2-character kana (digraph) if possible.
-  if (text.length >= 2 && isAllHiragana(text.slice(0, 2))) {
-    const twoChar = text.slice(0, 2);
-    const possibilities2 = getKanaPossibilities(twoChar);
-    if (possibilities2.length > 0) {
-      const tail = generatePatterns(text.slice(2), pat.slice(2));
-      for (const conv of possibilities2) {
-        for (const t of tail) {
-          results.push(conv + t);
-        }
-      }
-    }
-  }
-  // Also process single-character kana.
-  const oneChar = text[0];
-  if (isHiragana(oneChar)) {
-    const possibilities1 = getKanaPossibilities(oneChar);
-    const tail = generatePatterns(text.slice(1), pat.slice(1));
-    for (const conv of possibilities1) {
-      for (const t of tail) {
-        results.push(conv + t);
-      }
-    }
-  }
-  return results;
-}
-// Mapping function: Returns all possible romaji conversions for a given hiragana sequence.
-function getKanaPossibilities(kana: string): string[] {
-  const mapping: { [key: string]: string[] } = {
-    ぁ: ["la", "xa"],
-    ぃ: ["li", "xi"],
-    ぅ: ["lu", "xu"],
-    ぇ: ["le", "xe"],
-    ぉ: ["lo", "xo"],
-    // Vowels
-    あ: ["a"],
-    い: ["i"],
-    う: ["u"],
-    え: ["e"],
-    お: ["o"],
-    // K-group
-    か: ["ka"],
-    き: ["ki"],
-    く: ["ku"],
-    け: ["ke"],
-    こ: ["ko", "co"],
-    // S-group
-    さ: ["sa"],
-    し: ["shi", "si"],
-    す: ["su"],
-    せ: ["se"],
-    そ: ["so"],
-    // T-group
-    た: ["ta"],
-    ち: ["chi", "ti"],
-    つ: ["tsu", "tu"],
-    て: ["te"],
-    と: ["to"],
-    // N-group
-    な: ["na"],
-    に: ["ni"],
-    ぬ: ["nu"],
-    ね: ["ne"],
-    の: ["no"],
-    // H-group
-    は: ["ha"],
-    ひ: ["hi"],
-    ふ: ["fu", "hu"],
-    へ: ["he"],
-    ほ: ["ho"],
-    // M-group
-    ま: ["ma"],
-    み: ["mi"],
-    む: ["mu"],
-    め: ["me"],
-    も: ["mo"],
-    // Y-group
-    や: ["ya"],
-    ゆ: ["yu"],
-    よ: ["yo"],
-
-    ゃ: ["lya", "xya"],
-    ゅ: ["lyu", "xyu"],
-    ょ: ["lyo", "xyo"],
-    // R-group
-    ら: ["ra"],
-    り: ["ri"],
-    る: ["ru"],
-    れ: ["re"],
-    ろ: ["ro"],
-    // W-group
-    わ: ["wa"],
-    を: ["wo"],
-    // N
-    ん: ["n", "nn"],
-    // Voiced (dakuten) and semi-voiced (handakuten) characters
-    が: ["ga"],
-    ぎ: ["gi"],
-    ぐ: ["gu"],
-    げ: ["ge"],
-    ご: ["go"],
-    ざ: ["za"],
-    じ: ["ji", "zi"],
-    ず: ["zu"],
-    ぜ: ["ze"],
-    ぞ: ["zo"],
-    だ: ["da"],
-    ぢ: ["di"],
-    づ: ["zu", "du"],
-    で: ["de"],
-    ど: ["do"],
-    ば: ["ba"],
-    び: ["bi"],
-    ぶ: ["bu"],
-    べ: ["be"],
-    ぼ: ["bo"],
-    ぱ: ["pa"],
-    ぴ: ["pi"],
-    ぷ: ["pu"],
-    ぺ: ["pe"],
-    ぽ: ["po"],
-    // Digraphs and contracted sounds
-    きゃ: ["kya", "kilya", "kixya"],
-    きゅ: ["kyu", "kilyu", "kixyu"],
-    きょ: ["kyo", "kilyo", "kixyo"],
-    しゃ: ["sha", "sya", "silya", "sixya", "shilya", "shixya"],
-    しゅ: ["shu", "syu", "silyu", "sixyu"],
-    しょ: ["sho", "syo", "silyo", "sixyo"],
-    ちゃ: ["cha", "tya", "cya", "tilya", "tixya", "chilya", "chixya"],
-    ちゅ: ["chu", "tyu", "cyu", "tilyu", "tixyu", "chilyu", "chixyu"],
-    ちょ: ["cho", "tyo", "cyo", "tilyo", "tixyo", "chilyo", "chixyo"],
-    にゃ: ["nya", "nilya", "nixya"],
-    にゅ: ["nyu"],
-    にょ: ["nyo"],
-    ひゃ: ["hya"],
-    ひゅ: ["hyu"],
-    ひょ: ["hyo"],
-    みゃ: ["mya"],
-    みゅ: ["myu"],
-    みょ: ["myo"],
-    りゃ: ["rya"],
-    りゅ: ["ryu"],
-    りょ: ["ryo"],
-    ぎゃ: ["gya"],
-    ぎゅ: ["gyu"],
-    ぎょ: ["gyo"],
-    じゃ: ["ja", "jya", "zya"],
-    じゅ: ["ju", "jyu", "zyu"],
-    じょ: ["jo", "jyo", "zyo"],
-    ぢゃ: ["ja", "dya"],
-    ぢゅ: ["ju", "dyu"],
-    ぢょ: ["jo", "dyo"],
-    びゃ: ["bya"],
-    びゅ: ["byu"],
-    びょ: ["byo"],
-    ぴゃ: ["pya"],
-    ぴゅ: ["pyu"],
-    ぴょ: ["pyo"],
-
-    // Special patterns like handling "ppa" (which should become "っぱ")
-    // are managed via the small tsu ("っ") handling in generatePatterns.
+    // Continue traversing children
+    node.children.forEach((child) => traverse(child, updated));
   };
-  return mapping[kana] || [];
-}
-/*
 
-typescriptで文字列の入力から全てのローマ字パターンを返す関数を考えてください
-まずひらがなと英語や記号混じった文字列から日本語の文字を"j"、日本語以外の文字を"e"に変換した文字列を取得します
-次に「ひらがな/英文字/数字/記号が混ざった文字列」と「日本語ならj/日本語以外ならeになった入力と同じ長さの文字列」で出力が「入力の文字列をローマ字にした場合の全ての文字列のパターンが入った配列」になるようにしてください。
-子音を２つ続けた後に母音を入力すれば"っ◯"になるパターンや"cha","cya","tsa"などの特別な入力,"n"の次に子音が出る場合は"nn"で"ん",そうでない場合は"n"と"nn"両方"ん"になるなど
-windowsとmac両方で入力できる本当に全てのパターンに対応するようにしてください
-例
-入力「こじまapple?」出力「kozimaapple?,kojimaapple?,cozimaapple?,cojimaapple?」
-入力「ちゅっぱちゃっぷす」出力「chultupachaltupusu,chultupachaxtupusu,chultupachaltsupusu,chultupatyaltupusu,chultupatyaxtupusu,chultupatyaltsupusu,chultupatixyaltupusu,chultupatixyaxtupusu,chultupatixyaltsupusu,chultupatilyaltupusu,chultupatilyaxtupusu,chultupatilyaltsupusu,chultupacyaltupusu,chultupacyaxtupusu,chultupacyaltsupusu,chuxtupachaltupusu,chuxtupachaxtupusu,chuxtupachaltsupusu,chuxtupatyaltupusu,chuxtupatyaxtupusu,chuxtupatyaltsupusu,chuxtupatixyaltupusu,chuxtupatixyaxtupusu,chuxtupatixyaltsupusu,chuxtupatilyaltupusu,chuxtupatilyaxtupusu,chuxtupatilyaltsupusu,chuxtupacyaltupusu,chuxtupacyaxtupusu,chuxtupacyaltsupusu,chultsupachaltupusu,chultsupachaxtupusu,chultsupachaltsupusu,chultsupatyaltupusu,chultsupatyaxtupusu,chultsupatyaltsupusu,chultsupatixyaltupusu,chultsupatixyaxtupusu,chultsupatixyaltsupusu,chultsupatilyaltupusu,chultsupatilyaxtupusu,chultsupatilyaltsupusu,chultsupacyaltupusu,chultsupacyaxtupusu,chultsupacyaltsupusu,tyultupachaltupusu,tyultupachaxtupusu,tyultupachaltsupusu,tyultupatyaltupusu,tyultupatyaxtupusu,tyultupatyaltsupusu,tyultupatixyaltupusu,tyultupatixyaxtupusu,tyultupatixyaltsupusu,tyultupatilyaltupusu,tyultupatilyaxtupusu,tyultupatilyaltsupusu,tyultupacyaltupusu,tyultupacyaxtupusu,tyultupacyaltsupusu,tyuxtupachaltupusu,tyuxtupachaxtupusu,tyuxtupachaltsupusu,tyuxtupatyaltupusu,tyuxtupatyaxtupusu,tyuxtupatyaltsupusu,tyuxtupatixyaltupusu,tyuxtupatixyaxtupusu,tyuxtupatixyaltsupusu,tyuxtupatilyaltupusu,tyuxtupatilyaxtupusu,tyuxtupatilyaltsupusu,tyuxtupacyaltupusu,tyuxtupacyaxtupusu,tyuxtupacyaltsupusu,tyultsupachaltupusu,tyultsupachaxtupusu,tyultsupachaltsupusu,tyultsupatyaltupusu,tyultsupatyaxtupusu,tyultsupatyaltsupusu,tyultsupatixyaltupusu,tyultsupatixyaxtupusu,tyultsupatixyaltsupusu,tyultsupatilyaltupusu,tyultsupatilyaxtupusu,tyultsupatilyaltsupusu,tyultsupacyaltupusu,tyultsupacyaxtupusu,tyultsupacyaltsupusu,tixyultupachaltupusu,tixyultupachaxtupusu,tixyultupachaltsupusu,tixyultupatyaltupusu,tixyultupatyaxtupusu,tixyultupatyaltsupusu,tixyultupatixyaltupusu,tixyultupatixyaxtupusu,tixyultupatixyaltsupusu,tixyultupatilyaltupusu,tixyultupatilyaxtupusu,tixyultupatilyaltsupusu,tixyultupacyaltupusu,tixyultupacyaxtupusu,tixyultupacyaltsupusu,tixyuxtupachaltupusu,tixyuxtupachaxtupusu,tixyuxtupachaltsupusu,tixyuxtupatyaltupusu,tixyuxtupatyaxtupusu,tixyuxtupatyaltsupusu,tixyuxtupatixyaltupusu,tixyuxtupatixyaxtupusu,tixyuxtupatixyaltsupusu,tixyuxtupatilyaltupusu,tixyuxtupatilyaxtupusu,tixyuxtupatilyaltsupusu,tixyuxtupacyaltupusu,tixyuxtupacyaxtupusu,tixyuxtupacyaltsupusu,tixyultsupachaltupusu,tixyultsupachaxtupusu,tixyultsupachaltsupusu,tixyultsupatyaltupusu,tixyultsupatyaxtupusu,tixyultsupatyaltsupusu,tixyultsupatixyaltupusu,tixyultsupatixyaxtupusu,tixyultsupatixyaltsupusu,tixyultsupatilyaltupusu,tixyultsupatilyaxtupusu,tixyultsupatilyaltsupusu,tixyultsupacyaltupusu,tixyultsupacyaxtupusu,tixyultsupacyaltsupusu,tilyultupachaltupusu,tilyultupachaxtupusu,tilyultupachaltsupusu,tilyultupatyaltupusu,tilyultupatyaxtupusu,tilyultupatyaltsupusu,tilyultupatixyaltupusu,tilyultupatixyaxtupusu,tilyultupatixyaltsupusu,tilyultupatilyaltupusu,tilyultupatilyaxtupusu,tilyultupatilyaltsupusu,tilyultupacyaltupusu,tilyultupacyaxtupusu,tilyultupacyaltsupusu,tilyuxtupachaltupusu,tilyuxtupachaxtupusu,tilyuxtupachaltsupusu,tilyuxtupatyaltupusu,tilyuxtupatyaxtupusu,tilyuxtupatyaltsupusu,tilyuxtupatixyaltupusu,tilyuxtupatixyaxtupusu,tilyuxtupatixyaltsupusu,tilyuxtupatilyaltupusu,tilyuxtupatilyaxtupusu,tilyuxtupatilyaltsupusu,tilyuxtupacyaltupusu,tilyuxtupacyaxtupusu,tilyuxtupacyaltsupusu,tilyultsupachaltupusu,tilyultsupachaxtupusu,tilyultsupachaltsupusu,tilyultsupatyaltupusu,tilyultsupatyaxtupusu,tilyultsupatyaltsupusu,tilyultsupatixyaltupusu,tilyultsupatixyaxtupusu,tilyultsupatixyaltsupusu,tilyultsupatilyaltupusu,tilyultsupatilyaxtupusu,tilyultsupatilyaltsupusu,tilyultsupacyaltupusu,tilyultsupacyaxtupusu,tilyultsupacyaltsupusu,cyultupachaltupusu,cyultupachaxtupusu,cyultupachaltsupusu,cyultupatyaltupusu,cyultupatyaxtupusu,cyultupatyaltsupusu,cyultupatixyaltupusu,cyultupatixyaxtupusu,cyultupatixyaltsupusu,cyultupatilyaltupusu,cyultupatilyaxtupusu,cyultupatilyaltsupusu,cyultupacyaltupusu,cyultupacyaxtupusu,cyultupacyaltsupusu,cyuxtupachaltupusu,cyuxtupachaxtupusu,cyuxtupachaltsupusu,cyuxtupatyaltupusu,cyuxtupatyaxtupusu,cyuxtupatyaltsupusu,cyuxtupatixyaltupusu,cyuxtupatixyaxtupusu,cyuxtupatixyaltsupusu,cyuxtupatilyaltupusu,cyuxtupatilyaxtupusu,cyuxtupatilyaltsupusu,cyuxtupacyaltupusu,cyuxtupacyaxtupusu,cyuxtupacyaltsupusu,cyultsupachaltupusu,cyultsupachaxtupusu,cyultsupachaltsupusu,cyultsupatyaltupusu,cyultsupatyaxtupusu,cyultsupatyaltsupusu,cyultsupatixyaltupusu,cyultsupatixyaxtupusu,cyultsupatixyaltsupusu,cyultsupatilyaltupusu,cyultsupatilyaxtupusu,cyultsupatilyaltsupusu,cyultsupacyaltupusu,cyultsupacyaxtupusu,cyultsupacyaltsupusu("ppa"で"っぱ"になるようなパターンを除いているので実際はこれ以上)」
-入力「じzyutu」出力「zizyutu,jizyutu」
-入力「ちゅ」出力「chu,tyu,tixyu,tilyu,cyu」
-入力「ばった」出力「batta,baltuta,baxtuta,baltsuta」 
-*/
+  // Start traversal from each child of the root (root.roma is an empty string)
+  root.children.forEach((child) => traverse(child, ""));
+  return results;
+};
