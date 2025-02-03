@@ -8,6 +8,8 @@ import WebGLPopup from "./components/WebGLPopup.tsx";
 import Header from "./components/Header.tsx";
 import Tab from "./components/Tab.tsx";
 
+import Footer from "./components/footer.tsx";
+
 import "./index.css";
 
 import { loadFromCache, updateSetting } from "./SiteInterface.ts";
@@ -78,6 +80,7 @@ const App: React.FC = () => {
         return <div>タブが見つかりません。</div>;
     }
   };
+  console.log("コンソールにようこそ\n");
 
   return (
     <div>
@@ -85,14 +88,7 @@ const App: React.FC = () => {
       <Tab onTabChange={setCurrentTab} />
       <div className="Components">{renderCurrentComponent()}</div>
       {showPopup && <WebGLPopup onClose={handleClosePopup} />}
-      <a
-        className="mySiteLink"
-        href="https://yusuke-kim.com"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        yusuke-kim.com
-      </a>
+      <Footer />
     </div>
   );
 };

@@ -127,3 +127,21 @@ button {
   left: 50vw;
   transform: translateX(-50%);
 }
+.GithubLink {
+  color: var(--MainColor);
+  text-decoration: none;
+  z-index: 2000;
+  position: absolute;
+  bottom: 1em;
+  right: 64px;
+  transform: translateX(-50%);
+}
+.XLink {
+  color: var(--MainColor);
+  text-decoration: none;
+  z-index: 2000;
+  position: absolute;
+  bottom: 1em;
+  right: 16px;
+  transform: translateX(-50%);
+}

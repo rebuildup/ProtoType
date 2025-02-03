@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { updateSetting } from "../SiteInterface";
+import { settings } from "../SiteInterface";
 
 export const fonts = [
   { name: "Noto Sans JP", value: "'Noto Sans JP',serif" },
@@ -20,7 +21,9 @@ export const fonts = [
 ];
 
 export default function FontSelector() {
-  const [selectedFont, setSelectedFont] = useState(fonts[0].value);
+  const [selectedFont, setSelectedFont] = useState(
+    settings.fontTheme.fontFamily
+  );
 
   const changeFont = (font: string) => {
     setSelectedFont(font);
