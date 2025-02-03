@@ -1,4 +1,4 @@
-let SceneName = "Opening";
+let CurrentSceneName = "Opening";
 let FontFamily = "Noto Sans JP";
 let KeyLayout = "QUERTY";
 let Score = 0;
@@ -7,8 +7,8 @@ let Miss = 0;
 
 export const getProp = (option: string): any => {
   switch (option) {
-    case "SceneName":
-      return SceneName;
+    case "CurrentSceneName":
+      return CurrentSceneName;
     case "FontFamily":
       return FontFamily;
     case "KeyLayout":
@@ -26,8 +26,8 @@ export const getProp = (option: string): any => {
 
 export const setProp = (option: string, input: any) => {
   switch (option) {
-    case "SceneName":
-      SceneName = input;
+    case "CurrentSceneName":
+      CurrentSceneName = input;
       break;
     case "FontFamily":
       FontFamily = input;

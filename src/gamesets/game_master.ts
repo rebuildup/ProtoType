@@ -5,16 +5,35 @@ import { game_scene } from "./game_scene";
 import { playCollect, playMiss } from "./soundplay";
 
 import { fetchGASData } from "./textget";
+import { getProp, setProp } from "./gameConfig";
 
-import { TextToRomaji } from "./generate_pattern";
+import { opening_scene } from "./opening";
 
-export function initializeGame(app: PIXI.Application) {
-  game_scene(app);
-  fetchGASData();
+//import { TextToRomaji } from "./generate_pattern";
+
+export async function initializeGame(app: PIXI.Application) {
+  await fetchGASData();
+  setProp("CurrentSceneName", "opening");
+  while (getProp("CurrentSceneName") != "exit") {
+    switch (getProp("CurrentSceneName")) {
+      case "opening":
+        playCollect();
+        await opening_scene(app);
+        break;
+      case "game_scene":
+        playCollect();
+        await game_scene(app);
+        break;
+      default:
+        setProp("CurrentSceneName", "exit");
+        break;
+    }
+  }
+  console.log("何が起こった？");
+  //game_scene(app);
   playCollect();
   playMiss();
-  console.log("totemo");
-  console.log(TextToRomaji("ちゅっぱandちゃっぷすnext"));
+  //console.log(TextToRomaji("げつようがちかいよ"));
 }
 export function replaceHash(color: string): string {
   if (typeof color !== "string") return "";
