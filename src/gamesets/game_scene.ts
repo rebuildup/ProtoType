@@ -96,7 +96,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
     });
     app.stage.addChild(progressDot);
     Keyboard(app);
-    setProp("CurrentSceneName", "exit");
+    setProp("CurrentSceneName", "result_scene");
     setTimeout(() => {
       resolve();
     }, 6000);

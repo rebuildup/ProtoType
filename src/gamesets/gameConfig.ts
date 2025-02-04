@@ -4,6 +4,7 @@ let KeyLayout = "QUERTY";
 let Score = 0;
 let Accuracy = 100.0;
 let Miss = 0;
+let GameMode = "nomal";
 
 export const getProp = (option: string): any => {
   switch (option) {
@@ -19,6 +20,8 @@ export const getProp = (option: string): any => {
       return Accuracy;
     case "Miss":
       return Miss;
+    case "GameMode":
+      return GameMode;
     default:
       return null;
   }
@@ -43,6 +46,9 @@ export const setProp = (option: string, input: any) => {
       break;
     case "Miss":
       Miss = input;
+      break;
+    case "GameMode":
+      GameMode = input;
       break;
     default:
       console.warn(`Unknown property: ${option}`);

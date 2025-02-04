@@ -2,19 +2,20 @@ import * as PIXI from "pixi.js";
 import { setProp, getProp } from "./gameConfig";
 import { replaceHash } from "./game_master";
 import { settings } from "../SiteInterface";
+import { playCollect } from "./soundplay";
 
 export function opening_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>((resolve) => {
     app.stage.removeChildren();
 
-    let i = 0;
+    let i = 3;
 
     function showNextText() {
       app.stage.removeChildren();
-      if (i >= 10) {
+      if (i == 0) {
         console.log("opening終了");
-        setProp("CurrentSceneName", "game_scene");
-        resolve(); // ここでPromiseを解決しないと、次の処理に進まない
+        setProp("CurrentSceneName", "game_select");
+        resolve();
         return;
       }
 
@@ -31,14 +32,14 @@ export function opening_scene(app: PIXI.Application): Promise<void> {
       });
 
       sentence_text.x = app.screen.width / 2 - sentence_text.width / 2;
-      sentence_text.y = 150;
+      sentence_text.y = app.screen.height / 2 - sentence_text.height / 2;
       app.stage.addChild(sentence_text);
 
-      i++;
-
-      setTimeout(showNextText, 2000); // 200msごとに次のテキストを表示
+      i--;
+      playCollect();
+      setTimeout(showNextText, 1000);
     }
 
-    showNextText(); // ループの最初の呼び出し
+    showNextText();
   });
 }

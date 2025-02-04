@@ -8,6 +8,9 @@ import { fetchGASData } from "./textget";
 import { getProp, setProp } from "./gameConfig";
 
 import { opening_scene } from "./opening";
+import { game_select } from "./game_select";
+import { setting_scene } from "./setting_scene";
+import { result_scene } from "./result_scene";
 
 //import { TextToRomaji } from "./generate_pattern";
 
@@ -24,14 +27,24 @@ export async function initializeGame(app: PIXI.Application) {
         playCollect();
         await game_scene(app);
         break;
+      case "game_select":
+        playCollect();
+        await game_select(app);
+        break;
+      case "setting_scene":
+        playCollect();
+        await setting_scene(app);
+        break;
+      case "result_scene":
+        playCollect();
+        await result_scene(app);
+        break;
       default:
         setProp("CurrentSceneName", "exit");
         break;
     }
   }
   console.log("何が起こった？");
-  //game_scene(app);
-  playCollect();
   playMiss();
   //console.log(TextToRomaji("げつようがちかいよ"));
 }
