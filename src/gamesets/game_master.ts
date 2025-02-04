@@ -16,7 +16,8 @@ import { result_scene } from "./result_scene";
 
 export async function initializeGame(app: PIXI.Application) {
   await fetchGASData();
-  setProp("CurrentSceneName", "opening");
+  //setProp("CurrentSceneName", "opening");
+  setProp("CurrentSceneName", "game_scene");
   while (getProp("CurrentSceneName") != "exit") {
     switch (getProp("CurrentSceneName")) {
       case "opening":

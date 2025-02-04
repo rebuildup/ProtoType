@@ -72,7 +72,7 @@ import * as PIXI from "pixi.js";
 import { settings } from "../SiteInterface";
 import { replaceHash } from "./game_master";
 
-const keybord_pos_y = 340;
+const keybord_pos_y = 330;
 
 export function Keyboard(app: PIXI.Application) {
   const g = new PIXI.Graphics();
