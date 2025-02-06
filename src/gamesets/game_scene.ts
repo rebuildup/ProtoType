@@ -3,6 +3,7 @@ import { replaceHash } from "./game_master";
 import { getProp, setProp } from "../gamesets/gameConfig";
 import { Keyboard } from "../gamesets/keybord";
 import { settings } from "../SiteInterface";
+
 export function game_scene(app: PIXI.Application): Promise<void> {
   return new Promise((resolve) => {
     app.stage.removeChildren();
@@ -22,6 +23,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
         break;
     }
 
+    // 各テキストに対して解像度を設定（グローバル設定が適用される場合は省略してもOK）
     const sentetce_text = new PIXI.Text({
       text: "構想は練った...後は作るだけ",
       style: {
@@ -31,9 +33,11 @@ export function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
+    sentetce_text.resolution = window.devicePixelRatio || 1;
     sentetce_text.x = app.screen.width / 2 - sentetce_text.width / 2;
     sentetce_text.y = 175;
     app.stage.addChild(sentetce_text);
+
     const alphabet_text = new PIXI.Text({
       text: "kousouhanetta...atohatukurudake",
       style: {
@@ -43,9 +47,11 @@ export function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
+    alphabet_text.resolution = window.devicePixelRatio || 1;
     alphabet_text.x = app.screen.width / 2 - alphabet_text.width / 2;
     alphabet_text.y = 200;
     app.stage.addChild(alphabet_text);
+
     const next_text = new PIXI.Text({
       text: "昨年はゲーム部門1位でした",
       style: {
@@ -55,6 +61,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
+    next_text.resolution = window.devicePixelRatio || 1;
     next_text.x = app.screen.width / 2 - next_text.width / 2;
     next_text.y = 251;
     app.stage.addChild(next_text);
@@ -68,6 +75,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
+    score_text.resolution = window.devicePixelRatio || 1;
     score_text.x = app.screen.width / 2 - score_text.width / 2;
     score_text.y = 100;
     app.stage.addChild(score_text);
@@ -81,6 +89,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
+    combo_text.resolution = window.devicePixelRatio || 1;
     combo_text.x = 81;
     combo_text.y = 179;
     app.stage.addChild(combo_text);
@@ -94,6 +103,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
         align: "right",
       },
     });
+    kpm_text.resolution = window.devicePixelRatio || 1;
     kpm_text.x = app.screen.width - 81 - 32;
     kpm_text.y = 179;
     app.stage.addChild(kpm_text);
@@ -107,6 +117,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
       alpha: 1,
     });
     app.stage.addChild(accuracyLine);
+
     const progressLine = new PIXI.Graphics();
     progressLine.moveTo(81, 298);
     progressLine.lineTo(app.screen.width - 81, 298);
@@ -116,14 +127,15 @@ export function game_scene(app: PIXI.Application): Promise<void> {
       alpha: 1,
     });
     app.stage.addChild(progressLine);
-    const progressDot = new PIXI.Graphics();
 
+    const progressDot = new PIXI.Graphics();
     progressDot.circle(100, 280, 1);
     progressDot.stroke({
       width: 8,
       color: replaceHash(settings.colorTheme.colors.MainColor),
     });
     app.stage.addChild(progressDot);
+
     Keyboard(app);
     setProp("CurrentSceneName", "result_scene");
     setTimeout(() => {

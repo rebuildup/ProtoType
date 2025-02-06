@@ -1,75 +1,51 @@
-interface PlayData {
-  score: number;
-  speed: number;
-  accuracy: number;
-  maxSpeed: number;
-  playTime: number;
-  finishTime: number;
-  playerId: number;
+const WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycbwYvF1tGnTf4dz2_eSeiQVmN7LxgE84n0yPoWEjhxQxC4CWuaS461kFGbHiRESACv8/exec";
+
+// シート "texts" のデータを取得する（GET リクエスト）
+export async function fetchTexts(): Promise<any> {
+  const response = await fetch(WEB_APP_URL);
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  // 返ってくる JSON をパース
+  const data = await response.json();
+  return data;
 }
 
-interface PlayerData {
-  username: string;
-  password: string;
-}
+// シート "play_datas" にデータを書き込む（POST リクエスト）
+export async function postPlayData(text: string, number: number): Promise<any> {
+  const params = new URLSearchParams();
+  params.append("text", text);
+  params.append("number", number.toString());
 
-interface ApiResponse {
-  status: string;
-  message?: string;
-  playerId?: number;
-  texts?: Array<{ problem: string; reading: string }>;
-  ranking?: Array<{ playerId: number; score: number }>;
-}
-
-// Apps Script の Web API の URL（YOUR_DEPLOYMENT_ID を実際のものに置換）
-const API_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
-
-// Function to write play data
-export async function writePlayData(playData: PlayData): Promise<ApiResponse> {
-  const response = await fetch(API_URL, {
+  const response = await fetch(WEB_APP_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "writePlayData", data: playData }),
+    body: params,
   });
-  return response.json();
-}
 
-// Function to get text data
-export async function getTexts(): Promise<ApiResponse> {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "getTexts" }),
-  });
-  return response.json();
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const data = await response.json();
+  return data;
 }
+/*
+// 利用例
+(async () => {
+  // GET で "texts" のデータを取得
+  try {
+    const textsData = await fetchTexts();
+    console.log("Texts data:", textsData);
+  } catch (error) {
+    console.error(error);
+  }
 
-// Function to register a new player
-export async function registerPlayer(player: PlayerData): Promise<ApiResponse> {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "registerPlayer", data: player }),
-  });
-  return response.json();
-}
-
-// Function to log in a player
-export async function login(player: PlayerData): Promise<ApiResponse> {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "login", data: player }),
-  });
-  return response.json();
-}
-
-// Function to get ranking data
-export async function getRanking(): Promise<ApiResponse> {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "getRanking" }),
-  });
-  return response.json();
-}
+  // POST で "play_datas" にデータを書き込む
+  try {
+    const result = await postPlayData("sample text", 123);
+    console.log("Post result:", result);
+  } catch (error) {
+    console.error(error);
+  }
+})();
+*/

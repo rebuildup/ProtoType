@@ -20,15 +20,20 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
     const initApp = async () => {
       try {
         if (!popupRef.current) return;
-
-        // 既存のCanvasをクリーンアップ
+        // Remove any existing canvas element
         popupRef.current.querySelector("canvas")?.remove();
 
-        // PIXI.Applicationの初期化
+        // Create a new canvas element manually
+        const canvas = document.createElement("canvas");
+
+        // Instantiate a new PIXI.Application and initialize with options
         app = new PIXI.Application();
-        await app.init({
-          width: 720 * 2,
-          height: 600 * 2,
+        app.init({
+          view: canvas,
+          width: 720,
+          height: 600,
+          resolution: window.devicePixelRatio || 1,
+          autoDensity: true,
           backgroundColor: settings.colorTheme.colors.MainBG,
           autoStart: true,
           resizeTo: popupRef.current,
@@ -37,18 +42,21 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
         if (!isMounted || !popupRef.current) return;
 
         appRef.current = app;
-        popupRef.current.appendChild(app.canvas);
-        function extractFontName(fontFamily: string) {
+        popupRef.current.appendChild(canvas);
+
+        // Extract font name from the provided font family string
+        const extractFontName = (fontFamily: string) => {
           const match = fontFamily.match(/["']([^"']+)["']/);
           return match ? match[1] : fontFamily;
-        }
+        };
         const fixedFont = extractFontName(settings.fontTheme.fontFamily);
         setProp("FontFamily", fixedFont);
         setProp("KeyLayout", settings.keyLayout);
-        initializeGame(app);
+        // Use non-null assertion to ensure app is not null
+        initializeGame(app!);
       } catch (error) {
         console.error("PixiJS initialization failed:", error);
-        app?.destroy(true);
+        if (app) app.destroy(true);
       }
     };
 

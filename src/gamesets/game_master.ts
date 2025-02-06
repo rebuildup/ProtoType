@@ -4,7 +4,6 @@ import { game_scene } from "./game_scene";
 
 import { playCollect, playMiss } from "./soundplay";
 
-import { fetchGASData } from "./textget";
 import { getProp, setProp } from "./gameConfig";
 
 import { opening_scene } from "./opening";
@@ -13,11 +12,17 @@ import { setting_scene } from "./setting_scene";
 import { result_scene } from "./result_scene";
 
 //import { TextToRomaji } from "./generate_pattern";
+import { fetchTexts } from "./APIget";
 
 export async function initializeGame(app: PIXI.Application) {
-  await fetchGASData();
   //setProp("CurrentSceneName", "opening");
   setProp("CurrentSceneName", "game_scene");
+  try {
+    const textsData = await fetchTexts();
+    console.log("Texts data:", textsData);
+  } catch (error) {
+    console.error(error);
+  }
   while (getProp("CurrentSceneName") != "exit") {
     switch (getProp("CurrentSceneName")) {
       case "opening":

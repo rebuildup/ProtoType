@@ -80,7 +80,6 @@ const App: React.FC = () => {
         return <div>タブが見つかりません。</div>;
     }
   };
-  console.log("コンソールにようこそ\n");
 
   return (
     <div>
