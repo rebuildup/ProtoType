@@ -4,8 +4,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 720px;
-  height: 600px;
+  width: (720+64) px;
+  height: (600+64) px;
   background-color: var(--MainBG);
   border: 3px solid var(--MainColor);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);

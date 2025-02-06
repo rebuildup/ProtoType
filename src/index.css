@@ -129,6 +129,7 @@ button {
 }
 .GithubLink {
   color: var(--MainColor);
+  fill: var(--MainColor);
   text-decoration: none;
   z-index: 2000;
   position: absolute;
@@ -138,6 +139,7 @@ button {
 }
 .XLink {
   color: var(--MainColor);
+  fill: var(--MainColor);
   text-decoration: none;
   z-index: 2000;
   position: absolute;
