@@ -1,107 +1,158 @@
-import * as PIXI from "pixi.js";
+// game_select.ts
+import * as THREE from "three";
 import { getProp, setProp } from "./gameConfig";
 import { settings } from "../SiteInterface";
-import { replaceHash } from "./game_master";
 import { playCollect } from "./soundplay";
-export function game_select(app: PIXI.Application): Promise<void> {
+import { ThreeGameContext } from "./game_master";
+import { game_scene } from "./game_scene";
+
+function createTextSprite(
+  message: string,
+  parameters: {
+    fontFamily: string;
+    fontSize: number;
+    fill: string;
+    align?: string;
+  }
+): THREE.Sprite {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  canvas.width = 256;
+  canvas.height = 64;
+  ctx.font = `${parameters.fontSize}px ${parameters.fontFamily}`;
+  ctx.textAlign = parameters.align
+    ? (parameters.align as CanvasTextAlign)
+    : "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = parameters.fill;
+  ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+  const texture = new THREE.CanvasTexture(canvas);
+  const spriteMaterial = new THREE.SpriteMaterial({
+    map: texture,
+    transparent: true,
+  });
+  const sprite = new THREE.Sprite(spriteMaterial);
+  sprite.scale.set(canvas.width, canvas.height, 1);
+  return sprite;
+}
+
+// Simple interactive registration using the sprite's userData.
+// Actual pointer detection via raycasting should be implemented in the main loop.
+function registerInteractive(
+  sprite: THREE.Sprite,
+  onClick: () => Promise<void>
+) {
+  sprite.userData.onClick = onClick;
+}
+
+export function game_select(context: ThreeGameContext): Promise<void> {
   return new Promise<void>((resolve) => {
-    app.stage.removeChildren();
-    const game_select_text = make_Button("ゲーム選択");
-    game_select_text.x = app.screen.width / 2 - game_select_text.width / 2;
-    game_select_text.y = app.screen.height / 2 - game_select_text.height / 2;
-    game_select_text.interactive = true;
-    game_select_text.on("pointerdown", async () => {
+    while (context.scene.children.length > 0) {
+      context.scene.remove(context.scene.children[0]);
+    }
+    const gameSelectButton = createTextSprite("ゲーム選択", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 24,
+      fill: settings.colorTheme.colors.MainColor,
+      align: "center",
+    });
+    gameSelectButton.position.set(0, 0, 0);
+    registerInteractive(gameSelectButton, async () => {
       console.log("gamemode");
-      await game_mode_select(app);
+      await game_mode_select(context);
       resolve();
     });
-    app.stage.addChild(game_select_text);
+    context.scene.add(gameSelectButton);
 
-    const setting_select_text = make_Button("設定");
-    setting_select_text.x =
-      app.screen.width / 2 - setting_select_text.width / 2;
-    setting_select_text.y =
-      app.screen.height / 2 - setting_select_text.height / 2 + 50;
-    setting_select_text.interactive = true;
-    setting_select_text.on("pointerdown", async () => {
+    const settingSelectButton = createTextSprite("設定", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 24,
+      fill: settings.colorTheme.colors.MainColor,
+      align: "center",
+    });
+    settingSelectButton.position.set(0, -50, 0);
+    registerInteractive(settingSelectButton, async () => {
       console.log("setting_scene");
       setProp("CurrentSceneName", "setting_scene");
       resolve();
     });
-    app.stage.addChild(setting_select_text);
+    context.scene.add(settingSelectButton);
 
-    const record_text = make_Button("プレイ記録");
-    record_text.x = app.screen.width / 2 - record_text.width / 2;
-    record_text.y = app.screen.height / 2 - record_text.height / 2 - 50;
-    record_text.interactive = true;
-    record_text.on("pointerdown", async () => {
+    const recordButton = createTextSprite("プレイ記録", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 24,
+      fill: settings.colorTheme.colors.MainColor,
+      align: "center",
+    });
+    recordButton.position.set(0, 50, 0);
+    registerInteractive(recordButton, async () => {
       setProp("CurrentSceneName", "setting_scene");
       resolve();
     });
-    app.stage.addChild(record_text);
+    context.scene.add(recordButton);
   });
 }
-function game_mode_select(app: PIXI.Application): Promise<void> {
+
+function game_mode_select(context: ThreeGameContext): Promise<void> {
   return new Promise<void>((resolve) => {
-    app.stage.removeChildren();
-
+    while (context.scene.children.length > 0) {
+      context.scene.remove(context.scene.children[0]);
+    }
     playCollect();
-
-    const select_nomal = make_Button("スタンダード");
-    select_nomal.x = app.screen.width / 2 - select_nomal.width / 2;
-    select_nomal.y = app.screen.height / 2 - select_nomal.height / 2 - 75;
-    select_nomal.on("pointerdown", async () => {
+    const select_nomal = createTextSprite("スタンダード", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 24,
+      fill: settings.colorTheme.colors.MainColor,
+      align: "center",
+    });
+    select_nomal.position.set(0, 50, 0);
+    registerInteractive(select_nomal, async () => {
       setProp("GameMode", "nomal");
       setProp("CurrentSceneName", "game_scene");
       resolve();
     });
-    select_nomal.interactive = true;
-    app.stage.addChild(select_nomal);
+    context.scene.add(select_nomal);
 
-    const select_focus = make_Button("集中モード");
-    select_focus.x = app.screen.width / 2 - select_focus.width / 2;
-    select_focus.y = app.screen.height / 2 - select_focus.height / 2 - 25;
-    select_focus.on("pointerdown", async () => {
+    const select_focus = createTextSprite("集中モード", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 24,
+      fill: settings.colorTheme.colors.MainColor,
+      align: "center",
+    });
+    select_focus.position.set(0, 0, 0);
+    registerInteractive(select_focus, async () => {
       setProp("GameMode", "focus");
       setProp("CurrentSceneName", "game_scene");
       resolve();
     });
-    select_focus.interactive = true;
-    app.stage.addChild(select_focus);
+    context.scene.add(select_focus);
 
-    const select_exact = make_Button("正確性重視");
-    select_exact.x = app.screen.width / 2 - select_exact.width / 2;
-    select_exact.y = app.screen.height / 2 - select_exact.height / 2 + 25;
-    select_exact.on("pointerdown", async () => {
+    const select_exact = createTextSprite("正確性重視", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 24,
+      fill: settings.colorTheme.colors.MainColor,
+      align: "center",
+    });
+    select_exact.position.set(0, -50, 0);
+    registerInteractive(select_exact, async () => {
       setProp("GameMode", "exact");
       setProp("CurrentSceneName", "game_scene");
       resolve();
     });
-    select_exact.interactive = true;
-    app.stage.addChild(select_exact);
+    context.scene.add(select_exact);
 
-    const select_long = make_Button("ランダム長文");
-    select_long.x = app.screen.width / 2 - select_long.width / 2;
-    select_long.y = app.screen.height / 2 - select_long.height / 2 + 75;
-    select_long.on("pointerdown", async () => {
+    const select_long = createTextSprite("ランダム長文", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 24,
+      fill: settings.colorTheme.colors.MainColor,
+      align: "center",
+    });
+    select_long.position.set(0, -100, 0);
+    registerInteractive(select_long, async () => {
       setProp("GameMode", "long");
       setProp("CurrentSceneName", "game_scene");
       resolve();
     });
-    select_long.interactive = true;
-    app.stage.addChild(select_long);
+    context.scene.add(select_long);
   });
-}
-
-function make_Button(text: string) {
-  const output = new PIXI.Text({
-    text: text,
-    style: {
-      fontFamily: getProp("FontFamily"),
-      fontSize: 24,
-      fill: replaceHash(settings.colorTheme.colors.MainColor),
-      align: "center",
-    },
-  });
-  return output;
 }

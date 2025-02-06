@@ -72,13 +72,14 @@ import * as PIXI from "pixi.js";
 import { settings } from "../SiteInterface";
 import { replaceHash } from "./game_master";
 
-const keybord_pos_y = 330;
+const keybord_pos_y = 300;
 
 export function Keyboard(app: PIXI.Application) {
   const g = new PIXI.Graphics();
   app.stage.addChild(g);
+
   g.rect(
-    keybords[33][2] + app.screen.width / 2 - 279 - 2,
+    keybords[33][2] + app.screen.width / 2 - 313 - 2,
     keybords[33][3] + keybord_pos_y - 2,
     keybords[33][0] + 4,
     keybords[33][1] + 4
@@ -86,7 +87,7 @@ export function Keyboard(app: PIXI.Application) {
 
   // Draw the second rectangle with a green fill
   g.rect(
-    keybords[36][2] + app.screen.width / 2 - 279 - 2,
+    keybords[36][2] + app.screen.width / 2 - 313 - 2,
     keybords[36][3] + keybord_pos_y - 2,
     keybords[36][0] + 4,
     keybords[36][1] + 4
@@ -96,10 +97,11 @@ export function Keyboard(app: PIXI.Application) {
   // Draw the remaining rectangles with the main color from settings
   for (let i = 0; i < keybords.length; i++) {
     g.rect(
-      keybords[i][2] + app.screen.width / 2 - 279,
+      keybords[i][2] + app.screen.width / 2 - 313,
       keybords[i][3] + keybord_pos_y,
       keybords[i][0],
       keybords[i][1]
     ).fill(replaceHash(settings.colorTheme.colors.MainColor));
   }
+  g.scale = 1.1;
 }

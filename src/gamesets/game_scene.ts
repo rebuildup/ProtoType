@@ -1,130 +1,160 @@
-import * as PIXI from "pixi.js";
+// game_scene.ts
+import * as THREE from "three";
+import { getProp, setProp } from "./gameConfig";
 import { replaceHash } from "./game_master";
-import { getProp, setProp } from "../gamesets/gameConfig";
-import { Keyboard } from "../gamesets/keybord";
 import { settings } from "../SiteInterface";
-export function game_scene(app: PIXI.Application): Promise<void> {
+import { playCollect } from "./soundplay";
+import { ThreeGameContext } from "./game_master";
+
+function createTextSprite(
+  message: string,
+  parameters: {
+    fontFamily: string;
+    fontSize: number;
+    fill: string;
+    align?: string;
+  }
+): THREE.Sprite {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  canvas.width = 512;
+  canvas.height = 128;
+  ctx.font = `${parameters.fontSize}px ${parameters.fontFamily}`;
+  ctx.textAlign = parameters.align
+    ? (parameters.align as CanvasTextAlign)
+    : "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = parameters.fill;
+  ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+  const texture = new THREE.CanvasTexture(canvas);
+  const spriteMaterial = new THREE.SpriteMaterial({
+    map: texture,
+    transparent: true,
+  });
+  const sprite = new THREE.Sprite(spriteMaterial);
+  // Scale factor can be adjusted as needed
+  sprite.scale.set(canvas.width / 4, canvas.height / 4, 1);
+  return sprite;
+}
+
+function createLine(
+  start: THREE.Vector3,
+  end: THREE.Vector3,
+  lineWidth: number
+): THREE.Line {
+  const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
+  const material = new THREE.LineBasicMaterial({
+    color: Number(replaceHash(settings.colorTheme.colors.MainColor)),
+    linewidth: lineWidth,
+  });
+  return new THREE.Line(geometry, material);
+}
+
+export function game_scene(context: ThreeGameContext): Promise<void> {
   return new Promise((resolve) => {
-    app.stage.removeChildren();
+    // Clear previous objects
+    while (context.scene.children.length > 0) {
+      context.scene.remove(context.scene.children[0]);
+    }
+    // In an orthographic setup, (0,0) is the center.
+    const winpos = { x: 0, y: 0 };
 
     switch (getProp("GameMode")) {
       case "nomal":
-        break;
       case "focus":
-        break;
       case "exact":
-        break;
       case "long":
         break;
       default:
         console.log("gamemode nothing");
         resolve();
-        break;
+        return;
     }
 
-    const sentetce_text = new PIXI.Text({
-      text: "構想は練った...後は作るだけ",
-      style: {
-        fontFamily: getProp("FontFamily"),
-        fontSize: 20,
-        fill: replaceHash(settings.colorTheme.colors.MainColor),
-        align: "center",
-      },
+    const sentenceSprite = createTextSprite("拝啓ドッペルゲンガー君は 君は誰", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 20,
+      fill: replaceHash(settings.colorTheme.colors.MainColor),
+      align: "center",
     });
-    sentetce_text.x = app.screen.width / 2 - sentetce_text.width / 2;
-    sentetce_text.y = 175;
-    app.stage.addChild(sentetce_text);
-    const alphabet_text = new PIXI.Text({
-      text: "kousouhanetta...atohatukurudake",
-      style: {
-        fontFamily: getProp("FontFamily"),
-        fontSize: 14,
-        fill: replaceHash(settings.colorTheme.colors.MainColor),
-        align: "center",
-      },
-    });
-    alphabet_text.x = app.screen.width / 2 - alphabet_text.width / 2;
-    alphabet_text.y = 200;
-    app.stage.addChild(alphabet_text);
-    const next_text = new PIXI.Text({
-      text: "昨年はゲーム部門1位でした",
-      style: {
-        fontFamily: getProp("FontFamily"),
-        fontSize: 14,
-        fill: replaceHash(settings.colorTheme.colors.MainColor),
-        align: "center",
-      },
-    });
-    next_text.x = app.screen.width / 2 - next_text.width / 2;
-    next_text.y = 251;
-    app.stage.addChild(next_text);
+    sentenceSprite.position.set(winpos.x, winpos.y, 0);
+    context.scene.add(sentenceSprite);
 
-    const score_text = new PIXI.Text({
-      text: "30000",
-      style: {
-        fontFamily: getProp("FontFamily"),
-        fontSize: 16,
-        fill: replaceHash(settings.colorTheme.colors.MainColor),
-        align: "center",
-      },
+    const alphabetSprite = createTextSprite("kousouhanetta...atohatukurudake", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 14,
+      fill: replaceHash(settings.colorTheme.colors.MainColor),
     });
-    score_text.x = app.screen.width / 2 - score_text.width / 2;
-    score_text.y = 100;
-    app.stage.addChild(score_text);
+    alphabetSprite.position.set(0, 50, 0);
+    context.scene.add(alphabetSprite);
 
-    const combo_text = new PIXI.Text({
-      text: "30",
-      style: {
-        fontFamily: getProp("FontFamily"),
-        fontSize: 24,
-        fill: replaceHash(settings.colorTheme.colors.MainColor),
-        align: "center",
-      },
+    const nextSprite = createTextSprite("昨年はゲーム部門1位でした", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 14,
+      fill: replaceHash(settings.colorTheme.colors.MainColor),
     });
-    combo_text.x = 81;
-    combo_text.y = 179;
-    app.stage.addChild(combo_text);
+    nextSprite.position.set(0, 0, 0);
+    context.scene.add(nextSprite);
 
-    const kpm_text = new PIXI.Text({
-      text: "5.2",
-      style: {
-        fontFamily: getProp("FontFamily"),
-        fontSize: 24,
-        fill: replaceHash(settings.colorTheme.colors.MainColor),
-        align: "right",
-      },
+    const scoreSprite = createTextSprite("30000", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 16,
+      fill: replaceHash(settings.colorTheme.colors.MainColor),
     });
-    kpm_text.x = app.screen.width - 81 - 32;
-    kpm_text.y = 179;
-    app.stage.addChild(kpm_text);
+    scoreSprite.position.set(0, -100, 0);
+    context.scene.add(scoreSprite);
 
-    const accuracyLine = new PIXI.Graphics();
-    accuracyLine.moveTo(81, 87);
-    accuracyLine.lineTo(app.screen.width - 81, 87);
-    accuracyLine.stroke({
-      width: 2,
-      color: replaceHash(settings.colorTheme.colors.MainColor),
-      alpha: 1,
+    const comboSprite = createTextSprite("30", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 24,
+      fill: replaceHash(settings.colorTheme.colors.MainColor),
     });
-    app.stage.addChild(accuracyLine);
-    const progressLine = new PIXI.Graphics();
-    progressLine.moveTo(81, 298);
-    progressLine.lineTo(app.screen.width - 81, 298);
-    progressLine.stroke({
-      width: 2,
-      color: replaceHash(settings.colorTheme.colors.MainColor),
-      alpha: 1,
-    });
-    app.stage.addChild(progressLine);
-    const progressDot = new PIXI.Graphics();
+    comboSprite.position.set(-150, 0, 0);
+    context.scene.add(comboSprite);
 
-    progressDot.circle(100, 280, 1);
-    progressDot.stroke({
-      width: 8,
-      color: replaceHash(settings.colorTheme.colors.MainColor),
+    const kpmSprite = createTextSprite("5.2", {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 24,
+      fill: replaceHash(settings.colorTheme.colors.MainColor),
     });
-    app.stage.addChild(progressDot);
-    Keyboard(app);
+    kpmSprite.position.set(150, 0, 0);
+    context.scene.add(kpmSprite);
+
+    // Draw lines
+    const accuracyLine = createLine(
+      new THREE.Vector3(-200, -50, 0),
+      new THREE.Vector3(200, -50, 0),
+      2
+    );
+    context.scene.add(accuracyLine);
+    const progressLine = createLine(
+      new THREE.Vector3(-200, -150, 0),
+      new THREE.Vector3(200, -150, 0),
+      2
+    );
+    context.scene.add(progressLine);
+    const positionLine = createLine(
+      new THREE.Vector3(-300, 0, 0),
+      new THREE.Vector3(300, 0, 0),
+      1
+    );
+    context.scene.add(positionLine);
+    const posiiLine = createLine(
+      new THREE.Vector3(0, -200, 0),
+      new THREE.Vector3(0, 200, 0),
+      1
+    );
+    context.scene.add(posiiLine);
+
+    // Draw progress dot as a small circle
+    const dotGeometry = new THREE.CircleGeometry(3, 16);
+    const dotMaterial = new THREE.MeshBasicMaterial({
+      color: Number(replaceHash(settings.colorTheme.colors.MainColor)),
+    });
+    const progressDot = new THREE.Mesh(dotGeometry, dotMaterial);
+    progressDot.position.set(winpos.x, winpos.y, 0);
+    context.scene.add(progressDot);
+
     setProp("CurrentSceneName", "result_scene");
     setTimeout(() => {
       resolve();
