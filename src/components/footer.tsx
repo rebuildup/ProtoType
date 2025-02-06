@@ -1,4 +1,5 @@
 import React from "react";
+import { settings } from "../SiteInterface";
 const Footer: React.FC = () => {
   return (
     <div>
@@ -24,7 +25,6 @@ const Footer: React.FC = () => {
           fillRule="nonzero"
         >
           <g
-            fill="#ffffff"
             fillRule="nonzero"
             stroke="none"
             strokeWidth="1"
@@ -58,7 +58,6 @@ const Footer: React.FC = () => {
           fillRule="nonzero"
         >
           <g
-            fill="#ffffff"
             fillRule="nonzero"
             stroke="none"
             strokeWidth="1"

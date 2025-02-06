@@ -17,28 +17,33 @@ export interface ThreeGameContext {
 
 export async function initializeGame(context: ThreeGameContext) {
   // Set the initial scene
-  setProp("CurrentSceneName", "game_scene");
+  setProp("CurrentSceneName", "opening");
 
   // Main game loop
   while (getProp("CurrentSceneName") !== "exit") {
     switch (getProp("CurrentSceneName")) {
       case "opening":
+        console.log("opening");
         playCollect();
         await opening_scene(context);
         break;
       case "game_scene":
+        console.log("game_scene");
         playCollect();
         await game_scene(context);
         break;
       case "game_select":
+        console.log("game_select");
         playCollect();
         await game_select(context);
         break;
       case "setting_scene":
+        console.log("setting_scene");
         playCollect();
         await setting_scene(context);
         break;
       case "result_scene":
+        console.log("result_scene");
         playCollect();
         await result_scene(context);
         break;

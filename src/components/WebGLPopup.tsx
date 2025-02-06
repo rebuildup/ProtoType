@@ -29,10 +29,16 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
         // Create three.js renderer with antialiasing for smoother visuals
         renderer = new THREE.WebGLRenderer({ antialias: true });
-        const width = 720 * 2;
-        const height = 600 * 2;
-        renderer.setSize(width, height);
+        // 定義する表示サイズ
+        const displayWidth = 720;
+        const displayHeight = 600;
+        // システム上のサイズは2倍（高解像度）にする
+        renderer.setSize(displayWidth * 2, displayHeight * 2, false);
+        // CSSで表示サイズを元のサイズに設定する
+        renderer.domElement.style.width = `${displayWidth}px`;
+        renderer.domElement.style.height = `${displayHeight}px`;
         renderer.setClearColor(settings.colorTheme.colors.MainBG);
+        renderer.setPixelRatio(window.devicePixelRatio);
         popupRef.current.appendChild(renderer.domElement);
         rendererRef.current = renderer;
 
@@ -41,10 +47,10 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
         // Setup an orthographic camera for 2D rendering
         camera = new THREE.OrthographicCamera(
-          -width / 2,
-          width / 2,
-          height / 2,
-          -height / 2,
+          -displayWidth / 2,
+          displayWidth / 2,
+          displayHeight / 2,
+          -displayHeight / 2,
           0.1,
           1000
         );
@@ -66,7 +72,6 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
         const animate = () => {
           if (!isMounted) return;
           animationFrameId = requestAnimationFrame(animate);
-          // Use non-null assertion operator to assure TS that renderer is not null
           renderer!.render(scene, camera);
         };
         animate();
