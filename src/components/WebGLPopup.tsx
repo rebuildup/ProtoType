@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
+
 import "../styles/webglPopup.css";
 import { settings } from "../SiteInterface";
 import { initializeGame } from "../gamesets/game_master";
@@ -20,21 +21,15 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
     const initApp = async () => {
       try {
         if (!popupRef.current) return;
-        // Remove any existing canvas element
+
+        // 既存のCanvasをクリーンアップ
         popupRef.current.querySelector("canvas")?.remove();
 
-        // Create a canvas element manually
-        const canvas = document.createElement("canvas");
-
-        // Initialize PIXI.Application without options
+        // PIXI.Applicationの初期化
         app = new PIXI.Application();
-        // Use init() with provided canvas element via the view option
-        app.init({
-          view: canvas,
-          width: 720,
-          height: 600,
-          resolution: window.devicePixelRatio || 1,
-          autoDensity: true,
+        await app.init({
+          width: 720 * 2,
+          height: 600 * 2,
           backgroundColor: settings.colorTheme.colors.MainBG,
           autoStart: true,
           resizeTo: popupRef.current,
@@ -42,18 +37,12 @@ const WebGLPopup: React.FC<WebGLPopupProps> = ({ onClose }) => {
 
         if (!isMounted || !popupRef.current) return;
 
-        // Ensure renderer resolution is set correctly
-        if (app.renderer) {
-          app.renderer.resolution = window.devicePixelRatio || 1;
-        }
         appRef.current = app;
-        // Append the created canvas element
-        popupRef.current.appendChild(canvas);
-
-        const extractFontName = (fontFamily: string) => {
+        popupRef.current.appendChild(app.canvas);
+        function extractFontName(fontFamily: string) {
           const match = fontFamily.match(/["']([^"']+)["']/);
           return match ? match[1] : fontFamily;
-        };
+        }
         const fixedFont = extractFontName(settings.fontTheme.fontFamily);
         setProp("FontFamily", fixedFont);
         setProp("KeyLayout", settings.keyLayout);
