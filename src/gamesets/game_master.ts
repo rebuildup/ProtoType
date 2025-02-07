@@ -10,6 +10,8 @@ import { opening_scene } from "./opening";
 import { game_select } from "./game_select";
 import { setting_scene } from "./setting_scene";
 import { result_scene } from "./result_scene";
+
+import { settings } from "../SiteInterface";
 //import { fetchTexts, postPlayData } from "./APIget";
 
 //import { TextToRomaji } from "./generate_pattern";
@@ -32,6 +34,7 @@ export async function initializeGame(app: PIXI.Application) {
   //setProp("CurrentSceneName", "opening");
   setProp("CurrentSceneName", "game_scene");
   setProp("GameMode", "nomal");
+  setProp("FontFamily", settings.fontTheme.fontFamily);
   while (getProp("CurrentSceneName") != "exit") {
     switch (getProp("CurrentSceneName")) {
       case "opening":

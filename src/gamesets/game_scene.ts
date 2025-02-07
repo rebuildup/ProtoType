@@ -1,8 +1,10 @@
 import * as PIXI from "pixi.js";
 import { replaceHash } from "./game_master";
 import { getProp, setProp } from "../gamesets/gameConfig";
-import { Keyboard } from "../gamesets/keybord";
+import { Keyboard, keybord_size, scale } from "../gamesets/keybord";
+
 import { settings } from "../SiteInterface";
+
 import { getLatestKey } from "../gamesets/keyinput";
 
 export async function game_scene(app: PIXI.Application): Promise<void> {
@@ -10,25 +12,43 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     app.stage.removeChildren();
 
     const texts_num = 15;
+
     const win_pos = { x: app.screen.width / 2, y: app.screen.height / 2 };
+
     let keybord_flag = true;
 
     switch (getProp("GameMode")) {
       case "nomal":
         keybord_flag = true;
+
+        win_pos.y = app.screen.height / 2 - 400;
+
         break;
+
       case "focus":
         keybord_flag = false;
+
         break;
+
       case "exact":
         keybord_flag = true;
+
+        win_pos.y = app.screen.height / 2 - 400;
+
         break;
+
       case "long":
         keybord_flag = true;
+
+        win_pos.y = app.screen.height / 2 - 400;
+
         break;
+
       default:
         console.log("gamemode nothing");
+
         resolve();
+
         break;
     }
 
@@ -36,50 +56,50 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       text: "構想は練った...後は作るだけ",
       style: {
         fontFamily: getProp("FontFamily"),
-        fontSize: 100,
+        fontSize: 70,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
       },
     });
     sentetce_text.x = win_pos.x - sentetce_text.width / 2;
-    sentetce_text.y = win_pos.y - sentetce_text.height / 2;
+    sentetce_text.y = win_pos.y - sentetce_text.height / 2 - 10;
     app.stage.addChild(sentetce_text);
     const alphabet_text = new PIXI.Text({
       text: "kousouhanetta...atohatukurudake",
       style: {
         fontFamily: getProp("FontFamily"),
-        fontSize: 100,
+        fontSize: 50,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
       },
     });
     alphabet_text.x = win_pos.x - alphabet_text.width / 2;
-    alphabet_text.y = win_pos.y - alphabet_text.height / 2;
+    alphabet_text.y = win_pos.y - alphabet_text.height / 2 + 50;
     app.stage.addChild(alphabet_text);
     const next_text = new PIXI.Text({
       text: "昨年はゲーム部門1位でした",
       style: {
         fontFamily: getProp("FontFamily"),
-        fontSize: 100,
+        fontSize: 50,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
       },
     });
     next_text.x = win_pos.x - next_text.width / 2;
-    next_text.y = win_pos.y - next_text.height / 2;
+    next_text.y = win_pos.y - next_text.height / 2 + 300;
     app.stage.addChild(next_text);
 
     const score_text = new PIXI.Text({
       text: "30000",
       style: {
         fontFamily: getProp("FontFamily"),
-        fontSize: 100,
+        fontSize: 50,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
       },
     });
     score_text.x = win_pos.x - score_text.width / 2;
-    score_text.y = win_pos.y - score_text.height / 2;
+    score_text.y = win_pos.y - score_text.height / 2 - 400;
     app.stage.addChild(score_text);
 
     const combo_text = new PIXI.Text({
@@ -91,7 +111,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
-    combo_text.x = win_pos.x - combo_text.width / 2;
+    combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
     combo_text.y = win_pos.y - combo_text.height / 2;
     app.stage.addChild(combo_text);
 
@@ -104,13 +124,19 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         align: "right",
       },
     });
-    kpm_text.x = win_pos.x - kpm_text.width / 2;
+    kpm_text.x = win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
     kpm_text.y = win_pos.y - kpm_text.height / 2;
     app.stage.addChild(kpm_text);
 
     const accuracyLine = new PIXI.Graphics();
-    accuracyLine.moveTo(win_pos.x - 400, win_pos.y);
-    accuracyLine.lineTo(win_pos.x + 400, win_pos.y);
+    accuracyLine.moveTo(
+      win_pos.x - (keybord_size.width * scale) / 2,
+      win_pos.y - 500
+    );
+    accuracyLine.lineTo(
+      win_pos.x + (keybord_size.width * scale) / 2,
+      win_pos.y - 500
+    );
     accuracyLine.stroke({
       width: 6,
       color: replaceHash(settings.colorTheme.colors.MainColor),
@@ -118,8 +144,14 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     app.stage.addChild(accuracyLine);
     const progressLine = new PIXI.Graphics();
-    progressLine.moveTo(win_pos.x - 400, win_pos.y);
-    progressLine.lineTo(win_pos.x + 400, win_pos.y);
+    progressLine.moveTo(
+      win_pos.x - (keybord_size.width * scale) / 2,
+      win_pos.y + 500
+    );
+    progressLine.lineTo(
+      win_pos.x + (keybord_size.width * scale) / 2,
+      win_pos.y + 500
+    );
     progressLine.stroke({
       width: 6,
       color: replaceHash(settings.colorTheme.colors.MainColor),
@@ -128,9 +160,10 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     app.stage.addChild(progressLine);
     const progressDot = new PIXI.Graphics();
 
-    progressDot.circle(win_pos.x, win_pos.y, 8);
+    progressDot.circle(win_pos.x, win_pos.y + 500, 16);
+    progressDot.fill(replaceHash(settings.colorTheme.colors.MainBG));
     progressDot.stroke({
-      width: 40,
+      width: 6,
       color: replaceHash(settings.colorTheme.colors.MainColor),
     });
     app.stage.addChild(progressDot);

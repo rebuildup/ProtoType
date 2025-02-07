@@ -11,7 +11,6 @@ export function game_select(app: PIXI.Application): Promise<void> {
     game_select_text.y = app.screen.height / 2 - game_select_text.height / 2;
     game_select_text.interactive = true;
     game_select_text.on("pointerdown", async () => {
-      console.log("gamemode");
       await game_mode_select(app);
       resolve();
     });

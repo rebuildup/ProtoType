@@ -71,13 +71,13 @@ import * as PIXI from "pixi.js";
 
 import { settings } from "../SiteInterface";
 import { replaceHash } from "./game_master";
+export const keybord_size = { width: 558, height: 180 };
+export const scale = 4;
+const accent_width = 6;
 
 export function Keyboard(app: PIXI.Application) {
   const keybord_pos = { x: app.screen.width / 2, y: app.screen.height - 600 };
-  const keybord_size = { width: 558, height: 180 };
 
-  const accent_width = 6;
-  const scale = 4;
   const g = new PIXI.Graphics();
   app.stage.addChild(g);
 
