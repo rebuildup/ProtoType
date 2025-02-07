@@ -3,18 +3,28 @@ import { replaceHash } from "./game_master";
 import { getProp, setProp } from "../gamesets/gameConfig";
 import { Keyboard } from "../gamesets/keybord";
 import { settings } from "../SiteInterface";
-export function game_scene(app: PIXI.Application): Promise<void> {
-  return new Promise((resolve) => {
+import { getLatestKey } from "../gamesets/keyinput";
+
+export async function game_scene(app: PIXI.Application): Promise<void> {
+  return new Promise(async (resolve) => {
     app.stage.removeChildren();
+
+    const texts_num = 15;
+    const texts_pos = { x: app.screen.width / 2, y: app.screen.height / 2 };
+    let keybord_flag = true;
 
     switch (getProp("GameMode")) {
       case "nomal":
+        keybord_flag = true;
         break;
       case "focus":
+        keybord_flag = false;
         break;
       case "exact":
+        keybord_flag = true;
         break;
       case "long":
+        keybord_flag = true;
         break;
       default:
         console.log("gamemode nothing");
@@ -104,7 +114,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
     accuracyLine.moveTo(81, 87);
     accuracyLine.lineTo(app.screen.width - 81, 87);
     accuracyLine.stroke({
-      width: 2,
+      width: 6,
       color: replaceHash(settings.colorTheme.colors.MainColor),
       alpha: 1,
     });
@@ -113,7 +123,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
     progressLine.moveTo(81, 298);
     progressLine.lineTo(app.screen.width - 81, 298);
     progressLine.stroke({
-      width: 2,
+      width: 6,
       color: replaceHash(settings.colorTheme.colors.MainColor),
       alpha: 1,
     });
@@ -122,14 +132,22 @@ export function game_scene(app: PIXI.Application): Promise<void> {
 
     progressDot.circle(100, 280, 1);
     progressDot.stroke({
-      width: 8,
+      width: 40,
       color: replaceHash(settings.colorTheme.colors.MainColor),
     });
     app.stage.addChild(progressDot);
-    Keyboard(app);
+    if (keybord_flag) {
+      Keyboard(app);
+    }
+
     setProp("CurrentSceneName", "result_scene");
-    setTimeout(() => {
-      resolve();
-    }, 60000);
+    while (true) {
+      const keyCode = await getLatestKey();
+
+      if (keyCode === "KeyE") {
+        resolve();
+        break;
+      }
+    }
   });
 }

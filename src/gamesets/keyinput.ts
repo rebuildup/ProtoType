@@ -1,4 +1,4 @@
-function getLatestKey(): Promise<string> {
+export function getLatestKey(): Promise<string> {
   return new Promise((resolve) => {
     const handler = (event: KeyboardEvent) => {
       window.removeEventListener("keydown", handler);
@@ -7,7 +7,7 @@ function getLatestKey(): Promise<string> {
     window.addEventListener("keydown", handler);
   });
 }
-
+/*
 async function keyLogger() {
   while (true) {
     const keyCode = await getLatestKey();
@@ -20,3 +20,4 @@ async function keyLogger() {
   }
 }
 keyLogger();
+*/
