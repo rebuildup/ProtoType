@@ -12,18 +12,30 @@ import { setting_scene } from "./setting_scene";
 import { result_scene } from "./result_scene";
 
 import { settings } from "../SiteInterface";
-//import { fetchTexts, postPlayData } from "./APIget";
+import { fetchTexts /*, postPlayData */ } from "./APIget";
 
 //import { TextToRomaji } from "./generate_pattern";
 
 export async function initializeGame(app: PIXI.Application) {
-  /*
+  const loading_text = new PIXI.Text({
+    text: "Loading",
+    style: {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 50,
+      fill: replaceHash(settings.colorTheme.colors.MainColor),
+      align: "center",
+    },
+  });
+  loading_text.x = app.screen.width / 2 - loading_text.width / 2;
+  loading_text.y = app.screen.height / 2 - loading_text.height / 2;
+  app.stage.addChild(loading_text);
   try {
     const textsData = await fetchTexts();
     console.log("Texts data:", textsData);
   } catch (error) {
     console.error(error);
   }
+  /*
   try {
     const result = await postPlayData("いいね！", 3333);
     console.log("Post result:", result);

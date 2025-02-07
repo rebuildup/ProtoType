@@ -22,8 +22,8 @@ const WebGLPopup: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       app = new PIXI.Application();
       try {
         await app.init({
-          width: 720 * 4,
-          height: 600 * 4,
+          width: 720 * 2,
+          height: 600 * 2,
           backgroundColor: replaceHash(settings.colorTheme.colors.MainBG),
           resolution: window.devicePixelRatio || 1,
           autoDensity: true,
