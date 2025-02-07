@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import { replaceHash } from "./game_master";
-import { getProp, setProp } from "../gamesets/gameConfig";
+import { gameData } from "../gamesets/gameConfig";
 import { Keyboard, keybord_size, scale } from "../gamesets/keybord";
 
 import { settings } from "../SiteInterface";
@@ -15,17 +15,18 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
     let keybord_flag = true;
 
-    switch (getProp("GameMode")) {
+    switch (gameData.GameMode) {
       case "nomal":
         keybord_flag = true;
         win_pos.y = app.screen.height / 2 - 200;
-        setProp("Issues_num", 15);
-        setProp("current_Issue", 0);
+
+        gameData.Issues_num = 15;
+        gameData.current_Issue = 0;
         break;
       case "focus":
         keybord_flag = false;
-        setProp("Issues_num", 15);
-        setProp("current_Issue", 0);
+        gameData.Issues_num = 15;
+        gameData.current_Issue = 0;
         break;
       case "exact":
         keybord_flag = true;
@@ -44,7 +45,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     const sentetce_text = new PIXI.Text({
       text: "構想は練った...後は作るだけ",
       style: {
-        fontFamily: getProp("FontFamily"),
+        fontFamily: gameData.FontFamily,
         fontSize: 40,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
@@ -57,7 +58,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     const alphabet_text = new PIXI.Text({
       text: "kousouhanetta...atohatukurudake",
       style: {
-        fontFamily: getProp("FontFamily"),
+        fontFamily: gameData.FontFamily,
         fontSize: 25,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
@@ -69,7 +70,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     const next_text = new PIXI.Text({
       text: "ゲームデザインはまじでフィーリング",
       style: {
-        fontFamily: getProp("FontFamily"),
+        fontFamily: gameData.FontFamily,
         fontSize: 25,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
@@ -82,7 +83,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     const score_text = new PIXI.Text({
       text: "30000",
       style: {
-        fontFamily: getProp("FontFamily"),
+        fontFamily: gameData.FontFamily,
         fontSize: 25,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
@@ -95,7 +96,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     const combo_text = new PIXI.Text({
       text: "30",
       style: {
-        fontFamily: getProp("FontFamily"),
+        fontFamily: gameData.FontFamily,
         fontSize: 40,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
@@ -108,7 +109,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     const kpm_text = new PIXI.Text({
       text: "5.2",
       style: {
-        fontFamily: getProp("FontFamily"),
+        fontFamily: gameData.FontFamily,
         fontSize: 40,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "right",
@@ -161,53 +162,54 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     if (keybord_flag) {
       Keyboard(app);
     }
-    setTimeout(() => {
-      makeIssues(app, win_pos.x, win_pos.y);
-    }, 100);
+    const load_text = new PIXI.Text({
+      text: "問題を取得中",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 25,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    load_text.x = win_pos.x - load_text.width / 2;
+    load_text.y = win_pos.y - load_text.height / 2 - 300;
+    app.stage.addChild(load_text);
+    setTimeout(async () => {
+      await makeIssues();
+      setTimeout(() => {
+        app.stage.removeChild(load_text);
+      }, 100);
+      while (true) {
+        const keyCode = await getLatestKey();
 
-    while (true) {
-      const keyCode = await getLatestKey();
-
-      if (keyCode === "KeyE") {
-        setProp("CurrentSceneName", "result_scene");
-        resolve();
-        break;
+        if (keyCode === "KeyE") {
+          gameData.CurrentSceneName = "result_scene";
+          resolve();
+          break;
+        }
       }
-    }
+    }, 100);
   });
 }
 
 import { Issue } from "./gameConfig";
 import { hiraganaToRomans } from "./generate_pattern";
-async function makeIssues(app: PIXI.Application, win_x: number, win_y: number) {
-  let Issues: Issue[] = [];
-  console.log("start");
-  const load_text = new PIXI.Text({
-    text: "問題を取得中",
-    style: {
-      fontFamily: getProp("FontFamily"),
-      fontSize: 25,
-      fill: replaceHash(settings.colorTheme.colors.MainColor),
-      align: "center",
-    },
+async function makeIssues(): Promise<void> {
+  return new Promise<void>(async (resolve) => {
+    let Issues: Issue[] = [];
+
+    for (let i = 0; i < gameData.Issues_num; i++) {
+      let new_Issue: Issue = {
+        text: example[i].text,
+        romaji: await hiraganaToRomans(example[i].hiragana),
+      };
+
+      Issues.push(new_Issue);
+    }
+    gameData.Issues = Issues;
+
+    resolve();
   });
-  load_text.x = win_x - load_text.width / 2;
-  load_text.y = win_y - load_text.height / 2 - 300;
-  app.stage.addChild(load_text);
-
-  for (let i = 0; i < getProp("Issues_num"); i++) {
-    let new_Issue: Issue = {
-      text: example[i].text,
-      romaji: await hiraganaToRomans(example[i].hiragana),
-    };
-    console.log(new_Issue);
-    Issues.push(new_Issue);
-  }
-  setProp("Issues", Issues);
-  console.log(Issues);
-
-  // テキストを削除
-  app.stage.removeChild(load_text);
 }
 
 const example = [

@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { setProp, getProp } from "./gameConfig";
+import { gameData } from "./gameConfig";
 import { replaceHash } from "./game_master";
 import { settings } from "../SiteInterface";
 
@@ -10,7 +10,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
     const select_select = new PIXI.Text({
       text: "ゲーム選択に戻る",
       style: {
-        fontFamily: getProp("FontFamily"),
+        fontFamily: gameData.FontFamily,
         fontSize: 80,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
@@ -20,7 +20,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
     select_select.y = app.screen.height / 2 - select_select.height / 2;
     select_select.interactive = true;
     select_select.on("pointerdown", async () => {
-      setProp("CurrentSceneName", "game_select");
+      gameData.CurrentSceneName = "game_select";
       resolve();
     });
     app.stage.addChild(select_select);

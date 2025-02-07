@@ -1,88 +1,55 @@
 import { Roman } from "./generate_pattern";
 
+// Issue interface definition
 export interface Issue {
   text: string;
   romaji: Roman;
 }
 
-let CurrentSceneName = "Opening";
-let FontFamily = "Noto Sans JP";
-let KeyLayout = "QUERTY";
-let Score = 0;
-let Accuracy = 100.0;
-let Miss = 0;
-let GameMode = "nomal";
-let textsData = [["none"], ["none"]];
-let Issues: Issue[] = [];
-let Issues_num = 15;
-let current_Issue = 0;
+// GameData interface that holds all game properties
+export interface GameData {
+  CurrentSceneName: string;
+  FontFamily: string;
+  KeyLayout: string;
+  Score: number;
+  Accuracy: number;
+  Miss: number;
+  GameMode: string;
+  textsData: string[][];
+  Issues: Issue[];
+  Issues_num: number;
+  current_Issue: number;
+  IsStarted: boolean;
+  StartTime: number;
+}
 
-export const getProp = (option: string): any => {
-  switch (option) {
-    case "CurrentSceneName":
-      return CurrentSceneName;
-    case "FontFamily":
-      return FontFamily;
-    case "KeyLayout":
-      return KeyLayout;
-    case "Score":
-      return Score;
-    case "Accuracy":
-      return Accuracy;
-    case "Miss":
-      return Miss;
-    case "GameMode":
-      return GameMode;
-    case "textsData":
-      return textsData;
-    case "Issues":
-      return Issues;
-    case "Issues_num":
-      return Issues_num;
-    case "current_Issue":
-      return current_Issue;
-    default:
-      return null;
-  }
+// Centralized game data object for easy property management
+export const gameData: GameData = {
+  CurrentSceneName: "Opening",
+  FontFamily: "Noto Sans JP",
+  KeyLayout: "QUERTY",
+  Score: 0,
+  Accuracy: 100.0,
+  Miss: 0,
+  GameMode: "nomal",
+  textsData: [["none"], ["none"]],
+  Issues: [],
+  Issues_num: 15,
+  current_Issue: 0,
+  IsStarted: false,
+  StartTime: Date.now(),
+};
+/*
+// Simplified getter function for game properties
+export const getProp = <K extends keyof GameData>(key: K): GameData[K] => {
+  return gameData[key];
 };
 
-export const setProp = (option: string, input: any) => {
-  switch (option) {
-    case "CurrentSceneName":
-      CurrentSceneName = input;
-      break;
-    case "FontFamily":
-      FontFamily = input;
-      break;
-    case "KeyLayout":
-      KeyLayout = input;
-      break;
-    case "Score":
-      Score = input;
-      break;
-    case "Accuracy":
-      Accuracy = input;
-      break;
-    case "Miss":
-      Miss = input;
-      break;
-    case "GameMode":
-      GameMode = input;
-      break;
-    case "textsData":
-      textsData = input;
-      break;
-    case "Issues":
-      Issues = input;
-      break;
-    case "Issues_num":
-      Issues_num = input;
-      break;
-    case "current_Issue":
-      current_Issue = input;
-      break;
-    default:
-      console.warn(`Unknown property: ${option}`);
-      break;
-  }
+// Simplified setter function for game properties
+export const setProp = <K extends keyof GameData>(
+  key: K,
+  value: GameData[K]
+): void => {
+  gameData[key] = value;
 };
+*/

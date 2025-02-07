@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { getProp, setProp } from "./gameConfig";
+import { gameData } from "./gameConfig";
 import { settings } from "../SiteInterface";
 import { replaceHash } from "./game_master";
 import { playCollect } from "./soundplay";
@@ -23,8 +23,7 @@ export function game_select(app: PIXI.Application): Promise<void> {
       app.screen.height / 2 - setting_select_text.height / 2 + 50;
     setting_select_text.interactive = true;
     setting_select_text.on("pointerdown", async () => {
-      console.log("setting_scene");
-      setProp("CurrentSceneName", "setting_scene");
+      gameData.CurrentSceneName = "setting_scene";
       resolve();
     });
     app.stage.addChild(setting_select_text);
@@ -34,7 +33,7 @@ export function game_select(app: PIXI.Application): Promise<void> {
     record_text.y = app.screen.height / 2 - record_text.height / 2 - 50;
     record_text.interactive = true;
     record_text.on("pointerdown", async () => {
-      setProp("CurrentSceneName", "setting_scene");
+      gameData.CurrentSceneName = "setting_scene";
       resolve();
     });
     app.stage.addChild(record_text);
@@ -50,8 +49,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     select_nomal.x = app.screen.width / 2 - select_nomal.width / 2;
     select_nomal.y = app.screen.height / 2 - select_nomal.height / 2 - 75;
     select_nomal.on("pointerdown", async () => {
-      setProp("GameMode", "nomal");
-      setProp("CurrentSceneName", "game_scene");
+      gameData.GameMode = "nomal";
+      gameData.CurrentSceneName = "game_scene";
       resolve();
     });
     select_nomal.interactive = true;
@@ -61,8 +60,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     select_focus.x = app.screen.width / 2 - select_focus.width / 2;
     select_focus.y = app.screen.height / 2 - select_focus.height / 2 - 25;
     select_focus.on("pointerdown", async () => {
-      setProp("GameMode", "focus");
-      setProp("CurrentSceneName", "game_scene");
+      gameData.GameMode = "focus";
+      gameData.CurrentSceneName = "game_scene";
       resolve();
     });
     select_focus.interactive = true;
@@ -72,8 +71,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     select_exact.x = app.screen.width / 2 - select_exact.width / 2;
     select_exact.y = app.screen.height / 2 - select_exact.height / 2 + 25;
     select_exact.on("pointerdown", async () => {
-      setProp("GameMode", "exact");
-      setProp("CurrentSceneName", "game_scene");
+      gameData.GameMode = "exact";
+      gameData.CurrentSceneName = "game_scene";
       resolve();
     });
     select_exact.interactive = true;
@@ -83,8 +82,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     select_long.x = app.screen.width / 2 - select_long.width / 2;
     select_long.y = app.screen.height / 2 - select_long.height / 2 + 75;
     select_long.on("pointerdown", async () => {
-      setProp("GameMode", "long");
-      setProp("CurrentSceneName", "game_scene");
+      gameData.GameMode = "long";
+      gameData.CurrentSceneName = "game_scene";
       resolve();
     });
     select_long.interactive = true;
@@ -96,7 +95,7 @@ function make_Button(text: string) {
   const output = new PIXI.Text({
     text: text,
     style: {
-      fontFamily: getProp("FontFamily"),
+      fontFamily: gameData.FontFamily,
       fontSize: 60,
       fill: replaceHash(settings.colorTheme.colors.MainColor),
       align: "center",

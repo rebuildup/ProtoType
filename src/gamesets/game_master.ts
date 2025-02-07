@@ -4,7 +4,7 @@ import { game_scene } from "./game_scene";
 
 import { playCollect, playMiss } from "./soundplay";
 
-import { getProp, setProp } from "./gameConfig";
+import { gameData } from "./gameConfig";
 
 import { opening_scene } from "./opening";
 import { game_select } from "./game_select";
@@ -18,7 +18,7 @@ export async function initializeGame(app: PIXI.Application) {
   const loading_text = new PIXI.Text({
     text: "Loading",
     style: {
-      fontFamily: getProp("FontFamily"),
+      fontFamily: gameData.FontFamily,
       fontSize: 50,
       fill: replaceHash(settings.colorTheme.colors.MainColor),
       align: "center",
@@ -29,8 +29,7 @@ export async function initializeGame(app: PIXI.Application) {
   app.stage.addChild(loading_text);
   try {
     const textsData = await fetchTexts();
-    //console.log(textsData);
-    setProp("textsData", textsData);
+    gameData.textsData = textsData;
   } catch (error) {
     console.error(error);
   }
@@ -43,11 +42,11 @@ export async function initializeGame(app: PIXI.Application) {
   }
     */
   //setProp("CurrentSceneName", "opening");
-  setProp("CurrentSceneName", "game_scene");
-  setProp("GameMode", "nomal");
-  setProp("FontFamily", settings.fontTheme.fontFamily);
-  while (getProp("CurrentSceneName") != "exit") {
-    switch (getProp("CurrentSceneName")) {
+  gameData.CurrentSceneName = "game_scene";
+  gameData.GameMode = "nomal";
+  gameData.FontFamily = settings.fontTheme.fontFamily;
+  while (gameData.CurrentSceneName != "exit") {
+    switch (gameData.CurrentSceneName) {
       case "opening":
         playCollect();
         await opening_scene(app);
@@ -69,7 +68,7 @@ export async function initializeGame(app: PIXI.Application) {
         await result_scene(app);
         break;
       default:
-        setProp("CurrentSceneName", "exit");
+        gameData.CurrentSceneName = "exit";
         break;
     }
   }

@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { setProp, getProp } from "./gameConfig";
+import { gameData } from "./gameConfig";
 import { replaceHash } from "./game_master";
 import { settings } from "../SiteInterface";
 import { playCollect } from "./soundplay";
@@ -14,7 +14,7 @@ export function opening_scene(app: PIXI.Application): Promise<void> {
       app.stage.removeChildren();
       if (i == 0) {
         console.log("opening終了");
-        setProp("CurrentSceneName", "game_select");
+        gameData.CurrentSceneName = "game_select";
         resolve();
         return;
       }
@@ -24,7 +24,7 @@ export function opening_scene(app: PIXI.Application): Promise<void> {
       const sentence_text = new PIXI.Text({
         text: i.toString(),
         style: {
-          fontFamily: getProp("FontFamily"),
+          fontFamily: gameData.FontFamily,
           fontSize: 24,
           fill: replaceHash(settings.colorTheme.colors.MainColor),
           align: "center",
