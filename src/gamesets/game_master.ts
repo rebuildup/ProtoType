@@ -10,11 +10,12 @@ import { opening_scene } from "./opening";
 import { game_select } from "./game_select";
 import { setting_scene } from "./setting_scene";
 import { result_scene } from "./result_scene";
-import { fetchTexts, postPlayData } from "./APIget";
+//import { fetchTexts, postPlayData } from "./APIget";
 
 //import { TextToRomaji } from "./generate_pattern";
 
 export async function initializeGame(app: PIXI.Application) {
+  /*
   try {
     const textsData = await fetchTexts();
     console.log("Texts data:", textsData);
@@ -27,6 +28,7 @@ export async function initializeGame(app: PIXI.Application) {
   } catch (error) {
     console.error(error);
   }
+    */
   //setProp("CurrentSceneName", "opening");
   setProp("CurrentSceneName", "game_scene");
   while (getProp("CurrentSceneName") != "exit") {

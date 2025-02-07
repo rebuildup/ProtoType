@@ -26,11 +26,13 @@ export function game_scene(app: PIXI.Application): Promise<void> {
       text: "構想は練った...後は作るだけ",
       style: {
         fontFamily: getProp("FontFamily"),
-        fontSize: 20,
+        fontSize: 100,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
       },
     });
+    //sentetce_text.resolution = window.devicePixelRatio * 2;
+
     sentetce_text.x = app.screen.width / 2 - sentetce_text.width / 2;
     sentetce_text.y = 175;
     app.stage.addChild(sentetce_text);
@@ -38,7 +40,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
       text: "kousouhanetta...atohatukurudake",
       style: {
         fontFamily: getProp("FontFamily"),
-        fontSize: 14,
+        fontSize: 100,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
       },
@@ -50,7 +52,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
       text: "昨年はゲーム部門1位でした",
       style: {
         fontFamily: getProp("FontFamily"),
-        fontSize: 14,
+        fontSize: 100,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
       },
@@ -63,7 +65,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
       text: "30000",
       style: {
         fontFamily: getProp("FontFamily"),
-        fontSize: 16,
+        fontSize: 100,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
       },
@@ -76,7 +78,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
       text: "30",
       style: {
         fontFamily: getProp("FontFamily"),
-        fontSize: 24,
+        fontSize: 100,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
       },
@@ -89,7 +91,7 @@ export function game_scene(app: PIXI.Application): Promise<void> {
       text: "5.2",
       style: {
         fontFamily: getProp("FontFamily"),
-        fontSize: 24,
+        fontSize: 100,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "right",
       },

@@ -25,9 +25,9 @@ const WebGLPopup: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           width: 720 * 4,
           height: 600 * 4,
           backgroundColor: replaceHash(settings.colorTheme.colors.MainBG),
-          resolution: window.devicePixelRatio || 2, // Force higher minimum resolution
+          resolution: window.devicePixelRatio || 2,
           autoDensity: true,
-          antialias: true, // Enable anti-aliasing
+          //antialias: true,
         });
 
         if (!isMounted || !popupRef.current) return;

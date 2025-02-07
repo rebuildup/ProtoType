@@ -72,36 +72,54 @@ import * as PIXI from "pixi.js";
 import { settings } from "../SiteInterface";
 import { replaceHash } from "./game_master";
 
-const keybord_pos_y = 300;
-
 export function Keyboard(app: PIXI.Application) {
+  const keybord_pos = { x: app.screen.width / 2, y: app.screen.height - 600 };
+  const keybord_size = { width: 558, height: 180 };
+
+  const accent_width = 6;
+  const scale = 4;
   const g = new PIXI.Graphics();
   app.stage.addChild(g);
 
   g.rect(
-    keybords[33][2] + app.screen.width / 2 - 313 - 2,
-    keybords[33][3] + keybord_pos_y - 2,
-    keybords[33][0] + 4,
-    keybords[33][1] + 4
+    keybords[33][2] * scale -
+      (keybord_size.width * scale) / 2 +
+      1 +
+      keybord_pos.x -
+      accent_width,
+    keybords[33][3] * scale -
+      (keybord_size.height * scale) / 2 +
+      1 +
+      keybord_pos.y -
+      accent_width,
+    keybords[33][0] * scale + accent_width + accent_width,
+    keybords[33][1] * scale + accent_width + accent_width
   ).fill(replaceHash(settings.colorTheme.colors.MainAccent));
 
-  // Draw the second rectangle with a green fill
   g.rect(
-    keybords[36][2] + app.screen.width / 2 - 313 - 2,
-    keybords[36][3] + keybord_pos_y - 2,
-    keybords[36][0] + 4,
-    keybords[36][1] + 4
+    keybords[36][2] * scale -
+      (keybord_size.width * scale) / 2 +
+      1 +
+      keybord_pos.x -
+      accent_width,
+    keybords[36][3] * scale -
+      (keybord_size.height * scale) / 2 +
+      1 +
+      keybord_pos.y -
+      accent_width,
+    keybords[36][0] * scale + accent_width + accent_width,
+    keybords[36][1] * scale + accent_width + accent_width
   ).fill(replaceHash(settings.colorTheme.colors.MainAccent));
   g.alpha = 0.3;
 
-  // Draw the remaining rectangles with the main color from settings
   for (let i = 0; i < keybords.length; i++) {
     g.rect(
-      keybords[i][2] + app.screen.width / 2 - 313,
-      keybords[i][3] + keybord_pos_y,
-      keybords[i][0],
-      keybords[i][1]
+      keybords[i][2] * scale - (keybord_size.width * scale) / 2 + keybord_pos.x,
+      keybords[i][3] * scale -
+        (keybord_size.height * scale) / 2 +
+        keybord_pos.y,
+      keybords[i][0] * scale,
+      keybords[i][1] * scale
     ).fill(replaceHash(settings.colorTheme.colors.MainColor));
   }
-  g.scale = 1.1;
 }
