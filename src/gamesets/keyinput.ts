@@ -7,17 +7,3 @@ export function getLatestKey(): Promise<string> {
     window.addEventListener("keydown", handler);
   });
 }
-/*
-async function keyLogger() {
-  while (true) {
-    const keyCode = await getLatestKey();
-    console.log(`Pressed: ${keyCode}`);
-
-    if (keyCode === "Escape") {
-      console.log("終了します");
-      break;
-    }
-  }
-}
-keyLogger();
-*/

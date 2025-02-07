@@ -1,65 +1,70 @@
-export function TextToRomaji(input: string) {
-  return extractAllPatterns(hiraganaToRomans(input));
+export async function TextToRomaji(input: string): Promise<string[]> {
+  const roman = await hiraganaToRomans(input);
+  return extractAllPatterns(roman);
 }
 
-export const hiraganaToRomans = (hiraganas: string) => {
+export const hiraganaToRomans = async (hiraganas: string): Promise<Roman> => {
   const startRoman = new Roman("");
-  addNextChild(hiraganas, startRoman);
-
+  await addNextChild(hiraganas, startRoman);
   return startRoman;
 };
 
-const addNextChild = (
+const addNextChild = async (
   remainingHiraganas: string,
   parentRoman: Roman,
   duplicateFirstLetter?: true
-) => {
-  // 空文字の場合は最後の文字なので何もしない
+): Promise<void> => {
+  // Return if there are no remaining characters
   if (!remainingHiraganas) {
     return;
   }
-
   const firstChar = remainingHiraganas[0];
 
   if (!isHiragana(firstChar)) {
-    // ひらがな以外の文字の場合、そのままローマ字として扱う
+    // For non-hiragana characters, treat them directly as roman letters
     const nextRoman = new Roman(firstChar);
     parentRoman.addChild(nextRoman);
     const nextHiraganas = remainingHiraganas.slice(1);
-    addNextChild(nextHiraganas, nextRoman);
-    return; // ひらがな以外の文字の場合はここで処理を終える
+    await addNextChild(nextHiraganas, nextRoman);
+    return; // End processing for non-hiragana character
   }
 
-  // 「っ」の時はその次の文字を重ねたやつもいける
+  // If a small tsu is allowed, process duplication of the following letter
   if (isAllowDuplicateFirstLetter(remainingHiraganas)) {
     const nextHiraganas = remainingHiraganas.slice(1);
-    addNextChild(nextHiraganas, parentRoman, true);
+    await addNextChild(nextHiraganas, parentRoman, true);
   }
 
-  // 「ん」の時は次がnから始まらないならn一個で入力ができるので追加する
+  // Process the 'ん' character when appropriate
   if (isAllowOneNInput(remainingHiraganas)) {
     const nextRoman = new Roman("n");
     parentRoman.addChild(nextRoman);
     const nextHiraganas = remainingHiraganas.slice(1);
-    addNextChild(nextHiraganas, nextRoman);
+    await addNextChild(nextHiraganas, nextRoman);
   }
 
-  // キーから始まる設定を探す
+  // Find configurations matching the start of the remaining string
   const matchKeyConfigs = KEY_CONFIGS.filter((keyConfig) =>
     remainingHiraganas.startsWith(keyConfig.key)
   );
-  // キーから始まる設定の、ローマ字の組み合わせを子ノードとして追加する
-  matchKeyConfigs.forEach((matchKeyConfig) => {
-    matchKeyConfig.origins.forEach((origin) => {
-      // 重ねて入力するフラグが立っている場合は、最初の文字を重ねて入力する
-      const nextRoman = duplicateFirstLetter
-        ? new Roman(origin[0] + origin)
-        : new Roman(origin);
-      parentRoman.addChild(nextRoman);
-      const nextHiraganas = remainingHiraganas.slice(matchKeyConfig.key.length);
-      addNextChild(nextHiraganas, nextRoman);
-    });
-  });
+
+  // Process each matching configuration asynchronously
+  await Promise.all(
+    matchKeyConfigs.map(async (matchKeyConfig) => {
+      await Promise.all(
+        matchKeyConfig.origins.map(async (origin) => {
+          const nextRoman = duplicateFirstLetter
+            ? new Roman(origin[0] + origin)
+            : new Roman(origin);
+          parentRoman.addChild(nextRoman);
+          const nextHiraganas = remainingHiraganas.slice(
+            matchKeyConfig.key.length
+          );
+          await addNextChild(nextHiraganas, nextRoman);
+        })
+      );
+    })
+  );
 };
 
 const isAllowDuplicateFirstLetter = (remainingHiraganas: string): boolean => {
@@ -105,7 +110,6 @@ const isNextStartWithN = (remainingHiraganas: string): boolean => {
 const isNextStartWithConsonant = (remainingHiraganas: string): boolean => {
   const nextHiraganas = remainingHiraganas.slice(1);
   if (!nextHiraganas) return false;
-
   const matchKeyConfigs = KEY_CONFIGS.filter((keyConfig) =>
     nextHiraganas.startsWith(keyConfig.key)
   );
@@ -1001,6 +1005,7 @@ export interface KeyConfig {
   key: string;
   origins: string[];
 }
+
 export const extractAllPatterns = (root: Roman): string[] => {
   const results: string[] = [];
 

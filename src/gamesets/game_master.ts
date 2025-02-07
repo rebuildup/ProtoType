@@ -14,8 +14,6 @@ import { result_scene } from "./result_scene";
 import { settings } from "../SiteInterface";
 import { fetchTexts /*, postPlayData */ } from "./APIget";
 
-//import { TextToRomaji } from "./generate_pattern";
-
 export async function initializeGame(app: PIXI.Application) {
   const loading_text = new PIXI.Text({
     text: "Loading",
@@ -31,7 +29,8 @@ export async function initializeGame(app: PIXI.Application) {
   app.stage.addChild(loading_text);
   try {
     const textsData = await fetchTexts();
-    console.log("Texts data:", textsData);
+    //console.log(textsData);
+    setProp("textsData", textsData);
   } catch (error) {
     console.error(error);
   }

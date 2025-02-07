@@ -18,35 +18,26 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     switch (getProp("GameMode")) {
       case "nomal":
         keybord_flag = true;
-
         win_pos.y = app.screen.height / 2 - 200;
-
+        setProp("Issues_num", 15);
+        setProp("current_Issue", 0);
         break;
-
       case "focus":
         keybord_flag = false;
-
+        setProp("Issues_num", 15);
+        setProp("current_Issue", 0);
         break;
-
       case "exact":
         keybord_flag = true;
-
         win_pos.y = app.screen.height / 2 - 200;
-
         break;
-
       case "long":
         keybord_flag = true;
-
         win_pos.y = app.screen.height / 2 - 200;
-
         break;
-
       default:
         console.log("gamemode nothing");
-
         resolve();
-
         break;
     }
 
@@ -170,15 +161,85 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     if (keybord_flag) {
       Keyboard(app);
     }
+    setTimeout(() => {
+      makeIssues(app, win_pos.x, win_pos.y);
+    }, 100);
 
-    setProp("CurrentSceneName", "result_scene");
     while (true) {
       const keyCode = await getLatestKey();
 
       if (keyCode === "KeyE") {
+        setProp("CurrentSceneName", "result_scene");
         resolve();
         break;
       }
     }
   });
 }
+
+import { Issue } from "./gameConfig";
+import { hiraganaToRomans } from "./generate_pattern";
+async function makeIssues(app: PIXI.Application, win_x: number, win_y: number) {
+  let Issues: Issue[] = [];
+  console.log("start");
+  const load_text = new PIXI.Text({
+    text: "問題を取得中",
+    style: {
+      fontFamily: getProp("FontFamily"),
+      fontSize: 25,
+      fill: replaceHash(settings.colorTheme.colors.MainColor),
+      align: "center",
+    },
+  });
+  load_text.x = win_x - load_text.width / 2;
+  load_text.y = win_y - load_text.height / 2 - 300;
+  app.stage.addChild(load_text);
+
+  for (let i = 0; i < getProp("Issues_num"); i++) {
+    let new_Issue: Issue = {
+      text: example[i].text,
+      romaji: await hiraganaToRomans(example[i].hiragana),
+    };
+    console.log(new_Issue);
+    Issues.push(new_Issue);
+  }
+  setProp("Issues", Issues);
+  console.log(Issues);
+
+  // テキストを削除
+  app.stage.removeChild(load_text);
+}
+
+const example = [
+  { text: "レンタルひらがな「ぬ」", hiragana: "はいけいどっぺるげんがー" },
+  { text: "嘘だよーん", hiragana: "うそだよ-ん" },
+  {
+    text: "ゴッホより普通にラッセンが好き",
+    hiragana: "ごっほよりふつうにらっせんがすき",
+  },
+  { text: "ああそれいいよね みちお", hiragana: "ああそれいいよね みちお" },
+  {
+    text: "3回見たら死ぬ絵みたいな顔",
+    hiragana: "3かいみたらしぬえみたいなかお",
+  },
+  {
+    text: "ロイター通信じゃないですぅ",
+    hiragana: "ろいた-つうしんじゃないですぅ",
+  },
+  { text: "そんなことって...", hiragana: "そんなことって..." },
+  { text: "𰻞𰻞麺", hiragana: "びゃんびゃんめん" },
+  { text: "踊る方のバレーボール", hiragana: "おどるほうのばれ-ぼ-る" },
+  {
+    text: "テキスト長いと処理落ちする",
+    hiragana: "てきすとながいとしょりおちする",
+  },
+  {
+    text: "まるでミシシッピアカミミガメ",
+    hiragana: "まるでみししっぴあかみみがめ",
+  },
+  { text: "ポリネシアンルーレット", hiragana: "ぽりねしあんる-れっと" },
+  { text: "I my me mine", hiragana: "I my me mine" },
+  { text: "もしかして ムッソリーニ", hiragana: "もしかして むっそり-に" },
+  { text: "Xをフォローしといてね", hiragana: "Xをふぉろ-しといてね" },
+  { text: "青眼の白龍", hiragana: "ぶるーあいずほわいとどらごん" },
+];
