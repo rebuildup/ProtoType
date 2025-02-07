@@ -31,6 +31,7 @@ export async function initializeGame(app: PIXI.Application) {
     */
   //setProp("CurrentSceneName", "opening");
   setProp("CurrentSceneName", "game_scene");
+  setProp("GameMode", "nomal");
   while (getProp("CurrentSceneName") != "exit") {
     switch (getProp("CurrentSceneName")) {
       case "opening":

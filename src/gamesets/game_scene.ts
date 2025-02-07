@@ -10,7 +10,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     app.stage.removeChildren();
 
     const texts_num = 15;
-    const texts_pos = { x: app.screen.width / 2, y: app.screen.height / 2 };
+    const win_pos = { x: app.screen.width / 2, y: app.screen.height / 2 };
     let keybord_flag = true;
 
     switch (getProp("GameMode")) {
@@ -41,10 +41,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
-    //sentetce_text.resolution = window.devicePixelRatio * 2;
-
-    sentetce_text.x = app.screen.width / 2 - sentetce_text.width / 2;
-    sentetce_text.y = 175;
+    sentetce_text.x = win_pos.x - sentetce_text.width / 2;
+    sentetce_text.y = win_pos.y - sentetce_text.height / 2;
     app.stage.addChild(sentetce_text);
     const alphabet_text = new PIXI.Text({
       text: "kousouhanetta...atohatukurudake",
@@ -55,8 +53,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
-    alphabet_text.x = app.screen.width / 2 - alphabet_text.width / 2;
-    alphabet_text.y = 200;
+    alphabet_text.x = win_pos.x - alphabet_text.width / 2;
+    alphabet_text.y = win_pos.y - alphabet_text.height / 2;
     app.stage.addChild(alphabet_text);
     const next_text = new PIXI.Text({
       text: "昨年はゲーム部門1位でした",
@@ -67,8 +65,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
-    next_text.x = app.screen.width / 2 - next_text.width / 2;
-    next_text.y = 251;
+    next_text.x = win_pos.x - next_text.width / 2;
+    next_text.y = win_pos.y - next_text.height / 2;
     app.stage.addChild(next_text);
 
     const score_text = new PIXI.Text({
@@ -80,8 +78,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
-    score_text.x = app.screen.width / 2 - score_text.width / 2;
-    score_text.y = 100;
+    score_text.x = win_pos.x - score_text.width / 2;
+    score_text.y = win_pos.y - score_text.height / 2;
     app.stage.addChild(score_text);
 
     const combo_text = new PIXI.Text({
@@ -93,8 +91,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
-    combo_text.x = 81;
-    combo_text.y = 179;
+    combo_text.x = win_pos.x - combo_text.width / 2;
+    combo_text.y = win_pos.y - combo_text.height / 2;
     app.stage.addChild(combo_text);
 
     const kpm_text = new PIXI.Text({
@@ -106,13 +104,13 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         align: "right",
       },
     });
-    kpm_text.x = app.screen.width - 81 - 32;
-    kpm_text.y = 179;
+    kpm_text.x = win_pos.x - kpm_text.width / 2;
+    kpm_text.y = win_pos.y - kpm_text.height / 2;
     app.stage.addChild(kpm_text);
 
     const accuracyLine = new PIXI.Graphics();
-    accuracyLine.moveTo(81, 87);
-    accuracyLine.lineTo(app.screen.width - 81, 87);
+    accuracyLine.moveTo(win_pos.x - 400, win_pos.y);
+    accuracyLine.lineTo(win_pos.x + 400, win_pos.y);
     accuracyLine.stroke({
       width: 6,
       color: replaceHash(settings.colorTheme.colors.MainColor),
@@ -120,8 +118,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     app.stage.addChild(accuracyLine);
     const progressLine = new PIXI.Graphics();
-    progressLine.moveTo(81, 298);
-    progressLine.lineTo(app.screen.width - 81, 298);
+    progressLine.moveTo(win_pos.x - 400, win_pos.y);
+    progressLine.lineTo(win_pos.x + 400, win_pos.y);
     progressLine.stroke({
       width: 6,
       color: replaceHash(settings.colorTheme.colors.MainColor),
@@ -130,12 +128,13 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     app.stage.addChild(progressLine);
     const progressDot = new PIXI.Graphics();
 
-    progressDot.circle(100, 280, 1);
+    progressDot.circle(win_pos.x, win_pos.y, 8);
     progressDot.stroke({
       width: 40,
       color: replaceHash(settings.colorTheme.colors.MainColor),
     });
     app.stage.addChild(progressDot);
+
     if (keybord_flag) {
       Keyboard(app);
     }

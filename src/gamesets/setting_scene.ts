@@ -11,7 +11,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       text: "ゲーム選択に戻る",
       style: {
         fontFamily: getProp("FontFamily"),
-        fontSize: 24,
+        fontSize: 80,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
       },

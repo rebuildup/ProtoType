@@ -98,7 +98,7 @@ function make_Button(text: string) {
     text: text,
     style: {
       fontFamily: getProp("FontFamily"),
-      fontSize: 24,
+      fontSize: 60,
       fill: replaceHash(settings.colorTheme.colors.MainColor),
       align: "center",
     },
