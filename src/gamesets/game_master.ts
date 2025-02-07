@@ -10,7 +10,7 @@ import { opening_scene } from "./opening";
 import { game_select } from "./game_select";
 import { setting_scene } from "./setting_scene";
 import { result_scene } from "./result_scene";
-import { fetchTexts } from "./APIget";
+import { fetchTexts, postPlayData } from "./APIget";
 
 //import { TextToRomaji } from "./generate_pattern";
 
@@ -18,6 +18,12 @@ export async function initializeGame(app: PIXI.Application) {
   try {
     const textsData = await fetchTexts();
     console.log("Texts data:", textsData);
+  } catch (error) {
+    console.error(error);
+  }
+  try {
+    const result = await postPlayData("いいね！", 3333);
+    console.log("Post result:", result);
   } catch (error) {
     console.error(error);
   }
