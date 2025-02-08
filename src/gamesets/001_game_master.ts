@@ -14,11 +14,6 @@ import { result_scene } from "./006_result_scene";
 import { settings } from "../SiteInterface";
 import { fetchTexts /*, postPlayData */ } from "./010_APIget";
 
-import {
-  getNextKeysOptimized,
-  getRomanizedTextFromTendency,
-} from "./008_generate_pattern";
-
 export async function initializeGame(app: PIXI.Application) {
   const loading_text = new PIXI.Text({
     text: "Loading",
@@ -52,10 +47,7 @@ export async function initializeGame(app: PIXI.Application) {
   gameData.GameMode = "nomal";
   gameData.FontFamily = settings.fontTheme.fontFamily;
   TendenciesInit();
-  console.log(getNextKeysOptimized("おじゃまtext", "oz"));
-  console.log(
-    getRomanizedTextFromTendency(gameData.Conversion, "おじゃまtext", "oz")
-  );
+
   while (gameData.CurrentSceneName != "exit") {
     switch (gameData.CurrentSceneName) {
       case "opening":

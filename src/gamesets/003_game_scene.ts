@@ -5,10 +5,10 @@ import { Keyboard, keybord_size, scale } from "./011_keybord";
 
 import { settings } from "../SiteInterface";
 
-import { getLatestKey } from "./009_keyinput";
+import { getLatestKey, keyCodeToText } from "./009_keyinput";
 
 import {
-  /*getNextKeysOptimized,*/
+  getNextKeysOptimized,
   getRomanizedTextFromTendency,
 } from "./008_generate_pattern";
 
@@ -25,7 +25,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         keybord_flag = true;
         win_pos.y = app.screen.height / 2 - 200;
 
-        gameData.Issues_num = 10;
+        gameData.Issues_num = 15;
         gameData.current_Issue = 0;
         break;
       case "focus":
@@ -156,7 +156,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     app.stage.addChild(progressLine);
     const progressDot = new PIXI.Graphics();
 
-    progressDot.circle(win_pos.x, win_pos.y + 250, 8);
+    progressDot.circle(0, win_pos.y + 250, 8);
+    progressDot.x = win_pos.x - (keybord_size.width * scale) / 2;
     progressDot.fill(replaceHash(settings.colorTheme.colors.MainBG));
     progressDot.stroke({
       width: 4,
@@ -187,15 +188,29 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       }, 100);
       while (gameData.CurrentSceneName == "game_scene") {
         const keyCode = await getLatestKey();
-        console.log(keyCode);
+        console.log(keyCodeToText(keyCode.code, keyCode.shift));
         if (gameData.IsStarted) {
-          if (keyCode === "KeyN") {
-            gameData.current_Issue++;
-          }
           if (gameData.current_Issue >= gameData.Issues_num) {
             gameData.CurrentSceneName = "result_scene";
             resolve();
           }
+          let collectkeys = getNextKeysOptimized(
+            gameData.Issues[gameData.current_Issue].romaji,
+            gameData.current_inputed
+          );
+          let Ismiss = true;
+          for (let i = 0; i < collectkeys.length; i++) {
+            if (
+              keyCodeToText(keyCode.code, keyCode.shift) ==
+              collectkeys[i].letter
+            ) {
+              Ismiss = false;
+              gameData.current_inputed =
+                gameData.current_inputed +
+                keyCodeToText(keyCode.code, keyCode.shift);
+            }
+          }
+          console.log(gameData.current_inputed);
           if (gameData.current_Issue + 1 >= gameData.Issues_num) {
             next_text.text = "";
           } else {
@@ -211,8 +226,22 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           );
           alphabet_text.x = win_pos.x - alphabet_text.width / 2;
           next_text.x = win_pos.x - next_text.width / 2;
+          progressDot.x =
+            (keybord_size.width / gameData.Issues_num) *
+              scale *
+              gameData.current_Issue +
+            (app.screen.width - keybord_size.width * scale) / 2;
+          if (
+            getNextKeysOptimized(
+              gameData.Issues[gameData.current_Issue].romaji,
+              gameData.current_inputed
+            ).length == 0
+          ) {
+            gameData.current_Issue++;
+            gameData.current_inputed = "";
+          }
         } else {
-          if (keyCode === "Space") {
+          if (keyCode.code === "Space") {
             console.log("spased");
             gameData.IsStarted = true;
 
@@ -235,6 +264,11 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             );
             alphabet_text.x = win_pos.x - alphabet_text.width / 2;
             next_text.x = win_pos.x - next_text.width / 2;
+            progressDot.x =
+              (keybord_size.width / gameData.Issues_num) *
+                scale *
+                gameData.current_Issue +
+              (app.screen.width - keybord_size.width * scale) / 2;
           }
         }
       }

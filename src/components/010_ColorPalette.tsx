@@ -49,7 +49,6 @@ const ColorPalette: React.FC = () => {
       document.documentElement.style.setProperty(key, value);
     });
     setCurrentTheme(theme.name);
-    console.log(document.documentElement.style);
     updateSetting("colorTheme", {
       name: theme.name,
       colors: {
