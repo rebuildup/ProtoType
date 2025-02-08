@@ -1,11 +1,9 @@
-import { Roman } from "./generate_pattern";
-
 // Issue interface definition
 export interface Issue {
   text: string;
-  romaji: Roman;
+  romaji: string;
 }
-
+import { ConversionTendencies } from "./generate_pattern";
 // GameData interface that holds all game properties
 export interface GameData {
   CurrentSceneName: string;
@@ -19,8 +17,10 @@ export interface GameData {
   Issues: Issue[];
   Issues_num: number;
   current_Issue: number;
+  current_inputed: string;
   IsStarted: boolean;
   StartTime: number;
+  Conversion: ConversionTendencies;
 }
 
 // Centralized game data object for easy property management
@@ -36,8 +36,10 @@ export const gameData: GameData = {
   Issues: [],
   Issues_num: 15,
   current_Issue: 0,
+  current_inputed: "",
   IsStarted: false,
   StartTime: Date.now(),
+  Conversion: [],
 };
 /*
 // Simplified getter function for game properties

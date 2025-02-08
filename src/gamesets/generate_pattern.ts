@@ -1,3 +1,174 @@
+export function getNextKeysOptimized(
+  readingText: string,
+  currentInput: string
+): NextKeyInfo[] {
+  // Cache for memoization keyed by "index_matched"
+  const cache = new Map<string, NextKeyInfo[]>();
+
+  // Check if a character is Hiragana
+  function isHiragana(char: string): boolean {
+    const code = char.charCodeAt(0);
+    return code >= 0x3041 && code <= 0x3096;
+  }
+
+  // Recursive function to determine next possible letters with conversion flag info
+  function nextLetters(index: number, matched: number): NextKeyInfo[] {
+    const cacheKey = `${index}_${matched}`;
+    if (cache.has(cacheKey)) return cache.get(cacheKey)!;
+    const results: NextKeyInfo[] = [];
+    if (index >= readingText.length) {
+      cache.set(cacheKey, results);
+      return results;
+    }
+    const currentChar = readingText[index];
+    // Handle non-hiragana characters directly
+    if (!isHiragana(currentChar)) {
+      const candidate = currentChar;
+      const remainingInput = currentInput.substring(matched);
+      if (remainingInput === "") {
+        results.push({
+          letter: candidate,
+          flag: { type: "direct", consumed: candidate.length },
+        });
+      }
+      if (remainingInput.startsWith(candidate)) {
+        if (remainingInput.length === candidate.length) {
+          const rec = nextLetters(index + 1, matched + candidate.length);
+          results.push(...rec);
+        }
+      }
+      cache.set(cacheKey, results);
+      return results;
+    }
+    // Process hiragana characters via KEY_CONFIGS
+    for (const config of KEY_CONFIGS) {
+      if (readingText.startsWith(config.key, index)) {
+        const newIndex = index + config.key.length;
+        for (const origin of config.origins) {
+          const remaining = currentInput.substring(matched);
+          if (remaining.length > origin.length) {
+            if (origin === remaining.substring(0, origin.length)) {
+              const rec = nextLetters(newIndex, matched + origin.length);
+              results.push(...rec);
+            }
+          } else {
+            if (origin.startsWith(remaining)) {
+              if (origin.length > remaining.length) {
+                // Output the next roman letter candidate along with conversion flag info
+                const nextChar = origin.charAt(remaining.length);
+                results.push({
+                  letter: nextChar,
+                  flag: {
+                    type: "keyConfig",
+                    configKey: config.key,
+                    origin: origin,
+                    consumed: remaining.length + 1,
+                  },
+                });
+              } else {
+                // Full match of the origin candidate; proceed recursively
+                const rec = nextLetters(newIndex, matched + origin.length);
+                results.push(...rec);
+              }
+            }
+          }
+        }
+      }
+    }
+    cache.set(cacheKey, results);
+    return results;
+  }
+
+  return nextLetters(0, 0);
+}
+export function getRomanizedTextFromTendency(
+  tendencies: ConversionTendencies,
+  readingText: string,
+  currentInput: string
+): string {
+  // Utility: ひらがなかどうかを判定する
+  function isHiragana(char: string): boolean {
+    const code = char.charCodeAt(0);
+    return code >= 0x3041 && code <= 0x3096;
+  }
+  // Utility: 文字が子音かどうかを判定（※ここでは例として母音以外を子音とする）
+  function isConsonant(char: string): boolean {
+    return !"aiueo".includes(char.toLowerCase());
+  }
+
+  let fullRomanized = "";
+  let index = 0;
+  // 複数文字のキーを優先するため、傾向をキー長の降順にソート
+  const sortedTendencies = tendencies
+    .slice()
+    .sort((a, b) => b.key.length - a.key.length);
+
+  while (index < readingText.length) {
+    // 「っ」を検出した場合、次の変換候補の先頭文字（子音）を重ねる
+    if (readingText[index] === "っ") {
+      // 参照: addNextChild 内の isAllowDuplicateFirstLetter の考え方
+      if (index + 1 < readingText.length) {
+        // 次の位置から、該当する変換傾向を探す
+        const nextTendency = sortedTendencies.find((tendency) =>
+          readingText.startsWith(tendency.key, index + 1)
+        );
+        if (nextTendency && nextTendency.tendency.length > 0) {
+          const firstChar = nextTendency.tendency.charAt(0);
+          // 子音ならばその文字を出力（重ねる）
+          if (isConsonant(firstChar)) {
+            fullRomanized += firstChar;
+          }
+        }
+      }
+      index++; // 「っ」を消費して次へ
+      continue;
+    }
+
+    let matched = false;
+    // 非ひらがな文字はそのまま出力
+    if (!isHiragana(readingText[index])) {
+      fullRomanized += readingText[index];
+      index++;
+      continue;
+    }
+    // 傾向リストから、該当するキー（複合キーも含む）を探す
+    for (const tendency of sortedTendencies) {
+      if (readingText.startsWith(tendency.key, index)) {
+        fullRomanized += tendency.tendency;
+        index += tendency.key.length;
+        matched = true;
+        break;
+      }
+    }
+    // 該当する傾向が見つからなければ、その文字をそのまま出力
+    if (!matched) {
+      fullRomanized += readingText[index];
+      index++;
+    }
+  }
+  if (!fullRomanized.startsWith(currentInput)) {
+    throw new Error("入力済みのテキストと変換結果が一致しません。");
+  }
+  return fullRomanized;
+}
+
+export interface ConversionTendency {
+  key: string; // 変換対象のひらがな（例："ち"）
+  tendency: string; // デフォルトとして使用するローマ字（例："ti"）
+}
+export type ConversionTendencies = ConversionTendency[];
+export type ConversionFlag = {
+  type: "direct" | "keyConfig"; // 'direct' for literal chars, 'keyConfig' for conversion via KEY_CONFIGS
+  configKey?: string; // Hiragana key from KEY_CONFIGS (e.g. "ち")
+  origin?: string; // The chosen origin string (e.g. "ti" or "chi")
+  consumed?: number; // Number of characters from currentInput consumed in this conversion step
+};
+
+export type NextKeyInfo = {
+  letter: string;
+  flag: ConversionFlag;
+};
+
 export async function TextToRomaji(input: string): Promise<string[]> {
   const roman = await hiraganaToRomans(input);
   return extractAllPatterns(roman);
@@ -14,28 +185,24 @@ const addNextChild = async (
   parentRoman: Roman,
   duplicateFirstLetter?: true
 ): Promise<void> => {
-  // Return if there are no remaining characters
   if (!remainingHiraganas) {
     return;
   }
   const firstChar = remainingHiraganas[0];
 
   if (!isHiragana(firstChar)) {
-    // For non-hiragana characters, treat them directly as roman letters
     const nextRoman = new Roman(firstChar);
     parentRoman.addChild(nextRoman);
     const nextHiraganas = remainingHiraganas.slice(1);
     await addNextChild(nextHiraganas, nextRoman);
-    return; // End processing for non-hiragana character
+    return;
   }
 
-  // If a small tsu is allowed, process duplication of the following letter
   if (isAllowDuplicateFirstLetter(remainingHiraganas)) {
     const nextHiraganas = remainingHiraganas.slice(1);
     await addNextChild(nextHiraganas, parentRoman, true);
   }
 
-  // Process the 'ん' character when appropriate
   if (isAllowOneNInput(remainingHiraganas)) {
     const nextRoman = new Roman("n");
     parentRoman.addChild(nextRoman);
@@ -43,12 +210,10 @@ const addNextChild = async (
     await addNextChild(nextHiraganas, nextRoman);
   }
 
-  // Find configurations matching the start of the remaining string
   const matchKeyConfigs = KEY_CONFIGS.filter((keyConfig) =>
     remainingHiraganas.startsWith(keyConfig.key)
   );
 
-  // Process each matching configuration asynchronously
   await Promise.all(
     matchKeyConfigs.map(async (matchKeyConfig) => {
       await Promise.all(
@@ -77,7 +242,6 @@ const isAllowDuplicateFirstLetter = (remainingHiraganas: string): boolean => {
 };
 
 const isAllowOneNInput = (remainingHiraganas: string): boolean => {
-  // 「ん」から始まってない場合はだめ
   if (!remainingHiraganas.startsWith("ん")) {
     return false;
   }
@@ -1009,19 +1173,15 @@ export interface KeyConfig {
 export const extractAllPatterns = (root: Roman): string[] => {
   const results: string[] = [];
 
-  // Recursive DFS to build complete romanization strings
   const traverse = (node: Roman, current: string) => {
     const updated = current + node.roma;
-    // If no children, we've reached a complete pattern
     if (node.children.length === 0) {
       results.push(updated);
       return;
     }
-    // Continue traversing children
     node.children.forEach((child) => traverse(child, updated));
   };
 
-  // Start traversal from each child of the root (root.roma is an empty string)
   root.children.forEach((child) => traverse(child, ""));
   return results;
 };

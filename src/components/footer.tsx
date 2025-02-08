@@ -1,5 +1,4 @@
 import React from "react";
-import { settings } from "../SiteInterface";
 const Footer: React.FC = () => {
   return (
     <div>

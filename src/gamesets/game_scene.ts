@@ -7,6 +7,11 @@ import { settings } from "../SiteInterface";
 
 import { getLatestKey } from "../gamesets/keyinput";
 
+import {
+  getNextKeysOptimized,
+  getRomanizedTextFromTendency,
+} from "./generate_pattern";
+
 export async function game_scene(app: PIXI.Application): Promise<void> {
   return new Promise(async (resolve) => {
     app.stage.removeChildren();
@@ -20,7 +25,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         keybord_flag = true;
         win_pos.y = app.screen.height / 2 - 200;
 
-        gameData.Issues_num = 15;
+        gameData.Issues_num = 10;
         gameData.current_Issue = 0;
         break;
       case "focus":
@@ -43,7 +48,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     }
 
     const sentetce_text = new PIXI.Text({
-      text: "構想は練った...後は作るだけ",
+      text: "スペースキーでスタート",
       style: {
         fontFamily: gameData.FontFamily,
         fontSize: 40,
@@ -56,7 +61,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     sentetce_text.y = win_pos.y - sentetce_text.height / 2 - 2;
     app.stage.addChild(sentetce_text);
     const alphabet_text = new PIXI.Text({
-      text: "kousouhanetta...atohatukurudake",
+      text: "space to start",
       style: {
         fontFamily: gameData.FontFamily,
         fontSize: 25,
@@ -68,7 +73,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     alphabet_text.y = win_pos.y - alphabet_text.height / 2 + 40;
     app.stage.addChild(alphabet_text);
     const next_text = new PIXI.Text({
-      text: "ゲームデザインはまじでフィーリング",
+      text: "",
       style: {
         fontFamily: gameData.FontFamily,
         fontSize: 25,
@@ -171,6 +176,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
+    gameData.IsStarted = false;
     load_text.x = win_pos.x - load_text.width / 2;
     load_text.y = win_pos.y - load_text.height / 2 - 300;
     app.stage.addChild(load_text);
@@ -179,13 +185,57 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       setTimeout(() => {
         app.stage.removeChild(load_text);
       }, 100);
-      while (true) {
+      while (gameData.CurrentSceneName == "game_scene") {
         const keyCode = await getLatestKey();
+        console.log(keyCode);
+        if (gameData.IsStarted) {
+          if (keyCode === "KeyN") {
+            gameData.current_Issue++;
+          }
+          if (gameData.current_Issue >= gameData.Issues_num) {
+            gameData.CurrentSceneName = "result_scene";
+            resolve();
+          }
+          if (gameData.current_Issue + 1 >= gameData.Issues_num) {
+            next_text.text = "";
+          } else {
+            next_text.text = gameData.Issues[gameData.current_Issue + 1].text;
+          }
+          sentetce_text.text = gameData.Issues[gameData.current_Issue].text;
+          sentetce_text.x = win_pos.x - sentetce_text.width / 2;
 
-        if (keyCode === "KeyE") {
-          gameData.CurrentSceneName = "result_scene";
-          resolve();
-          break;
+          alphabet_text.text = getRomanizedTextFromTendency(
+            gameData.Conversion,
+            gameData.Issues[gameData.current_Issue].romaji,
+            gameData.current_inputed
+          );
+          alphabet_text.x = win_pos.x - alphabet_text.width / 2;
+          next_text.x = win_pos.x - next_text.width / 2;
+        } else {
+          if (keyCode === "Space") {
+            console.log("spased");
+            gameData.IsStarted = true;
+
+            if (gameData.current_Issue >= gameData.Issues_num) {
+              gameData.CurrentSceneName = "result_scene";
+              resolve();
+            }
+            if (gameData.current_Issue + 1 >= gameData.Issues_num) {
+              next_text.text = "";
+            } else {
+              next_text.text = gameData.Issues[gameData.current_Issue + 1].text;
+            }
+            sentetce_text.text = gameData.Issues[gameData.current_Issue].text;
+            sentetce_text.x = win_pos.x - sentetce_text.width / 2;
+
+            alphabet_text.text = getRomanizedTextFromTendency(
+              gameData.Conversion,
+              gameData.Issues[gameData.current_Issue].romaji,
+              gameData.current_inputed
+            );
+            alphabet_text.x = win_pos.x - alphabet_text.width / 2;
+            next_text.x = win_pos.x - next_text.width / 2;
+          }
         }
       }
     }, 100);
@@ -193,15 +243,14 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 }
 
 import { Issue } from "./gameConfig";
-import { hiraganaToRomans } from "./generate_pattern";
 async function makeIssues(): Promise<void> {
   return new Promise<void>(async (resolve) => {
     let Issues: Issue[] = [];
 
-    for (let i = 0; i < gameData.Issues_num; i++) {
+    for (let i = 0; i < gameData.Issues_num + 1; i++) {
       let new_Issue: Issue = {
         text: example[i].text,
-        romaji: await hiraganaToRomans(example[i].hiragana),
+        romaji: example[i].hiragana,
       };
 
       Issues.push(new_Issue);
@@ -213,7 +262,7 @@ async function makeIssues(): Promise<void> {
 }
 
 const example = [
-  { text: "レンタルひらがな「ぬ」", hiragana: "はいけいどっぺるげんがー" },
+  { text: "レンタルひらがな「ぬ」", hiragana: "れんたるひらがな[ぬ]" },
   { text: "嘘だよーん", hiragana: "うそだよ-ん" },
   {
     text: "ゴッホより普通にラッセンが好き",
