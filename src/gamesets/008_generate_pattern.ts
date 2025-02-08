@@ -11,17 +11,94 @@ export function getNextKeysOptimized(
     return code >= 0x3041 && code <= 0x3096;
   }
 
+  // Check if a character is a consonant (i.e. not a vowel)
+  function isConsonant(char: string): boolean {
+    return !"aiueo".includes(char.toLowerCase());
+  }
+
+  // Check if there is a next character in the remaining string
+  function hasNextHiraganas(remaining: string): boolean {
+    return remaining.length > 1;
+  }
+
+  // Check if the next conversion can start with an 'n'
+  function isNextStartWithN(remaining: string): boolean {
+    const next = remaining.slice(1);
+    if (!next) return false;
+    const matchKeyConfigs = KEY_CONFIGS.filter((config) =>
+      next.startsWith(config.key)
+    );
+    return matchKeyConfigs.some((config) =>
+      config.origins.some((origin) => origin.startsWith("n"))
+    );
+  }
+
+  // Check if the next conversion starts with a consonant
+  function isNextStartWithConsonant(remaining: string): boolean {
+    const next = remaining.slice(1);
+    if (!next) return false;
+    const matchKeyConfigs = KEY_CONFIGS.filter((config) =>
+      next.startsWith(config.key)
+    );
+    return matchKeyConfigs.some((config) =>
+      config.origins.some((origin) => isConsonant(origin.charAt(0)))
+    );
+  }
+
   // Recursive function to determine next possible letters with conversion flag info
   function nextLetters(index: number, matched: number): NextKeyInfo[] {
     const cacheKey = `${index}_${matched}`;
     if (cache.has(cacheKey)) return cache.get(cacheKey)!;
     const results: NextKeyInfo[] = [];
+
     if (index >= readingText.length) {
       cache.set(cacheKey, results);
       return results;
     }
+
     const currentChar = readingText[index];
-    // Handle non-hiragana characters directly
+
+    // Handle small tsu ('っ') to output a doubled consonant candidate
+    if (currentChar === "っ") {
+      if (index + 1 < readingText.length) {
+        const nextCandidates = nextLetters(index + 1, matched);
+        for (const cand of nextCandidates) {
+          if (cand.letter && isConsonant(cand.letter.charAt(0))) {
+            results.push({
+              letter: cand.letter.charAt(0),
+              flag: { type: "direct", consumed: 1 },
+            });
+          }
+        }
+      }
+      cache.set(cacheKey, results);
+      return results;
+    }
+
+    // Handle 'ん' to output a single "n" when allowed by context
+    if (currentChar === "ん") {
+      const remaining = readingText.slice(index);
+      if (hasNextHiraganas(remaining)) {
+        if (
+          !isNextStartWithN(remaining) &&
+          !isNextStartWithConsonant(remaining)
+        ) {
+          results.push({
+            letter: "n",
+            flag: { type: "direct", consumed: 1 },
+          });
+        }
+      } else {
+        results.push({
+          letter: "n",
+          flag: { type: "direct", consumed: 1 },
+        });
+      }
+      cache.set(cacheKey, results);
+      return results;
+    }
+
+    // Process non-hiragana characters directly
     if (!isHiragana(currentChar)) {
       const candidate = currentChar;
       const remainingInput = currentInput.substring(matched);
@@ -40,7 +117,8 @@ export function getNextKeysOptimized(
       cache.set(cacheKey, results);
       return results;
     }
-    // Process hiragana characters via KEY_CONFIGS
+
+    // Process Hiragana characters via KEY_CONFIGS
     for (const config of KEY_CONFIGS) {
       if (readingText.startsWith(config.key, index)) {
         const newIndex = index + config.key.length;
@@ -54,7 +132,7 @@ export function getNextKeysOptimized(
           } else {
             if (origin.startsWith(remaining)) {
               if (origin.length > remaining.length) {
-                // Output the next roman letter candidate along with conversion flag info
+                // Output the next roman letter candidate with conversion flag info
                 const nextChar = origin.charAt(remaining.length);
                 results.push({
                   letter: nextChar,
@@ -66,7 +144,7 @@ export function getNextKeysOptimized(
                   },
                 });
               } else {
-                // Full match of the origin candidate; proceed recursively
+                // Full match; proceed recursively
                 const rec = nextLetters(newIndex, matched + origin.length);
                 results.push(...rec);
               }
@@ -75,12 +153,14 @@ export function getNextKeysOptimized(
         }
       }
     }
+
     cache.set(cacheKey, results);
     return results;
   }
 
   return nextLetters(0, 0);
 }
+
 export function getRomanizedTextFromTendency(
   tendencies: ConversionTendencies,
   readingText: string,

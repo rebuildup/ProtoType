@@ -181,23 +181,24 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     load_text.x = win_pos.x - load_text.width / 2;
     load_text.y = win_pos.y - load_text.height / 2 - 300;
     app.stage.addChild(load_text);
+    gameData.current_inputed = "";
     setTimeout(async () => {
       await makeIssues();
       setTimeout(() => {
         app.stage.removeChild(load_text);
       }, 100);
       while (gameData.CurrentSceneName == "game_scene") {
+        //キーを取得
+
         const keyCode = await getLatestKey();
-        console.log(keyCodeToText(keyCode.code, keyCode.shift));
+        setTimeout(() => {}, 10);
+        //スタートしているか
         if (gameData.IsStarted) {
-          if (gameData.current_Issue >= gameData.Issues_num) {
-            gameData.CurrentSceneName = "result_scene";
-            resolve();
-          }
           let collectkeys = getNextKeysOptimized(
             gameData.Issues[gameData.current_Issue].romaji,
             gameData.current_inputed
           );
+          console.log(collectkeys);
           let Ismiss = true;
           for (let i = 0; i < collectkeys.length; i++) {
             if (
@@ -208,7 +209,18 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               gameData.current_inputed =
                 gameData.current_inputed +
                 keyCodeToText(keyCode.code, keyCode.shift);
+              const tendency = gameData.Conversion.find(
+                (t) => t.key === collectkeys[i].flag.configKey
+              );
+              if (tendency) {
+                tendency.tendency = String(collectkeys[i].flag.origin);
+              }
+              break;
             }
+          }
+          if (gameData.current_Issue >= gameData.Issues_num) {
+            gameData.CurrentSceneName = "result_scene";
+            resolve();
           }
           console.log(gameData.current_inputed);
           if (gameData.current_Issue + 1 >= gameData.Issues_num) {
@@ -216,14 +228,10 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           } else {
             next_text.text = gameData.Issues[gameData.current_Issue + 1].text;
           }
+
           sentetce_text.text = gameData.Issues[gameData.current_Issue].text;
           sentetce_text.x = win_pos.x - sentetce_text.width / 2;
-
-          alphabet_text.text = getRomanizedTextFromTendency(
-            gameData.Conversion,
-            gameData.Issues[gameData.current_Issue].romaji,
-            gameData.current_inputed
-          );
+          alphabet_text.text = gameData.current_inputed;
           alphabet_text.x = win_pos.x - alphabet_text.width / 2;
           next_text.x = win_pos.x - next_text.width / 2;
           progressDot.x =
@@ -231,6 +239,13 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               scale *
               gameData.current_Issue +
             (app.screen.width - keybord_size.width * scale) / 2;
+
+          console.log(
+            getNextKeysOptimized(
+              gameData.Issues[gameData.current_Issue].romaji,
+              gameData.current_inputed
+            )
+          );
           if (
             getNextKeysOptimized(
               gameData.Issues[gameData.current_Issue].romaji,

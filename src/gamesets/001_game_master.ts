@@ -14,6 +14,8 @@ import { result_scene } from "./006_result_scene";
 import { settings } from "../SiteInterface";
 import { fetchTexts /*, postPlayData */ } from "./010_APIget";
 
+import { getNextKeysOptimized } from "./008_generate_pattern";
+
 export async function initializeGame(app: PIXI.Application) {
   const loading_text = new PIXI.Text({
     text: "Loading",
@@ -33,6 +35,8 @@ export async function initializeGame(app: PIXI.Application) {
   } catch (error) {
     console.error(error);
   }
+
+  console.log(getNextKeysOptimized("あんこ", "an"));
 
   /*
   try {
