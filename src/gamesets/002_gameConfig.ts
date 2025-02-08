@@ -3,7 +3,7 @@ export interface Issue {
   text: string;
   romaji: string;
 }
-import { ConversionTendencies } from "./generate_pattern";
+import { ConversionTendencies } from "./008_generate_pattern";
 // GameData interface that holds all game properties
 export interface GameData {
   CurrentSceneName: string;

@@ -1,23 +1,23 @@
 // game_master.ts
 import * as PIXI from "pixi.js";
-import { game_scene } from "./game_scene";
+import { game_scene } from "./003_game_scene";
 
-import { playCollect, playMiss } from "./soundplay";
+import { playCollect, playMiss } from "./012_soundplay";
 
-import { gameData } from "./gameConfig";
+import { gameData } from "./002_gameConfig";
 
-import { opening_scene } from "./opening";
-import { game_select } from "./game_select";
-import { setting_scene } from "./setting_scene";
-import { result_scene } from "./result_scene";
+import { opening_scene } from "./005_opening";
+import { game_select } from "./004_game_select";
+import { setting_scene } from "./007_setting_scene";
+import { result_scene } from "./006_result_scene";
 
 import { settings } from "../SiteInterface";
-import { fetchTexts /*, postPlayData */ } from "./APIget";
+import { fetchTexts /*, postPlayData */ } from "./010_APIget";
 
 import {
   getNextKeysOptimized,
   getRomanizedTextFromTendency,
-} from "./generate_pattern";
+} from "./008_generate_pattern";
 
 export async function initializeGame(app: PIXI.Application) {
   const loading_text = new PIXI.Text({
@@ -91,7 +91,7 @@ export function replaceHash(color: string): string {
   if (typeof color !== "string") return "";
   return color.startsWith("#") ? color.replace("#", "0x") : color;
 }
-import { ConversionTendencies } from "./generate_pattern";
+import { ConversionTendencies } from "./008_generate_pattern";
 function TendenciesInit() {
   const CONVERSION_TENDENCIES: ConversionTendencies = [
     {

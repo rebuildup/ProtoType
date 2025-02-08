@@ -1,8 +1,8 @@
 import * as PIXI from "pixi.js";
-import { gameData } from "./gameConfig";
+import { gameData } from "./002_gameConfig";
 import { settings } from "../SiteInterface";
-import { replaceHash } from "./game_master";
-import { playCollect } from "./soundplay";
+import { replaceHash } from "./001_game_master";
+import { playCollect } from "./012_soundplay";
 export function game_select(app: PIXI.Application): Promise<void> {
   return new Promise<void>((resolve) => {
     app.stage.removeChildren();

@@ -1,8 +1,8 @@
 import * as PIXI from "pixi.js";
-import { gameData } from "./gameConfig";
-import { replaceHash } from "./game_master";
+import { gameData } from "./002_gameConfig";
+import { replaceHash } from "./001_game_master";
 import { settings } from "../SiteInterface";
-import { playCollect } from "./soundplay";
+import { playCollect } from "./012_soundplay";
 
 export function opening_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>((resolve) => {

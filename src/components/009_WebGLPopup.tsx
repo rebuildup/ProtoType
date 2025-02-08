@@ -3,7 +3,7 @@ import * as PIXI from "pixi.js";
 
 import "../styles/webglPopup.css";
 import { settings } from "../SiteInterface";
-import { initializeGame, replaceHash } from "../gamesets/game_master";
+import { initializeGame, replaceHash } from "../gamesets/001_game_master";
 //import { setProp } from "../gamesets/gameConfig";
 
 const WebGLPopup: React.FC<{ onClose: () => void }> = ({ onClose }) => {

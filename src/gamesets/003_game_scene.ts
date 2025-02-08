@@ -1,16 +1,16 @@
 import * as PIXI from "pixi.js";
-import { replaceHash } from "./game_master";
-import { gameData } from "../gamesets/gameConfig";
-import { Keyboard, keybord_size, scale } from "../gamesets/keybord";
+import { replaceHash } from "./001_game_master";
+import { gameData } from "./002_gameConfig";
+import { Keyboard, keybord_size, scale } from "./011_keybord";
 
 import { settings } from "../SiteInterface";
 
-import { getLatestKey } from "../gamesets/keyinput";
+import { getLatestKey } from "./009_keyinput";
 
 import {
-  getNextKeysOptimized,
+  /*getNextKeysOptimized,*/
   getRomanizedTextFromTendency,
-} from "./generate_pattern";
+} from "./008_generate_pattern";
 
 export async function game_scene(app: PIXI.Application): Promise<void> {
   return new Promise(async (resolve) => {
@@ -242,7 +242,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
   });
 }
 
-import { Issue } from "./gameConfig";
+import { Issue } from "./002_gameConfig";
 async function makeIssues(): Promise<void> {
   return new Promise<void>(async (resolve) => {
     let Issues: Issue[] = [];

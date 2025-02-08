@@ -1,21 +1,21 @@
 import React, { useState, useLayoutEffect } from "react";
 
-import Game from "./components/Game.tsx";
-import PlayRecord from "./components/PlayRecord.tsx";
-import Ranking from "./components/Ranking.tsx";
-import Setting from "./components/Setting.tsx";
-import WebGLPopup from "./components/WebGLPopup.tsx";
-import Header from "./components/Header.tsx";
-import Tab from "./components/Tab.tsx";
+import Game from "./components/004_Game.tsx";
+import PlayRecord from "./components/008_PlayRecord.tsx";
+import Ranking from "./components/005_Ranking.tsx";
+import Setting from "./components/007_Setting.tsx";
+import WebGLPopup from "./components/009_WebGLPopup.tsx";
+import Header from "./components/002_Header.tsx";
+import Tab from "./components/001_Tab.tsx";
 
-import Footer from "./components/footer.tsx";
+import Footer from "./components/003_footer.tsx";
 
 import "./index.css";
 
 import { loadFromCache, updateSetting } from "./SiteInterface.ts";
-import { themes } from "./components/ColorPalette.tsx";
+import { themes } from "./components/010_ColorPalette.tsx";
 
-import { fonts } from "./components/FontSelector.tsx";
+import { fonts } from "./components/011_FontSelector.tsx";
 
 const App: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);

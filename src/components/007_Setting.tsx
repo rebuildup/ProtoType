@@ -1,7 +1,7 @@
 import React from "react";
-import ColorPalette from "./ColorPalette";
-import FontSelector from "./FontSelector";
-import KeyLayoutSelector from "./KeyLayout";
+import ColorPalette from "./010_ColorPalette";
+import FontSelector from "./011_FontSelector";
+import KeyLayoutSelector from "./012_KeyLayout";
 import "../styles/setting.css";
 
 const Setting: React.FC = () => {

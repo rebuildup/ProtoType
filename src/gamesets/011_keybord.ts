@@ -70,7 +70,7 @@ export const keybords = [
 import * as PIXI from "pixi.js";
 
 import { settings } from "../SiteInterface";
-import { replaceHash } from "./game_master";
+import { replaceHash } from "./001_game_master";
 export const keybord_size = { width: 558, height: 180 };
 export const scale = 2;
 
