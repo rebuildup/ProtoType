@@ -35,9 +35,46 @@ export async function initializeGame(app: PIXI.Application) {
   } catch (error) {
     console.error(error);
   }
-
+  console.log("あんこ:an");
   console.log(getNextKeysOptimized("あんこ", "an"));
-
+  console.log("あんこ:ann");
+  console.log(getNextKeysOptimized("あんこ", "ann"));
+  console.log("あんこ:ank");
+  console.log(getNextKeysOptimized("あんこ", "ank"));
+  console.log("あんな:ann");
+  console.log(getNextKeysOptimized("あんな", "ann"));
+  console.log("どっと:do");
+  console.log(getNextKeysOptimized("どっと", "do"));
+  console.log("どっと:dol");
+  console.log(getNextKeysOptimized("どっと", "dol"));
+  console.log("どっと:dot");
+  console.log(getNextKeysOptimized("どっと", "dot"));
+  console.log("どっと:dott");
+  console.log(getNextKeysOptimized("どっと", "dott"));
+  console.log("れんたるひらがなぬ:rentaruhiraganan");
+  console.log(getNextKeysOptimized("れんたるひらがなぬ", "rentaruhiraganan"));
+  console.log("ふぁびこん:");
+  console.log(getNextKeysOptimized("ふぁびこん", ""));
+  console.log("れんたる:re");
+  console.log(getNextKeysOptimized("れんたる", "re"));
+  console.log("れんたる:re");
+  console.log(getNextKeysOptimized("れんたる", "re"));
+  console.log("れんたるひらがな[ぬ]:rentaruhiragana");
+  console.log(getNextKeysOptimized("れんたるひらがな[ぬ]", "rentaruhiragana"));
+  console.log("うそだよ-ん:usodayo-n");
+  console.log(getNextKeysOptimized("うそだよ-ん", "usodayo-n"));
+  console.log("ああそれいいよね みちお:aasoreiiyone m");
+  console.log(
+    getNextKeysOptimized("ああそれいいよね みちお", "aasoreiiyone m")
+  );
+  console.log("3かげつ:3k");
+  console.log(getNextKeysOptimized("3かげつ", "3k"));
+  console.log("ろいた-つうしん:roita-t");
+  console.log(getNextKeysOptimized("ろいた-つうしん", "roita-t"));
+  console.log("れんたるひらがな[ぬ]:rentaruhiragana[nu]");
+  console.log(
+    getNextKeysOptimized("れんたるひらがな[ぬ]", "rentaruhiragana[nu]")
+  );
   /*
   try {
     const result = await postPlayData("いいね！", 3333);
