@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
 
-import "../styles/webglPopup.css";
+import "../styles/009_webglPopup.css";
 import { settings } from "../SiteInterface";
 import { initializeGame, replaceHash } from "../gamesets/001_game_master";
 //import { setProp } from "../gamesets/gameConfig";

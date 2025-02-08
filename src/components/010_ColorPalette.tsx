@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/colorpalette.css";
+import "../styles/010_colorpalette.css";
 import { updateSetting } from "../SiteInterface.ts";
 
 export const themes = [

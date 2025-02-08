@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/tab.css";
+import "../styles/001_tab.css";
 interface TabProps {
   onTabChange: (tab: string) => void;
 }

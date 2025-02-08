@@ -1,6 +1,6 @@
 import React from "react";
 import CurrentTime from "./013_CurrentTime.tsx";
-import "../styles/header.css";
+import "../styles/002_header.css";
 
 // Header.tsx
 const Header: React.FC = () => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../styles/header.css";
+import "../styles/002_header.css";
 
 const CurrentTime: React.FC = () => {
   const [currentTime, setCurrentTime] = useState<string>("");

@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/game.css";
+import "../styles/004_game.css";
 
 interface HomeProps {
   onOpenPopup: () => void;
