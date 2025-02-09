@@ -193,7 +193,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       }, 100);
       while (gameData.CurrentSceneName == "game_scene") {
         const keyCode = await getLatestKey();
-        console.log(keyCode);
+
         if (gameData.IsStarted) {
           if (keyCode.code === "Escape") {
             gameData.CurrentSceneName = "reload_game";
@@ -203,6 +203,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             gameData.Issues[gameData.current_Issue].romaji,
             gameData.current_inputed
           );
+          console.log(collectkeys);
           if (keyCodeToText(keyCode.code, keyCode.shift) != "") {
             let Ismiss = true;
             for (let i = 0; i < collectkeys.length; i++) {
@@ -224,10 +225,14 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               }
             }
             if (Ismiss) {
+              console.log("miss");
+              console.log(keyCode);
               playMiss();
               gameData.Miss++;
               gameData.combo_cnt = 0;
             } else {
+              console.log("collect");
+              console.log(keyCode);
               playCollect();
               gameData.combo_cnt++;
               if (gameData.combo_cnt > gameData.max_combo)

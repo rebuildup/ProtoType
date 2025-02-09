@@ -4,13 +4,11 @@ export function getNextKeysOptimized(
 ): NextKeyInfo[] {
   const cache = new Map<string, NextKeyInfo[]>();
 
-  // Check if a character is Hiragana.
   function isHiragana(char: string): boolean {
     const code = char.charCodeAt(0);
     return code >= 0x3041 && code <= 0x3096;
   }
 
-  // Check if a character is a consonant.
   function isConsonant(char: string): boolean {
     return !"aiueo".includes(char.toLowerCase());
   }
@@ -43,11 +41,10 @@ export function getNextKeysOptimized(
   }
 
   function nextLetters(index: number, matched: number): NextKeyInfo[] {
-    const cacheKey = `${index}_${matched}`;
+    const cacheKey = `${index}_${matched}_${currentInput}`;
     if (cache.has(cacheKey)) return cache.get(cacheKey)!;
     let results: NextKeyInfo[] = [];
 
-    // Base case: if all readingText is processed.
     if (index >= readingText.length) {
       cache.set(cacheKey, results);
       return results;
@@ -55,8 +52,8 @@ export function getNextKeysOptimized(
 
     const currentChar = readingText[index];
 
-    // For non-Hiragana characters, compare directly.
     if (!isHiragana(currentChar)) {
+      // Non-hiragana characters are handled directly.
       const candidate = currentChar;
       const remainingInput = currentInput.substring(matched);
       if (remainingInput.startsWith(candidate)) {
@@ -78,48 +75,81 @@ export function getNextKeysOptimized(
       return results;
     }
 
-    // Processing for small "っ" remains unchanged.
     if (currentChar === "っ") {
-      if (index + 1 < readingText.length) {
-        const candidatesFromNext = getDoublingCandidates(index + 1);
-        const candidatesFromTsu = getSmallTsuCandidates();
-        const expectedDoubling = Array.from(
-          new Set([...candidatesFromNext, ...candidatesFromTsu])
-        );
-        const currentLetter = currentInput.substring(matched, matched + 1);
-        if (currentLetter) {
-          if (expectedDoubling.includes(currentLetter)) {
-            const rec = nextLetters(index + 1, matched + 1);
+      // Handling for small tsu.
+      const tsuConfig = KEY_CONFIGS.find((config) => config.key === "っ");
+      if (tsuConfig) {
+        const currentInputRemaining = currentInput.substring(matched);
+        const possibleNextLetters = new Set<string>();
+        let hasExactMatch = false;
+
+        // Check each origin for an exact or partial match for small tsu.
+        for (const origin of tsuConfig.origins) {
+          if (currentInputRemaining === origin) {
+            const rec = nextLetters(index + 1, matched + origin.length);
             results.push(...rec);
-          } else {
-            expectedDoubling.forEach((letter) =>
-              results.push({
-                letter,
-                flag: { type: "direct", consumed: 1 } as ConversionFlag,
-              })
-            );
+            hasExactMatch = true;
+          } else if (origin.startsWith(currentInputRemaining)) {
+            const nextChar = origin.charAt(currentInputRemaining.length);
+            possibleNextLetters.add(nextChar);
           }
-        } else {
-          expectedDoubling.forEach((letter) =>
-            results.push({
-              letter,
-              flag: { type: "direct", consumed: 1 } as ConversionFlag,
-            })
-          );
         }
-        cache.set(cacheKey, results);
-        return results;
+
+        if (!hasExactMatch) {
+          // Handle doubling candidates.
+          const doublingCandidates = getDoublingCandidates(index + 1);
+          if (currentInputRemaining === "") {
+            doublingCandidates.forEach((c) => possibleNextLetters.add(c));
+          } else {
+            const firstChar = currentInputRemaining[0];
+            if (doublingCandidates.includes(firstChar)) {
+              const rec = nextLetters(index + 1, matched + 1);
+              results.push(...rec);
+            }
+          }
+          // --- NEW FIX: Handle fixed alternative candidates for small tsu ---
+          const fixedAlternatives = ["ltu", "xtu", "ltsu", "xtsu"];
+          const rawFixedCandidates = Array.from(
+            new Set(fixedAlternatives.map((s) => s.charAt(0)))
+          );
+          if (currentInputRemaining) {
+            const firstChar = currentInputRemaining[0];
+            if (rawFixedCandidates.includes(firstChar)) {
+              for (const alt of fixedAlternatives) {
+                if (currentInputRemaining.startsWith(alt)) {
+                  // If the fixed alternative is fully matched, consume it.
+                  const rec = nextLetters(index + 1, matched + alt.length);
+                  results.push(...rec);
+                } else if (alt.startsWith(currentInputRemaining)) {
+                  // Suggest the next character for the fixed alternative.
+                  const nextChar = alt.charAt(currentInputRemaining.length);
+                  possibleNextLetters.add(nextChar);
+                }
+              }
+            }
+          }
+        }
+
+        // Add all possible next letter suggestions.
+        Array.from(possibleNextLetters).forEach((letter) => {
+          results.push({
+            letter,
+            flag: {
+              type: "direct",
+              consumed: currentInput.substring(matched).length + 1,
+            } as ConversionFlag,
+          });
+        });
       }
+
       cache.set(cacheKey, results);
       return results;
     }
 
-    // Processing for "ん"
     if (currentChar === "ん") {
+      // Handling for 'ん'.
       const remainingInput = currentInput.substring(matched);
-      // Final "ん": last character of readingText.
       if (index === readingText.length - 1) {
-        // If the user already entered "nn", conversion is complete.
         if (remainingInput.startsWith("nn")) {
           cache.set(cacheKey, []);
           return [];
@@ -133,15 +163,10 @@ export function getNextKeysOptimized(
           return results;
         }
       } else {
-        // Middle "ん":
-        // If user has typed extra "n" (i.e. remainingInput starts with "nn"),
-        // then consume two letters.
         if (remainingInput.startsWith("nn")) {
           return nextLetters(index + 1, matched + 2);
         } else {
-          // Otherwise, offer candidate "n" (consuming 1 letter) combined with the branch.
           const branchWithNConsumed = nextLetters(index + 1, matched + 1);
-          // If the branch is complete (empty), then no candidate should be offered.
           if (branchWithNConsumed.length === 0) {
             cache.set(cacheKey, []);
             return [];
@@ -158,7 +183,7 @@ export function getNextKeysOptimized(
       }
     }
 
-    // Normal conversion via KEY_CONFIGS.
+    // Normal conversion for other hiragana via KEY_CONFIGS.
     for (const config of KEY_CONFIGS) {
       if (readingText.startsWith(config.key, index)) {
         const newIndex = index + config.key.length;
@@ -195,26 +220,41 @@ export function getNextKeysOptimized(
     return results;
   }
 
-  const finalResult = nextLetters(0, 0);
-  return finalResult;
+  return nextLetters(0, 0);
 }
+
+export interface ConversionTendency {
+  key: string; // 変換対象のひらがな（例："ち"）
+  tendency: string; // デフォルトとして使用するローマ字（例："ti"）
+}
+export type ConversionTendencies = ConversionTendency[];
+export type ConversionFlag = {
+  type: "direct" | "keyConfig";
+  configKey?: string;
+  origin?: string;
+  consumed?: number;
+};
+export type NextKeyInfo = {
+  letter: string;
+  flag: ConversionFlag;
+};
 export function getRomanizedTextFromTendency(
   tendencies: ConversionTendencies,
   readingText: string,
   currentInput: string
 ): string {
-  // ひらがなかどうか判定
+  // Utility: ひらがなかどうか判定
   function isHiragana(char: string): boolean {
     const code = char.charCodeAt(0);
     return code >= 0x3041 && code <= 0x3096;
   }
-  // 次の文字がナ行かどうか判定（「な」「に」「ぬ」「ね」「の」）
+  // Utility: 次の文字がナ行かどうか判定（な, に, ぬ, ね, の）
   function isNextNaRow(text: string, i: number): boolean {
     if (i + 1 >= text.length) return false;
     const next = text[i + 1];
     return ["な", "に", "ぬ", "ね", "の"].includes(next);
   }
-  // 現在の出力 out が currentInput の接頭辞と一致しているかチェック
+  // Utility: 現在の出力が currentInput と接頭一致しているか
   function prefixMatches(out: string): boolean {
     if (out.length > currentInput.length) {
       return currentInput === out.slice(0, currentInput.length);
@@ -226,16 +266,15 @@ export function getRomanizedTextFromTendency(
   const results: string[] = [];
 
   /**
-   * 再帰関数 dfs
+   * DFS による全変換候補探索
    * @param i 読みテキストの現在位置
-   * @param dup 直前に「っ」があった場合、次のセグメントで先頭子音の重複を行う必要がある
+   * @param dup 直前に「っ」で子音重複させる必要があった場合のフラグ
    * @param out これまでの変換結果
    */
   function dfs(i: number, dup: boolean, out: string): void {
-    // 現在の出力が currentInput の接頭辞と一致していなければ枝刈り
     if (!prefixMatches(out)) return;
 
-    // 読みテキスト末尾なら候補として採用
+    // 完了時：読みテキスト全体を処理済みなら、out が currentInput を接頭辞としていれば採用
     if (i >= readingText.length) {
       if (out.startsWith(currentInput)) results.push(out);
       return;
@@ -243,7 +282,7 @@ export function getRomanizedTextFromTendency(
 
     const ch = readingText[i];
 
-    // ひらがなでない場合はそのまま出力
+    // 非ひらがなならそのまま出力
     if (!isHiragana(ch)) {
       dfs(i + 1, false, out + ch);
       return;
@@ -251,12 +290,57 @@ export function getRomanizedTextFromTendency(
 
     // 「っ」の処理
     if (ch === "っ") {
-      // オプション1: 次の文字の子音を重複させるためdupフラグを立てる
-      dfs(i + 1, true, out);
-      // オプション2: 固定変換候補をそのまま出力する（"ltu","xtu","ltsu","xtsu"）
+      const nextIndex = i + 1;
+      // doublingCandidates：次のセグメント（readingText[nextIndex]）の候補
+      const doublingCandidates = (function () {
+        const letters = new Set<string>();
+        for (const config of KEY_CONFIGS) {
+          if (readingText.startsWith(config.key, nextIndex)) {
+            for (const origin of config.origins) {
+              if (origin.length > 0 && isConsonant(origin.charAt(0))) {
+                letters.add(origin.charAt(0));
+              }
+            }
+          }
+        }
+        return Array.from(letters);
+      })();
+      // 固定変換候補群（固定の4通りの変換文字列）
       const fixedAlternatives = ["ltu", "xtu", "ltsu", "xtsu"];
-      for (const alt of fixedAlternatives) {
-        dfs(i + 1, false, out + alt);
+      // raw 固定候補＝各固定変換の1文字目
+      const rawFixedCandidates = Array.from(
+        new Set(fixedAlternatives.map((s) => s.charAt(0)))
+      );
+      // 現在、これまでの出力の長さが、ユーザー入力における消費済み文字数とみなすので、
+      // 次にユーザーが入力すべき文字は currentInput.charAt(out.length)
+      const userCandidate = currentInput.charAt(out.length) || "";
+      if (userCandidate) {
+        if (doublingCandidates.includes(userCandidate)) {
+          // ユーザー入力が次の文字の子音重複を示す場合
+          dfs(nextIndex, true, out);
+        } else if (rawFixedCandidates.includes(userCandidate)) {
+          // ユーザー入力が固定変換候補の raw 値に合致する場合は、
+          // 固定変換候補（例："ltu","ltsu" など）のうち、先頭文字が合致するものを採用
+          for (const alt of fixedAlternatives) {
+            if (alt.charAt(0) === userCandidate) {
+              dfs(nextIndex, false, out + alt);
+            }
+          }
+        } else {
+          // どちらにも該当しなければ、両方の候補を枝分かれさせる
+          for (const alt of doublingCandidates) {
+            dfs(nextIndex, true, out);
+          }
+          for (const alt of fixedAlternatives) {
+            dfs(nextIndex, false, out + alt);
+          }
+        }
+      } else {
+        // ユーザー入力がない場合は、両方の候補を試す
+        dfs(nextIndex, true, out);
+        for (const alt of fixedAlternatives) {
+          dfs(nextIndex, false, out + alt);
+        }
       }
       return;
     }
@@ -264,7 +348,6 @@ export function getRomanizedTextFromTendency(
     // 「ん」の処理
     if (ch === "ん") {
       let candidates: string[];
-      // 末尾または次がナ行なら "nn" のみ
       if (i === readingText.length - 1 || isNextNaRow(readingText, i)) {
         candidates = ["nn"];
       } else {
@@ -276,11 +359,10 @@ export function getRomanizedTextFromTendency(
       return;
     }
 
-    // 通常のひらがなについて、読みテキスト i 以降と先頭一致するすべての変換候補を試す
+    // 通常のひらがな（または複合キー）の処理
     for (const t of tendencies) {
       if (readingText.startsWith(t.key, i)) {
         let conv = t.tendency;
-        // 直前でdupフラグが立っていれば、変換先の先頭文字を重複させる
         if (dup && conv.length > 0) {
           conv = conv.charAt(0) + conv;
         }
@@ -291,10 +373,12 @@ export function getRomanizedTextFromTendency(
 
   dfs(0, false, "");
 
+  /*
   if (results.length === 0) {
     throw new Error("入力済みのテキストと変換結果が一致しません。");
   }
-  // 複数候補がある場合、currentInput以降の余分な文字数が少ないものを優先して返す
+    */
+  // 複数候補がある場合、余分な文字数が少ないものを優先して返す
   results.sort((a, b) => {
     const extraA = a.length - currentInput.length;
     const extraB = b.length - currentInput.length;
@@ -306,22 +390,15 @@ export function getRomanizedTextFromTendency(
   return results[0];
 }
 
+// 補助: 子音かどうか (母音 "a","i","u","e","o" および "y" は除く)
+function isConsonant(char: string): boolean {
+  return !"aiueoy".includes(char.toLowerCase());
+}
+
 export interface ConversionTendency {
   key: string; // 変換対象のひらがな（例："ち"）
   tendency: string; // デフォルトとして使用するローマ字（例："ti"）
 }
-export type ConversionTendencies = ConversionTendency[];
-export type ConversionFlag = {
-  type: "direct" | "keyConfig"; // 'direct' for literal chars, 'keyConfig' for conversion via KEY_CONFIGS
-  configKey?: string; // Hiragana key from KEY_CONFIGS (e.g. "ち")
-  origin?: string; // The chosen origin string (e.g. "ti" or "chi")
-  consumed?: number; // Number of characters from currentInput consumed in this conversion step
-};
-
-export type NextKeyInfo = {
-  letter: string;
-  flag: ConversionFlag;
-};
 
 export async function TextToRomaji(input: string): Promise<string[]> {
   const roman = await hiraganaToRomans(input);
@@ -434,10 +511,6 @@ const isNextStartWithConsonant = (remainingHiraganas: string): boolean => {
   return matchKeyConfigs.some((matchKeyConfig) =>
     matchKeyConfig.origins.some((origin) => isConsonant(origin[0]))
   );
-};
-
-const isConsonant = (char: string): boolean => {
-  return ["a", "i", "u", "e", "o", "y"].includes(char);
 };
 
 const isHiragana = (char: string): boolean => {
