@@ -13,19 +13,6 @@ export function getNextKeysOptimized(
     return !"aiueo".includes(char.toLowerCase());
   }
 
-  function getSmallTsuCandidates(): string[] {
-    const tsuConfig = KEY_CONFIGS.find((config) => config.key === "っ");
-    const letters = new Set<string>();
-    if (tsuConfig) {
-      tsuConfig.origins.forEach((origin) => {
-        if (origin.length > 0 && isConsonant(origin.charAt(0))) {
-          letters.add(origin.charAt(0));
-        }
-      });
-    }
-    return Array.from(letters);
-  }
-
   function getDoublingCandidates(syllableIndex: number): string[] {
     const letters = new Set<string>();
     for (const config of KEY_CONFIGS) {
@@ -328,9 +315,11 @@ export function getRomanizedTextFromTendency(
           }
         } else {
           // どちらにも該当しなければ、両方の候補を枝分かれさせる
+          /*
           for (const alt of doublingCandidates) {
             dfs(nextIndex, true, out);
           }
+            */
           for (const alt of fixedAlternatives) {
             dfs(nextIndex, false, out + alt);
           }
