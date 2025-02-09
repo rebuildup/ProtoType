@@ -10,11 +10,12 @@ import { opening_scene } from "./005_opening";
 import { game_select } from "./004_game_select";
 import { setting_scene } from "./007_setting_scene";
 import { result_scene } from "./006_result_scene";
+import { reload_game } from "./016_reload_game";
 
 import { settings } from "../SiteInterface";
 import { fetchTexts /*, postPlayData */ } from "./010_APIget";
 
-import { getNextKeysOptimized } from "./008_generate_pattern";
+//import { getNextKeysOptimized } from "./008_generate_pattern";
 
 export async function initializeGame(app: PIXI.Application) {
   const loading_text = new PIXI.Text({
@@ -35,9 +36,19 @@ export async function initializeGame(app: PIXI.Application) {
   } catch (error) {
     console.error(error);
   }
+  /*
   console.log("あんこ:an");
   console.log(getNextKeysOptimized("あんこ", "an"));
   console.log("あんこ:ann");
+  console.log(getNextKeysOptimized("あんこ", "ann"));
+  console.log("ふぁびこん:fabikon");
+  console.log(getNextKeysOptimized("ふぁびこん", "fabikon"));
+  console.log("ふぁびこん:fabikonn");
+  console.log(getNextKeysOptimized("ふぁびこん", "fabikonn"));
+  console.log("れんたるひらがなぬ:rentaruhiragananu");
+  console.log(getNextKeysOptimized("れんたるひらがなぬ", "rentaruhiragananu"));
+  
+   console.log("あんこ:ann");
   console.log(getNextKeysOptimized("あんこ", "ann"));
   console.log("あんこ:ank");
   console.log(getNextKeysOptimized("あんこ", "ank"));
@@ -53,8 +64,13 @@ export async function initializeGame(app: PIXI.Application) {
   console.log(getNextKeysOptimized("どっと", "dott"));
   console.log("れんたるひらがなぬ:rentaruhiraganan");
   console.log(getNextKeysOptimized("れんたるひらがなぬ", "rentaruhiraganan"));
-  console.log("ふぁびこん:");
-  console.log(getNextKeysOptimized("ふぁびこん", ""));
+  
+  
+  console.log("れんたるひらがな[ぬ]:rentaruhiragana[nu]");
+  console.log(
+    getNextKeysOptimized("れんたるひらがな[ぬ]", "rentaruhiragana[nu]")
+  );
+  
   console.log("れんたる:re");
   console.log(getNextKeysOptimized("れんたる", "re"));
   console.log("れんたる:re");
@@ -71,10 +87,8 @@ export async function initializeGame(app: PIXI.Application) {
   console.log(getNextKeysOptimized("3かげつ", "3k"));
   console.log("ろいた-つうしん:roita-t");
   console.log(getNextKeysOptimized("ろいた-つうしん", "roita-t"));
-  console.log("れんたるひらがな[ぬ]:rentaruhiragana[nu]");
-  console.log(
-    getNextKeysOptimized("れんたるひらがな[ぬ]", "rentaruhiragana[nu]")
-  );
+  
+  */
   /*
   try {
     const result = await postPlayData("いいね！", 3333);
@@ -87,6 +101,7 @@ export async function initializeGame(app: PIXI.Application) {
   gameData.CurrentSceneName = "game_scene";
   gameData.GameMode = "nomal";
   gameData.FontFamily = settings.fontTheme.fontFamily;
+  gameData.KeyLayout = settings.keyLayout;
   TendenciesInit();
 
   while (gameData.CurrentSceneName != "exit") {
@@ -110,6 +125,10 @@ export async function initializeGame(app: PIXI.Application) {
       case "result_scene":
         playCollect();
         await result_scene(app);
+        break;
+      case "reload_game":
+        playCollect();
+        await reload_game(app);
         break;
       default:
         gameData.CurrentSceneName = "exit";

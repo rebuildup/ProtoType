@@ -4,11 +4,13 @@ export function getNextKeysOptimized(
 ): NextKeyInfo[] {
   const cache = new Map<string, NextKeyInfo[]>();
 
+  // Check if a character is Hiragana.
   function isHiragana(char: string): boolean {
     const code = char.charCodeAt(0);
     return code >= 0x3041 && code <= 0x3096;
   }
 
+  // Check if a character is a consonant.
   function isConsonant(char: string): boolean {
     return !"aiueo".includes(char.toLowerCase());
   }
@@ -45,7 +47,7 @@ export function getNextKeysOptimized(
     if (cache.has(cacheKey)) return cache.get(cacheKey)!;
     let results: NextKeyInfo[] = [];
 
-    // Base case: readingText fully processed.
+    // Base case: if all readingText is processed.
     if (index >= readingText.length) {
       cache.set(cacheKey, results);
       return results;
@@ -53,7 +55,7 @@ export function getNextKeysOptimized(
 
     const currentChar = readingText[index];
 
-    // Non-hiragana (symbols, etc.) – just compare directly.
+    // For non-Hiragana characters, compare directly.
     if (!isHiragana(currentChar)) {
       const candidate = currentChar;
       const remainingInput = currentInput.substring(matched);
@@ -76,7 +78,7 @@ export function getNextKeysOptimized(
       return results;
     }
 
-    // Small "っ" processing (unchanged)
+    // Processing for small "っ" remains unchanged.
     if (currentChar === "っ") {
       if (index + 1 < readingText.length) {
         const candidatesFromNext = getDoublingCandidates(index + 1);
@@ -112,51 +114,46 @@ export function getNextKeysOptimized(
       return results;
     }
 
-    // Modified "ん" processing.
+    // Processing for "ん"
     if (currentChar === "ん") {
       const remainingInput = currentInput.substring(matched);
-      const nextHiragana = readingText[index + 1];
-      const naRow = new Set(["な", "に", "ぬ", "ね", "の"]);
-      const requireDoubleN = nextHiragana && naRow.has(nextHiragana);
-
-      if (requireDoubleN) {
-        if (remainingInput === "") {
-          // User has not started typing for the double-n; suggest "n"
-          results.push({
-            letter: "n",
-            flag: { type: "direct", consumed: 1 } as ConversionFlag,
-          });
-          cache.set(cacheKey, results);
-          return results;
-        } else if (remainingInput.startsWith("nn")) {
-          return nextLetters(index + 1, matched + 2);
-        } else if (remainingInput.startsWith("n")) {
-          return nextLetters(index + 1, matched + 1);
+      // Final "ん": last character of readingText.
+      if (index === readingText.length - 1) {
+        // If the user already entered "nn", conversion is complete.
+        if (remainingInput.startsWith("nn")) {
+          cache.set(cacheKey, []);
+          return [];
         } else {
+          const consumed = remainingInput.startsWith("n") ? 1 : 0;
           results.push({
             letter: "n",
-            flag: { type: "direct", consumed: 1 } as ConversionFlag,
+            flag: { type: "direct", consumed } as ConversionFlag,
           });
           cache.set(cacheKey, results);
           return results;
         }
       } else {
-        if (remainingInput === "") {
-          results.push({
-            letter: "n",
-            flag: { type: "direct", consumed: 1 } as ConversionFlag,
-          });
-          cache.set(cacheKey, results);
-          return results;
-        } else if (remainingInput.startsWith("n")) {
-          return nextLetters(index + 1, matched + 1);
+        // Middle "ん":
+        // If user has typed extra "n" (i.e. remainingInput starts with "nn"),
+        // then consume two letters.
+        if (remainingInput.startsWith("nn")) {
+          return nextLetters(index + 1, matched + 2);
         } else {
-          results.push({
+          // Otherwise, offer candidate "n" (consuming 1 letter) combined with the branch.
+          const branchWithNConsumed = nextLetters(index + 1, matched + 1);
+          // If the branch is complete (empty), then no candidate should be offered.
+          if (branchWithNConsumed.length === 0) {
+            cache.set(cacheKey, []);
+            return [];
+          }
+          let candidates: NextKeyInfo[] = [];
+          candidates.push({
             letter: "n",
             flag: { type: "direct", consumed: 1 } as ConversionFlag,
           });
-          cache.set(cacheKey, results);
-          return results;
+          candidates.push(...branchWithNConsumed);
+          cache.set(cacheKey, candidates);
+          return candidates;
         }
       }
     }

@@ -16,6 +16,9 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
   return new Promise(async (resolve) => {
     app.stage.removeChildren();
 
+    console.log(gameData.KeyLayout);
+    console.log(settings.keyLayout);
+
     const win_pos = { x: app.screen.width / 2, y: app.screen.height / 2 };
 
     let keybord_flag = true;
@@ -99,7 +102,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     app.stage.addChild(score_text);
 
     const combo_text = new PIXI.Text({
-      text: "30",
+      text: "0",
       style: {
         fontFamily: gameData.FontFamily,
         fontSize: 40,
@@ -180,6 +183,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     gameData.IsStarted = false;
     load_text.x = win_pos.x - load_text.width / 2;
     load_text.y = win_pos.y - load_text.height / 2 - 300;
+    gameData.combo_cnt = 0;
     app.stage.addChild(load_text);
     gameData.current_inputed = "";
     setTimeout(async () => {
@@ -188,64 +192,49 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         app.stage.removeChild(load_text);
       }, 100);
       while (gameData.CurrentSceneName == "game_scene") {
-        //キーを取得
-
         const keyCode = await getLatestKey();
-        setTimeout(() => {}, 10);
-        //スタートしているか
+
         if (gameData.IsStarted) {
+          if (keyCode.code === "Escape") {
+            gameData.CurrentSceneName = "reload_game";
+            resolve();
+          }
           let collectkeys = getNextKeysOptimized(
             gameData.Issues[gameData.current_Issue].romaji,
             gameData.current_inputed
           );
-          console.log(collectkeys);
-          let Ismiss = true;
-          for (let i = 0; i < collectkeys.length; i++) {
-            if (
-              keyCodeToText(keyCode.code, keyCode.shift) ==
-              collectkeys[i].letter
-            ) {
-              Ismiss = false;
-              gameData.current_inputed =
-                gameData.current_inputed +
-                keyCodeToText(keyCode.code, keyCode.shift);
-              const tendency = gameData.Conversion.find(
-                (t) => t.key === collectkeys[i].flag.configKey
-              );
-              if (tendency) {
-                tendency.tendency = String(collectkeys[i].flag.origin);
+          if (keyCodeToText(keyCode.code, keyCode.shift) != "") {
+            let Ismiss = true;
+            for (let i = 0; i < collectkeys.length; i++) {
+              if (
+                keyCodeToText(keyCode.code, keyCode.shift) ==
+                collectkeys[i].letter
+              ) {
+                Ismiss = false;
+                gameData.current_inputed =
+                  gameData.current_inputed +
+                  keyCodeToText(keyCode.code, keyCode.shift);
+                const tendency = gameData.Conversion.find(
+                  (t) => t.key === collectkeys[i].flag.configKey
+                );
+                if (tendency) {
+                  tendency.tendency = String(collectkeys[i].flag.origin);
+                }
+                break;
               }
-              break;
+            }
+            if (Ismiss) {
+              playMiss();
+              gameData.Miss++;
+              gameData.combo_cnt = 0;
+            } else {
+              playCollect();
+              gameData.combo_cnt++;
+              if (gameData.combo_cnt > gameData.max_combo)
+                gameData.max_combo = gameData.combo_cnt;
             }
           }
-          if (gameData.current_Issue >= gameData.Issues_num) {
-            gameData.CurrentSceneName = "result_scene";
-            resolve();
-          }
-          console.log(gameData.current_inputed);
-          if (gameData.current_Issue + 1 >= gameData.Issues_num) {
-            next_text.text = "";
-          } else {
-            next_text.text = gameData.Issues[gameData.current_Issue + 1].text;
-          }
 
-          sentetce_text.text = gameData.Issues[gameData.current_Issue].text;
-          sentetce_text.x = win_pos.x - sentetce_text.width / 2;
-          alphabet_text.text = gameData.current_inputed;
-          alphabet_text.x = win_pos.x - alphabet_text.width / 2;
-          next_text.x = win_pos.x - next_text.width / 2;
-          progressDot.x =
-            (keybord_size.width / gameData.Issues_num) *
-              scale *
-              gameData.current_Issue +
-            (app.screen.width - keybord_size.width * scale) / 2;
-
-          console.log(
-            getNextKeysOptimized(
-              gameData.Issues[gameData.current_Issue].romaji,
-              gameData.current_inputed
-            )
-          );
           if (
             getNextKeysOptimized(
               gameData.Issues[gameData.current_Issue].romaji,
@@ -254,10 +243,36 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           ) {
             gameData.current_Issue++;
             gameData.current_inputed = "";
+
+            if (gameData.current_Issue >= gameData.Issues_num) {
+              gameData.CurrentSceneName = "result_scene";
+              resolve();
+            }
           }
+          if (gameData.current_Issue + 1 >= gameData.Issues_num) {
+            next_text.text = "";
+          } else {
+            next_text.text = gameData.Issues[gameData.current_Issue + 1].text;
+          }
+          sentetce_text.text = gameData.Issues[gameData.current_Issue].text;
+          sentetce_text.x = win_pos.x - sentetce_text.width / 2;
+
+          alphabet_text.text = getRomanizedTextFromTendency(
+            gameData.Conversion,
+            gameData.Issues[gameData.current_Issue].romaji,
+            gameData.current_inputed
+          );
+          alphabet_text.x = win_pos.x - alphabet_text.width / 2;
+          next_text.x = win_pos.x - next_text.width / 2;
+          progressDot.x =
+            (keybord_size.width / gameData.Issues_num) *
+              scale *
+              gameData.current_Issue +
+            (app.screen.width - keybord_size.width * scale) / 2;
+          combo_text.text = gameData.combo_cnt;
+          combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
         } else {
           if (keyCode.code === "Space") {
-            console.log("spased");
             gameData.IsStarted = true;
 
             if (gameData.current_Issue >= gameData.Issues_num) {
@@ -284,6 +299,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 scale *
                 gameData.current_Issue +
               (app.screen.width - keybord_size.width * scale) / 2;
+            combo_text.text = gameData.combo_cnt;
+            combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
           }
         }
       }
@@ -292,6 +309,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 }
 
 import { Issue } from "./002_gameConfig";
+import { playCollect, playMiss } from "./012_soundplay";
 async function makeIssues(): Promise<void> {
   return new Promise<void>(async (resolve) => {
     let Issues: Issue[] = [];

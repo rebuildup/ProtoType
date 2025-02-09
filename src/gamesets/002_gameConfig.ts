@@ -20,6 +20,8 @@ export interface GameData {
   IsStarted: boolean;
   StartTime: number;
   Conversion: ConversionTendencies;
+  combo_cnt: number;
+  max_combo: number;
 }
 
 export const gameData: GameData = {
@@ -38,4 +40,6 @@ export const gameData: GameData = {
   IsStarted: false,
   StartTime: Date.now(),
   Conversion: [],
+  combo_cnt: 0,
+  max_combo: 0,
 };
