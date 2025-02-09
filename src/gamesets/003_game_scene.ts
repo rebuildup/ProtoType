@@ -193,7 +193,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       }, 100);
       while (gameData.CurrentSceneName == "game_scene") {
         const keyCode = await getLatestKey();
-
+        console.log(keyCode);
         if (gameData.IsStarted) {
           if (keyCode.code === "Escape") {
             gameData.CurrentSceneName = "reload_game";

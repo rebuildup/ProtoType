@@ -198,76 +198,112 @@ export function getNextKeysOptimized(
   const finalResult = nextLetters(0, 0);
   return finalResult;
 }
-
 export function getRomanizedTextFromTendency(
   tendencies: ConversionTendencies,
   readingText: string,
   currentInput: string
 ): string {
-  // Utility: ひらがなかどうかを判定する
+  // ひらがなかどうか判定
   function isHiragana(char: string): boolean {
     const code = char.charCodeAt(0);
     return code >= 0x3041 && code <= 0x3096;
   }
-  // Utility: 文字が子音かどうかを判定（※ここでは例として母音以外を子音とする）
-  function isConsonant(char: string): boolean {
-    return !"aiueo".includes(char.toLowerCase());
+  // 次の文字がナ行かどうか判定（「な」「に」「ぬ」「ね」「の」）
+  function isNextNaRow(text: string, i: number): boolean {
+    if (i + 1 >= text.length) return false;
+    const next = text[i + 1];
+    return ["な", "に", "ぬ", "ね", "の"].includes(next);
+  }
+  // 現在の出力 out が currentInput の接頭辞と一致しているかチェック
+  function prefixMatches(out: string): boolean {
+    if (out.length > currentInput.length) {
+      return currentInput === out.slice(0, currentInput.length);
+    } else {
+      return out === currentInput.slice(0, out.length);
+    }
   }
 
-  let fullRomanized = "";
-  let index = 0;
-  // 複数文字のキーを優先するため、傾向をキー長の降順にソート
-  const sortedTendencies = tendencies
-    .slice()
-    .sort((a, b) => b.key.length - a.key.length);
+  const results: string[] = [];
 
-  while (index < readingText.length) {
-    // 「っ」を検出した場合、次の変換候補の先頭文字（子音）を重ねる
-    if (readingText[index] === "っ") {
-      // 参照: addNextChild 内の isAllowDuplicateFirstLetter の考え方
-      if (index + 1 < readingText.length) {
-        // 次の位置から、該当する変換傾向を探す
-        const nextTendency = sortedTendencies.find((tendency) =>
-          readingText.startsWith(tendency.key, index + 1)
-        );
-        if (nextTendency && nextTendency.tendency.length > 0) {
-          const firstChar = nextTendency.tendency.charAt(0);
-          // 子音ならばその文字を出力（重ねる）
-          if (isConsonant(firstChar)) {
-            fullRomanized += firstChar;
-          }
+  /**
+   * 再帰関数 dfs
+   * @param i 読みテキストの現在位置
+   * @param dup 直前に「っ」があった場合、次のセグメントで先頭子音の重複を行う必要がある
+   * @param out これまでの変換結果
+   */
+  function dfs(i: number, dup: boolean, out: string): void {
+    // 現在の出力が currentInput の接頭辞と一致していなければ枝刈り
+    if (!prefixMatches(out)) return;
+
+    // 読みテキスト末尾なら候補として採用
+    if (i >= readingText.length) {
+      if (out.startsWith(currentInput)) results.push(out);
+      return;
+    }
+
+    const ch = readingText[i];
+
+    // ひらがなでない場合はそのまま出力
+    if (!isHiragana(ch)) {
+      dfs(i + 1, false, out + ch);
+      return;
+    }
+
+    // 「っ」の処理
+    if (ch === "っ") {
+      // オプション1: 次の文字の子音を重複させるためdupフラグを立てる
+      dfs(i + 1, true, out);
+      // オプション2: 固定変換候補をそのまま出力する（"ltu","xtu","ltsu","xtsu"）
+      const fixedAlternatives = ["ltu", "xtu", "ltsu", "xtsu"];
+      for (const alt of fixedAlternatives) {
+        dfs(i + 1, false, out + alt);
+      }
+      return;
+    }
+
+    // 「ん」の処理
+    if (ch === "ん") {
+      let candidates: string[];
+      // 末尾または次がナ行なら "nn" のみ
+      if (i === readingText.length - 1 || isNextNaRow(readingText, i)) {
+        candidates = ["nn"];
+      } else {
+        candidates = ["n", "nn"];
+      }
+      for (const cand of candidates) {
+        dfs(i + 1, false, out + cand);
+      }
+      return;
+    }
+
+    // 通常のひらがなについて、読みテキスト i 以降と先頭一致するすべての変換候補を試す
+    for (const t of tendencies) {
+      if (readingText.startsWith(t.key, i)) {
+        let conv = t.tendency;
+        // 直前でdupフラグが立っていれば、変換先の先頭文字を重複させる
+        if (dup && conv.length > 0) {
+          conv = conv.charAt(0) + conv;
         }
+        dfs(i + t.key.length, false, out + conv);
       }
-      index++; // 「っ」を消費して次へ
-      continue;
-    }
-
-    let matched = false;
-    // 非ひらがな文字はそのまま出力
-    if (!isHiragana(readingText[index])) {
-      fullRomanized += readingText[index];
-      index++;
-      continue;
-    }
-    // 傾向リストから、該当するキー（複合キーも含む）を探す
-    for (const tendency of sortedTendencies) {
-      if (readingText.startsWith(tendency.key, index)) {
-        fullRomanized += tendency.tendency;
-        index += tendency.key.length;
-        matched = true;
-        break;
-      }
-    }
-    // 該当する傾向が見つからなければ、その文字をそのまま出力
-    if (!matched) {
-      fullRomanized += readingText[index];
-      index++;
     }
   }
-  if (!fullRomanized.startsWith(currentInput)) {
+
+  dfs(0, false, "");
+
+  if (results.length === 0) {
     throw new Error("入力済みのテキストと変換結果が一致しません。");
   }
-  return fullRomanized;
+  // 複数候補がある場合、currentInput以降の余分な文字数が少ないものを優先して返す
+  results.sort((a, b) => {
+    const extraA = a.length - currentInput.length;
+    const extraB = b.length - currentInput.length;
+    if (extraA === extraB) {
+      return a.localeCompare(b);
+    }
+    return extraA - extraB;
+  });
+  return results[0];
 }
 
 export interface ConversionTendency {
