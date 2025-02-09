@@ -9,6 +9,9 @@ export interface GameData {
   FontFamily: string;
   KeyLayout: string;
   Score: number;
+  MaxScore: number;
+  MaxKPM: number;
+  score_extra: number;
   Accuracy: number;
   Miss: number;
   GameMode: string;
@@ -19,9 +22,13 @@ export interface GameData {
   current_inputed: string;
   IsStarted: boolean;
   StartTime: number;
+  EndTime: number;
   Conversion: ConversionTendencies;
   combo_cnt: number;
   max_combo: number;
+  total_hit_cnt: number;
+  game_failure: boolean;
+  instant_key_n: number;
 }
 
 export const gameData: GameData = {
@@ -29,6 +36,9 @@ export const gameData: GameData = {
   FontFamily: "Noto Sans JP",
   KeyLayout: "QUERTY",
   Score: 0,
+  MaxScore: 0,
+  MaxKPM: 0,
+  score_extra: 0,
   Accuracy: 100.0,
   Miss: 0,
   GameMode: "nomal",
@@ -39,7 +49,11 @@ export const gameData: GameData = {
   current_inputed: "",
   IsStarted: false,
   StartTime: Date.now(),
+  EndTime: Date.now(),
   Conversion: [],
   combo_cnt: 0,
   max_combo: 0,
+  total_hit_cnt: 0,
+  game_failure: false,
+  instant_key_n: 20,
 };

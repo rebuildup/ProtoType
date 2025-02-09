@@ -105,7 +105,7 @@ export function Keyboard(app: PIXI.Application) {
     keybords[36][0] * scale,
     keybords[36][1] * scale
   ).fill(replaceHash(settings.colorTheme.colors.MainAccent));
-  g.alpha = 0.3;
+  g.alpha = 0.2;
 
   for (let i = 0; i < keybords.length; i++) {
     g.rect(

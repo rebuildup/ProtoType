@@ -198,9 +198,6 @@ export function keyCodeToText(code: string, shift: boolean): string {
     case "Numpad9":
       output = "9";
       break;
-    case "Numpad0":
-      output = "0";
-      break;
     case "NumpadComma":
       output = ".";
       break;

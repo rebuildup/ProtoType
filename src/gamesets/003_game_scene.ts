@@ -74,7 +74,21 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     alphabet_text.x = win_pos.x - alphabet_text.width / 2;
     alphabet_text.y = win_pos.y - alphabet_text.height / 2 + 40;
+    alphabet_text.alpha = 0.6;
     app.stage.addChild(alphabet_text);
+    const alphabet_current_text = new PIXI.Text({
+      text: "",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 25,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    alphabet_current_text.x = win_pos.x - alphabet_current_text.width / 2;
+    alphabet_current_text.y = win_pos.y - alphabet_current_text.height / 2 + 40;
+    app.stage.addChild(alphabet_current_text);
+
     const next_text = new PIXI.Text({
       text: "",
       style: {
@@ -84,12 +98,13 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
+
     next_text.x = win_pos.x - next_text.width / 2;
     next_text.y = win_pos.y - next_text.height / 2 + 150;
     app.stage.addChild(next_text);
 
     const score_text = new PIXI.Text({
-      text: "30000",
+      text: "",
       style: {
         fontFamily: gameData.FontFamily,
         fontSize: 25,
@@ -102,7 +117,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     app.stage.addChild(score_text);
 
     const combo_text = new PIXI.Text({
-      text: "0",
+      text: "",
       style: {
         fontFamily: gameData.FontFamily,
         fontSize: 40,
@@ -115,7 +130,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     app.stage.addChild(combo_text);
 
     const kpm_text = new PIXI.Text({
-      text: "5.2",
+      text: "",
       style: {
         fontFamily: gameData.FontFamily,
         fontSize: 40,
@@ -180,12 +195,46 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
+    let keyTimestamps: number[] = [];
+
+    function recordKey(): void {
+      const now: number = Date.now();
+      keyTimestamps.push(now);
+      if (keyTimestamps.length > gameData.instant_key_n) {
+        keyTimestamps.shift();
+      }
+    }
+
+    function getTypingSpeed(): number {
+      if (keyTimestamps.length < gameData.instant_key_n) {
+        return -1;
+      }
+      let totalDelta = 0;
+      for (let i = 0; i < gameData.instant_key_n - 1; i++) {
+        totalDelta += keyTimestamps[i + 1] - keyTimestamps[i];
+      }
+      const avgDelta: number = totalDelta / (gameData.instant_key_n - 1);
+
+      if (avgDelta === 0) {
+        return Infinity;
+      }
+
+      return 1000 / avgDelta;
+    }
+
     gameData.IsStarted = false;
     load_text.x = win_pos.x - load_text.width / 2;
     load_text.y = win_pos.y - load_text.height / 2 - 300;
     gameData.combo_cnt = 0;
+    gameData.total_hit_cnt = 0;
+    gameData.Miss = 0;
+    gameData.game_failure = false;
     app.stage.addChild(load_text);
     gameData.current_inputed = "";
+    gameData.score_extra = 0;
+    gameData.Score = 0;
+    gameData.MaxScore = 0;
+    gameData.MaxKPM = 0;
     setTimeout(async () => {
       await makeIssues();
       setTimeout(() => {
@@ -197,13 +246,14 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         if (gameData.IsStarted) {
           if (keyCode.code === "Escape") {
             gameData.CurrentSceneName = "reload_game";
+            gameData.EndTime = Date.now();
             resolve();
           }
           let collectkeys = getNextKeysOptimized(
             gameData.Issues[gameData.current_Issue].romaji,
             gameData.current_inputed
           );
-          console.log(collectkeys);
+          //console.log(collectkeys);
           if (keyCodeToText(keyCode.code, keyCode.shift) != "") {
             let Ismiss = true;
             for (let i = 0; i < collectkeys.length; i++) {
@@ -225,18 +275,38 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               }
             }
             if (Ismiss) {
-              console.log("miss");
-              console.log(keyCode);
+              //console.log("miss");
+              //console.log(keyCode);
               playMiss();
               gameData.Miss++;
               gameData.combo_cnt = 0;
+              gameData.total_hit_cnt++;
             } else {
-              console.log("collect");
-              console.log(keyCode);
+              //console.log("collect");
+              //console.log(keyCode);
               playCollect();
               gameData.combo_cnt++;
               if (gameData.combo_cnt > gameData.max_combo)
                 gameData.max_combo = gameData.combo_cnt;
+              gameData.total_hit_cnt++;
+              recordKey();
+              if (isFibonacci(gameData.total_hit_cnt - gameData.Miss)) {
+                gameData.score_extra += gameData.combo_cnt * 10;
+              }
+              let tmp_kpm =
+                ((gameData.total_hit_cnt - gameData.Miss) /
+                  ((Date.now() - gameData.StartTime) / 1000)) *
+                60;
+              gameData.Score =
+                tmp_kpm *
+                  (1 - gameData.Miss / gameData.total_hit_cnt) *
+                  (1 - gameData.Miss / gameData.total_hit_cnt) *
+                  (1 - gameData.Miss / gameData.total_hit_cnt) *
+                  100 +
+                gameData.score_extra;
+              if (gameData.Score > gameData.MaxScore)
+                gameData.MaxScore = gameData.Score;
+              if (tmp_kpm > gameData.MaxKPM) gameData.MaxKPM = tmp_kpm;
             }
           }
 
@@ -251,6 +321,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
             if (gameData.current_Issue >= gameData.Issues_num) {
               gameData.CurrentSceneName = "result_scene";
+              gameData.EndTime = Date.now();
               resolve();
             }
           }
@@ -268,17 +339,57 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             gameData.current_inputed
           );
           alphabet_text.x = win_pos.x - alphabet_text.width / 2;
+          alphabet_current_text.text = gameData.current_inputed;
+          alphabet_current_text.x = win_pos.x - alphabet_text.width / 2;
           next_text.x = win_pos.x - next_text.width / 2;
           progressDot.x =
             (keybord_size.width / gameData.Issues_num) *
               scale *
               gameData.current_Issue +
             (app.screen.width - keybord_size.width * scale) / 2;
-          combo_text.text = gameData.combo_cnt;
+          if (gameData.combo_cnt == 0) {
+            combo_text.text = "";
+          } else {
+            combo_text.text = gameData.combo_cnt;
+          }
+
           combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
+
+          //console.log(gameData.Miss / gameData.total_hit_cnt);
+          if (gameData.total_hit_cnt > 5) {
+            accuracyLine.clear();
+            accuracyLine.moveTo(
+              win_pos.x -
+                ((keybord_size.width * scale) / 2) *
+                  (1 - gameData.Miss / gameData.total_hit_cnt),
+              win_pos.y - 250
+            );
+            accuracyLine.lineTo(
+              win_pos.x +
+                ((keybord_size.width * scale) / 2) *
+                  (1 - gameData.Miss / gameData.total_hit_cnt),
+              win_pos.y - 250
+            );
+            accuracyLine.stroke({
+              width: 4,
+              color: replaceHash(settings.colorTheme.colors.MainColor),
+              alpha: 1,
+            });
+          }
+          score_text.text = gameData.Score.toFixed(0);
+          score_text.x = win_pos.x - score_text.width / 2;
+          if (getTypingSpeed() == -1) {
+            kpm_text.text = "";
+          } else {
+            kpm_text.text = getTypingSpeed().toFixed(2);
+          }
+
+          kpm_text.x =
+            win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
         } else {
           if (keyCode.code === "Space") {
             gameData.IsStarted = true;
+            gameData.StartTime = Date.now();
 
             if (gameData.current_Issue >= gameData.Issues_num) {
               gameData.CurrentSceneName = "result_scene";
@@ -298,14 +409,36 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               gameData.current_inputed
             );
             alphabet_text.x = win_pos.x - alphabet_text.width / 2;
+            alphabet_current_text.text = gameData.current_inputed;
+            alphabet_current_text.x =
+              win_pos.x - alphabet_current_text.width / 2;
             next_text.x = win_pos.x - next_text.width / 2;
             progressDot.x =
               (keybord_size.width / gameData.Issues_num) *
                 scale *
                 gameData.current_Issue +
               (app.screen.width - keybord_size.width * scale) / 2;
-            combo_text.text = gameData.combo_cnt;
+            combo_text.text = "";
             combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
+            accuracyLine.clear();
+            accuracyLine.moveTo(
+              win_pos.x - (keybord_size.width * scale) / 2,
+              win_pos.y - 250
+            );
+            accuracyLine.lineTo(
+              win_pos.x + (keybord_size.width * scale) / 2,
+              win_pos.y - 250
+            );
+            accuracyLine.stroke({
+              width: 4,
+              color: replaceHash(settings.colorTheme.colors.MainColor),
+              alpha: 1,
+            });
+            kpm_text.text = "";
+            kpm_text.x =
+              win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
+            score_text.text = "";
+            score_text.x = win_pos.x - score_text.width / 2;
           }
         }
       }
@@ -335,7 +468,7 @@ async function makeIssues(): Promise<void> {
 
 const example = [
   { text: "レンタルひらがな「ぬ」", hiragana: "れんたるひらがな[ぬ]" },
-  { text: "嘘だよーん", hiragana: "うそだよ-ん" },
+  { text: "青眼の白龍", hiragana: "ぶる-あいずほわいとどらごん" },
   {
     text: "ゴッホより普通にラッセンが好き",
     hiragana: "ごっほよりふつうにらっせんがすき",
@@ -366,3 +499,16 @@ const example = [
   { text: "Xをフォローしといてね", hiragana: "Xをふぉろ-しといてね" },
   { text: "青眼の白龍", hiragana: "ぶるーあいずほわいとどらごん" },
 ];
+
+function isPerfectSquare(x: number): boolean {
+  // Calculate the integer square root and check if its square equals x
+  const s = Math.floor(Math.sqrt(x));
+  return s * s === x;
+}
+
+function isFibonacci(n: number): boolean {
+  // Negative numbers are not Fibonacci numbers
+  if (n < 0) return false;
+  // Check if one of (5*n*n + 4) or (5*n*n - 4) is a perfect square
+  return isPerfectSquare(5 * n * n + 4) || isPerfectSquare(5 * n * n - 4);
+}
