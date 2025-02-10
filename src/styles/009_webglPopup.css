@@ -7,7 +7,7 @@
   width: (720) px;
   height: (600) px;
   background-color: var(--MainBG);
-  border: 3px solid var(--MainColor);
+  border: 2px solid var(--MainColor);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }

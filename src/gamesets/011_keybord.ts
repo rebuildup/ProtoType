@@ -1,3 +1,9 @@
+import * as PIXI from "pixi.js";
+import { settings } from "../SiteInterface";
+import { replaceHash } from "./001_game_master";
+import { GlowFilter } from "pixi-filters";
+import gsap from "gsap";
+
 export const keybords = [
   [26, 28, 0, 0],
   [26, 28, 38, 0],
@@ -67,54 +73,75 @@ export const keybords = [
   [48, 28, 510, 152],
 ];
 
-import * as PIXI from "pixi.js";
-
-import { settings } from "../SiteInterface";
-import { replaceHash } from "./001_game_master";
 export const keybord_size = { width: 558, height: 180 };
 export const scale = 2;
 
 export function Keyboard(app: PIXI.Application) {
-  const keybord_pos = { x: app.screen.width / 2, y: app.screen.height - 300 };
+  const keybord_pos = {
+    x: app.screen.width / 2,
+    y: app.screen.height - 320,
+  };
+  const glowFilter = new GlowFilter({
+    distance: 28,
+    outerStrength: 20,
+    innerStrength: 0,
+    color: 0xffffff,
+    quality: 0.5,
+    alpha: 0.02,
+  });
 
-  const g = new PIXI.Graphics();
-  app.stage.addChild(g);
+  // キー全体をまとめるコンテナ
+  const container = new PIXI.Container();
+  container.alpha = 0.2;
+  container.filters = [glowFilter];
+  app.stage.addChild(container);
 
-  g.rect(
-    keybords[33][2] * scale -
-      (keybord_size.width * scale) / 2 +
-      1 +
-      keybord_pos.x,
-    keybords[33][3] * scale -
-      (keybord_size.height * scale) / 2 +
-      1 +
-      keybord_pos.y,
-    keybords[33][0] * scale,
-    keybords[33][1] * scale
-  ).fill(replaceHash(settings.colorTheme.colors.MainAccent));
-
-  g.rect(
-    keybords[36][2] * scale -
-      (keybord_size.width * scale) / 2 +
-      1 +
-      keybord_pos.x,
-    keybords[36][3] * scale -
-      (keybord_size.height * scale) / 2 +
-      1 +
-      keybord_pos.y,
-    keybords[36][0] * scale,
-    keybords[36][1] * scale
-  ).fill(replaceHash(settings.colorTheme.colors.MainAccent));
-  g.alpha = 0.2;
+  const offsetY = 100; // 各キーの初期位置を下にずらすオフセット
+  const delayIncrement = 0.02; // キーごとに遅延させる秒数
 
   for (let i = 0; i < keybords.length; i++) {
-    g.rect(
-      keybords[i][2] * scale - (keybord_size.width * scale) / 2 + keybord_pos.x,
-      keybords[i][3] * scale -
-        (keybord_size.height * scale) / 2 +
-        keybord_pos.y,
-      keybords[i][0] * scale,
-      keybords[i][1] * scale
-    ).fill(replaceHash(settings.colorTheme.colors.MainColor));
+    const [w, h, keyX, keyY] = keybords[i];
+
+    // 各キーをまとめるコンテナを作成
+    const keyContainer = new PIXI.Container();
+    // 初期状態は透明にする
+    keyContainer.alpha = 0;
+
+    // 新しいチェーン可能なAPIを使用して基本のキー矩形を描画
+    const baseKey = new PIXI.Graphics();
+    baseKey
+      .rect(0, 0, w * scale, h * scale)
+      .fill(replaceHash(settings.colorTheme.colors.MainColor));
+    keyContainer.addChild(baseKey);
+
+    // 特定のキー（例：インデックス33, 36）の場合、アクセント矩形を追加
+    if (i === 33 || i === 36) {
+      const accentKey = new PIXI.Graphics();
+      accentKey
+        .rect(1, 1, w * scale, h * scale)
+        .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+      keyContainer.addChild(accentKey);
+    }
+
+    // キーの最終位置を計算
+    const finalX =
+      keyX * scale - (keybord_size.width * scale) / 2 + keybord_pos.x;
+    const finalY =
+      keyY * scale - (keybord_size.height * scale) / 2 + keybord_pos.y;
+
+    // 位置設定は.xと.yを直接使用
+    keyContainer.x = finalX;
+    keyContainer.y = finalY + offsetY;
+
+    container.addChild(keyContainer);
+
+    // gsapにより、キーを上に移動させながらフェードイン
+    gsap.to(keyContainer, {
+      duration: 0.5,
+      y: finalY,
+      alpha: 1,
+      ease: "power2.out",
+      delay: i * delayIncrement,
+    });
   }
 }

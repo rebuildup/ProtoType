@@ -29,6 +29,7 @@ export interface GameData {
   total_hit_cnt: number;
   game_failure: boolean;
   instant_key_n: number;
+  App_Filters: any[];
 }
 
 export const gameData: GameData = {
@@ -56,4 +57,5 @@ export const gameData: GameData = {
   total_hit_cnt: 0,
   game_failure: false,
   instant_key_n: 20,
+  App_Filters: [],
 };

@@ -13,7 +13,7 @@ export function opening_scene(app: PIXI.Application): Promise<void> {
     function showNextText() {
       app.stage.removeChildren();
       if (i == 0) {
-        console.log("opening終了");
+        //console.log("opening終了");
         gameData.CurrentSceneName = "game_select";
         resolve();
         return;

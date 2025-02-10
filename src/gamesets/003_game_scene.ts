@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import gsap from "gsap";
 import { replaceHash } from "./001_game_master";
 import { gameData } from "./002_gameConfig";
 import { Keyboard, keybord_size, scale } from "./011_keybord";
@@ -11,13 +12,29 @@ import {
   getNextKeysOptimized,
   getRomanizedTextFromTendency,
 } from "./008_generate_pattern";
+import { GlowFilter } from "pixi-filters";
 
+const anim_max_width = 100;
 export async function game_scene(app: PIXI.Application): Promise<void> {
   return new Promise(async (resolve) => {
     app.stage.removeChildren();
 
-    console.log(gameData.KeyLayout);
-    console.log(settings.keyLayout);
+    const BG_plane = new PIXI.Graphics();
+    app.stage.addChild(BG_plane);
+    BG_plane.rect(0, 0, app.screen.width, app.screen.height).fill(
+      replaceHash(settings.colorTheme.colors.MainBG)
+    );
+    //console.log(gameData.KeyLayout);
+    //console.log(settings.keyLayout);
+
+    const glowFilter = new GlowFilter({
+      distance: 28, // Glow distance
+      outerStrength: 20, // Outer glow strength
+      innerStrength: 0, // Inner glow strength
+      color: 0xffffff, // Glow color
+      quality: 0.4,
+      alpha: 0.02, // Glow quality
+    });
 
     const win_pos = { x: app.screen.width / 2, y: app.screen.height / 2 };
 
@@ -26,7 +43,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     switch (gameData.GameMode) {
       case "nomal":
         keybord_flag = true;
-        win_pos.y = app.screen.height / 2 - 200;
+        win_pos.y = app.screen.height / 2 - 210;
 
         gameData.Issues_num = 15;
         gameData.current_Issue = 0;
@@ -38,11 +55,11 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         break;
       case "exact":
         keybord_flag = true;
-        win_pos.y = app.screen.height / 2 - 200;
+        win_pos.y = app.screen.height / 2 - 210;
         break;
       case "long":
         keybord_flag = true;
-        win_pos.y = app.screen.height / 2 - 200;
+        win_pos.y = app.screen.height / 2 - 210;
         break;
       default:
         console.log("gamemode nothing");
@@ -62,6 +79,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
     sentetce_text.x = win_pos.x - sentetce_text.width / 2;
     sentetce_text.y = win_pos.y - sentetce_text.height / 2 - 2;
+    sentetce_text.filters = glowFilter;
     app.stage.addChild(sentetce_text);
     const alphabet_text = new PIXI.Text({
       text: "space to start",
@@ -75,6 +93,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     alphabet_text.x = win_pos.x - alphabet_text.width / 2;
     alphabet_text.y = win_pos.y - alphabet_text.height / 2 + 40;
     alphabet_text.alpha = 0.6;
+
     app.stage.addChild(alphabet_text);
     const alphabet_current_text = new PIXI.Text({
       text: "",
@@ -87,6 +106,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     alphabet_current_text.x = win_pos.x - alphabet_current_text.width / 2;
     alphabet_current_text.y = win_pos.y - alphabet_current_text.height / 2 + 40;
+    alphabet_current_text.filters = glowFilter;
     app.stage.addChild(alphabet_current_text);
 
     const next_text = new PIXI.Text({
@@ -101,6 +121,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
     next_text.x = win_pos.x - next_text.width / 2;
     next_text.y = win_pos.y - next_text.height / 2 + 150;
+    next_text.filters = glowFilter;
     app.stage.addChild(next_text);
 
     const score_text = new PIXI.Text({
@@ -114,6 +135,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     score_text.x = win_pos.x - score_text.width / 2;
     score_text.y = win_pos.y - score_text.height / 2 - 200;
+    score_text.filters = glowFilter;
     app.stage.addChild(score_text);
 
     const combo_text = new PIXI.Text({
@@ -127,6 +149,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
     combo_text.y = win_pos.y - combo_text.height / 2;
+    combo_text.filters = glowFilter;
     app.stage.addChild(combo_text);
 
     const kpm_text = new PIXI.Text({
@@ -140,6 +163,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     kpm_text.x = win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
     kpm_text.y = win_pos.y - kpm_text.height / 2;
+    kpm_text.filters = glowFilter;
     app.stage.addChild(kpm_text);
 
     const accuracyLine = new PIXI.Graphics();
@@ -156,6 +180,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       color: replaceHash(settings.colorTheme.colors.MainColor),
       alpha: 1,
     });
+    accuracyLine.filters = glowFilter;
     app.stage.addChild(accuracyLine);
     const progressLine = new PIXI.Graphics();
     progressLine.moveTo(
@@ -171,6 +196,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       color: replaceHash(settings.colorTheme.colors.MainColor),
       alpha: 1,
     });
+    progressLine.filters = glowFilter;
     app.stage.addChild(progressLine);
     const progressDot = new PIXI.Graphics();
 
@@ -181,6 +207,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       width: 4,
       color: replaceHash(settings.colorTheme.colors.MainColor),
     });
+    progressDot.filters = glowFilter;
     app.stage.addChild(progressDot);
 
     if (keybord_flag) {
@@ -195,6 +222,93 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
+
+    const frame_left = new PIXI.Graphics();
+    app.stage.addChild(frame_left);
+    frame_left
+      .rect(0, 0, anim_max_width, app.screen.height)
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    frame_left.x = -anim_max_width;
+    frame_left.filters = glowFilter;
+
+    const frame_right = new PIXI.Graphics();
+    app.stage.addChild(frame_right);
+    frame_right
+      .rect(0, 0, anim_max_width, app.screen.height)
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    frame_right.x = app.screen.width;
+    frame_right.filters = glowFilter;
+
+    const frame_top = new PIXI.Graphics();
+    app.stage.addChild(frame_top);
+    frame_top
+      .rect(0, 0, app.screen.width, anim_max_width)
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    frame_top.y = -anim_max_width;
+    frame_top.filters = glowFilter;
+
+    const frame_bottom = new PIXI.Graphics();
+    app.stage.addChild(frame_bottom);
+    frame_bottom
+      .rect(0, 0, app.screen.width, anim_max_width)
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    frame_bottom.y = app.screen.height;
+    frame_bottom.filters = glowFilter;
+
+    function frame_anim(kpm: number) {
+      let ratio = 0;
+      if (kpm != -1) {
+        ratio = kpm / 10;
+      }
+      let offset = anim_max_width * ratio;
+      let rect_alphas = kpm < 10 ? 0.2 : 0.6;
+      frame_left.alpha = rect_alphas;
+      frame_right.alpha = rect_alphas;
+      frame_top.alpha = rect_alphas;
+      frame_bottom.alpha = rect_alphas;
+
+      gsap.fromTo(
+        frame_left,
+        { x: offset - anim_max_width, y: offset },
+        {
+          x: -anim_max_width,
+          y: 0,
+          duration: 1,
+          ease: "power2.out",
+        }
+      );
+      gsap.fromTo(
+        frame_right,
+        { x: app.screen.width - offset, y: -offset },
+        {
+          x: app.screen.width,
+          y: 0,
+          duration: 1,
+          ease: "power2.out",
+        }
+      );
+      gsap.fromTo(
+        frame_top,
+        { x: -offset, y: offset - anim_max_width },
+        {
+          x: 0,
+          y: -anim_max_width,
+          duration: 1,
+          ease: "power2.out",
+        }
+      );
+      gsap.fromTo(
+        frame_bottom,
+        { x: offset, y: app.screen.height - offset },
+        {
+          x: 0,
+          y: app.screen.height,
+          duration: 1,
+          ease: "power2.out",
+        }
+      );
+    }
+
     let keyTimestamps: number[] = [];
 
     function recordKey(): void {
@@ -241,159 +355,95 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         app.stage.removeChild(load_text);
       }, 100);
       while (gameData.CurrentSceneName == "game_scene") {
-        const keyCode = await getLatestKey();
+        try {
+          const keyCode = await getLatestKey();
 
-        if (gameData.IsStarted) {
-          if (keyCode.code === "Escape") {
-            gameData.CurrentSceneName = "reload_game";
-            gameData.EndTime = Date.now();
-            resolve();
-          }
-          let collectkeys = getNextKeysOptimized(
-            gameData.Issues[gameData.current_Issue].romaji,
-            gameData.current_inputed
-          );
-          //console.log(collectkeys);
-          if (keyCodeToText(keyCode.code, keyCode.shift) != "") {
-            let Ismiss = true;
-            for (let i = 0; i < collectkeys.length; i++) {
-              if (
-                keyCodeToText(keyCode.code, keyCode.shift) ==
-                collectkeys[i].letter
-              ) {
-                Ismiss = false;
-                gameData.current_inputed =
-                  gameData.current_inputed +
-                  keyCodeToText(keyCode.code, keyCode.shift);
-                const tendency = gameData.Conversion.find(
-                  (t) => t.key === collectkeys[i].flag.configKey
-                );
-                if (tendency) {
-                  tendency.tendency = String(collectkeys[i].flag.origin);
-                }
-                break;
-              }
-            }
-            if (Ismiss) {
-              //console.log("miss");
-              //console.log(keyCode);
-              playMiss();
-              gameData.Miss++;
-              gameData.combo_cnt = 0;
-              gameData.total_hit_cnt++;
-            } else {
-              //console.log("collect");
-              //console.log(keyCode);
-              playCollect();
-              gameData.combo_cnt++;
-              if (gameData.combo_cnt > gameData.max_combo)
-                gameData.max_combo = gameData.combo_cnt;
-              gameData.total_hit_cnt++;
-              recordKey();
-              if (isFibonacci(gameData.total_hit_cnt - gameData.Miss)) {
-                gameData.score_extra += gameData.combo_cnt * 10;
-              }
-              let tmp_kpm =
-                ((gameData.total_hit_cnt - gameData.Miss) /
-                  ((Date.now() - gameData.StartTime) / 1000)) *
-                60;
-              gameData.Score =
-                tmp_kpm *
-                  (1 - gameData.Miss / gameData.total_hit_cnt) *
-                  (1 - gameData.Miss / gameData.total_hit_cnt) *
-                  (1 - gameData.Miss / gameData.total_hit_cnt) *
-                  100 +
-                gameData.score_extra;
-              if (gameData.Score > gameData.MaxScore)
-                gameData.MaxScore = gameData.Score;
-              if (tmp_kpm > gameData.MaxKPM) gameData.MaxKPM = tmp_kpm;
-            }
-          }
-
-          if (
-            getNextKeysOptimized(
-              gameData.Issues[gameData.current_Issue].romaji,
-              gameData.current_inputed
-            ).length == 0
-          ) {
-            gameData.current_Issue++;
-            gameData.current_inputed = "";
-
-            if (gameData.current_Issue >= gameData.Issues_num) {
-              gameData.CurrentSceneName = "result_scene";
+          if (gameData.IsStarted) {
+            if (keyCode.code === "Escape") {
+              gameData.CurrentSceneName = "reload_game";
               gameData.EndTime = Date.now();
               resolve();
             }
-          }
-          if (gameData.current_Issue + 1 >= gameData.Issues_num) {
-            next_text.text = "";
-          } else {
-            next_text.text = gameData.Issues[gameData.current_Issue + 1].text;
-          }
-          sentetce_text.text = gameData.Issues[gameData.current_Issue].text;
-          sentetce_text.x = win_pos.x - sentetce_text.width / 2;
-
-          alphabet_text.text = getRomanizedTextFromTendency(
-            gameData.Conversion,
-            gameData.Issues[gameData.current_Issue].romaji,
-            gameData.current_inputed
-          );
-          alphabet_text.x = win_pos.x - alphabet_text.width / 2;
-          alphabet_current_text.text = gameData.current_inputed;
-          alphabet_current_text.x = win_pos.x - alphabet_text.width / 2;
-          next_text.x = win_pos.x - next_text.width / 2;
-          progressDot.x =
-            (keybord_size.width / gameData.Issues_num) *
-              scale *
-              gameData.current_Issue +
-            (app.screen.width - keybord_size.width * scale) / 2;
-          if (gameData.combo_cnt == 0) {
-            combo_text.text = "";
-          } else {
-            combo_text.text = gameData.combo_cnt;
-          }
-
-          combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
-
-          //console.log(gameData.Miss / gameData.total_hit_cnt);
-          if (gameData.total_hit_cnt > 5) {
-            accuracyLine.clear();
-            accuracyLine.moveTo(
-              win_pos.x -
-                ((keybord_size.width * scale) / 2) *
-                  (1 - gameData.Miss / gameData.total_hit_cnt),
-              win_pos.y - 250
+            let collectkeys = getNextKeysOptimized(
+              gameData.Issues[gameData.current_Issue].romaji,
+              gameData.current_inputed
             );
-            accuracyLine.lineTo(
-              win_pos.x +
-                ((keybord_size.width * scale) / 2) *
-                  (1 - gameData.Miss / gameData.total_hit_cnt),
-              win_pos.y - 250
-            );
-            accuracyLine.stroke({
-              width: 4,
-              color: replaceHash(settings.colorTheme.colors.MainColor),
-              alpha: 1,
-            });
-          }
-          score_text.text = gameData.Score.toFixed(0);
-          score_text.x = win_pos.x - score_text.width / 2;
-          if (getTypingSpeed() == -1) {
-            kpm_text.text = "";
-          } else {
-            kpm_text.text = getTypingSpeed().toFixed(2);
-          }
+            //console.log(collectkeys);
+            if (keyCodeToText(keyCode.code, keyCode.shift) != "") {
+              let Ismiss = true;
+              for (let i = 0; i < collectkeys.length; i++) {
+                if (
+                  keyCodeToText(keyCode.code, keyCode.shift) ==
+                  collectkeys[i].letter
+                ) {
+                  Ismiss = false;
+                  gameData.current_inputed =
+                    gameData.current_inputed +
+                    keyCodeToText(keyCode.code, keyCode.shift);
+                  const tendency = gameData.Conversion.find(
+                    (t) => t.key === collectkeys[i].flag.configKey
+                  );
+                  if (tendency) {
+                    tendency.tendency = String(collectkeys[i].flag.origin);
+                  }
+                  break;
+                }
+              }
+              if (Ismiss) {
+                //console.log("miss");
+                //console.log(keyCode);
+                playMiss();
+                filterflash(app);
+                gameData.Miss++;
+                gameData.combo_cnt = 0;
+                gameData.total_hit_cnt++;
+              } else {
+                //console.log("collect");
+                //console.log(keyCode);
+                playCollect();
+                frame_anim(getTypingSpeed());
+                gameData.combo_cnt++;
+                if (gameData.combo_cnt > gameData.max_combo)
+                  gameData.max_combo = gameData.combo_cnt;
+                gameData.total_hit_cnt++;
+                recordKey();
+                if (
+                  isFibonacci(gameData.combo_cnt) &&
+                  gameData.combo_cnt > 20
+                ) {
+                  gameData.score_extra += gameData.combo_cnt * 10;
+                }
+                let tmp_kpm =
+                  ((gameData.total_hit_cnt - gameData.Miss) /
+                    ((Date.now() - gameData.StartTime) / 1000)) *
+                  60;
+                gameData.Score =
+                  tmp_kpm *
+                    (1 - gameData.Miss / gameData.total_hit_cnt) *
+                    (1 - gameData.Miss / gameData.total_hit_cnt) *
+                    (1 - gameData.Miss / gameData.total_hit_cnt) *
+                    100 +
+                  gameData.score_extra;
+                if (gameData.Score > gameData.MaxScore)
+                  gameData.MaxScore = gameData.Score;
+                if (tmp_kpm > gameData.MaxKPM) gameData.MaxKPM = tmp_kpm;
+              }
+            }
 
-          kpm_text.x =
-            win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
-        } else {
-          if (keyCode.code === "Space") {
-            gameData.IsStarted = true;
-            gameData.StartTime = Date.now();
+            if (
+              getNextKeysOptimized(
+                gameData.Issues[gameData.current_Issue].romaji,
+                gameData.current_inputed
+              ).length == 0
+            ) {
+              gameData.current_Issue++;
+              gameData.current_inputed = "";
 
-            if (gameData.current_Issue >= gameData.Issues_num) {
-              gameData.CurrentSceneName = "result_scene";
-              resolve();
+              if (gameData.current_Issue >= gameData.Issues_num) {
+                gameData.CurrentSceneName = "result_scene";
+                gameData.EndTime = Date.now();
+                resolve();
+              }
             }
             if (gameData.current_Issue + 1 >= gameData.Issues_num) {
               next_text.text = "";
@@ -410,36 +460,112 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             );
             alphabet_text.x = win_pos.x - alphabet_text.width / 2;
             alphabet_current_text.text = gameData.current_inputed;
-            alphabet_current_text.x =
-              win_pos.x - alphabet_current_text.width / 2;
+            alphabet_current_text.x = win_pos.x - alphabet_text.width / 2;
             next_text.x = win_pos.x - next_text.width / 2;
             progressDot.x =
               (keybord_size.width / gameData.Issues_num) *
                 scale *
                 gameData.current_Issue +
               (app.screen.width - keybord_size.width * scale) / 2;
-            combo_text.text = "";
+            if (gameData.combo_cnt == 0) {
+              combo_text.text = "";
+            } else {
+              combo_text.text = gameData.combo_cnt;
+            }
+
             combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
-            accuracyLine.clear();
-            accuracyLine.moveTo(
-              win_pos.x - (keybord_size.width * scale) / 2,
-              win_pos.y - 250
-            );
-            accuracyLine.lineTo(
-              win_pos.x + (keybord_size.width * scale) / 2,
-              win_pos.y - 250
-            );
-            accuracyLine.stroke({
-              width: 4,
-              color: replaceHash(settings.colorTheme.colors.MainColor),
-              alpha: 1,
-            });
-            kpm_text.text = "";
+
+            //console.log(gameData.Miss / gameData.total_hit_cnt);
+            if (gameData.total_hit_cnt > 5) {
+              accuracyLine.clear();
+              accuracyLine.moveTo(
+                win_pos.x -
+                  ((keybord_size.width * scale) / 2) *
+                    (1 - gameData.Miss / gameData.total_hit_cnt),
+                win_pos.y - 250
+              );
+              accuracyLine.lineTo(
+                win_pos.x +
+                  ((keybord_size.width * scale) / 2) *
+                    (1 - gameData.Miss / gameData.total_hit_cnt),
+                win_pos.y - 250
+              );
+              accuracyLine.stroke({
+                width: 4,
+                color: replaceHash(settings.colorTheme.colors.MainColor),
+                alpha: 1,
+              });
+            }
+            score_text.text = gameData.Score.toFixed(0);
+            score_text.x = win_pos.x - score_text.width / 2;
+            if (getTypingSpeed() == -1) {
+              kpm_text.text = "";
+            } else {
+              kpm_text.text = getTypingSpeed().toFixed(2);
+            }
+
             kpm_text.x =
               win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
-            score_text.text = "";
-            score_text.x = win_pos.x - score_text.width / 2;
+          } else {
+            if (keyCode.code === "Space") {
+              gameData.IsStarted = true;
+              gameData.StartTime = Date.now();
+
+              if (gameData.current_Issue >= gameData.Issues_num) {
+                gameData.CurrentSceneName = "result_scene";
+                resolve();
+              }
+              if (gameData.current_Issue + 1 >= gameData.Issues_num) {
+                next_text.text = "";
+              } else {
+                next_text.text =
+                  gameData.Issues[gameData.current_Issue + 1].text;
+              }
+              sentetce_text.text = gameData.Issues[gameData.current_Issue].text;
+              sentetce_text.x = win_pos.x - sentetce_text.width / 2;
+
+              alphabet_text.text = getRomanizedTextFromTendency(
+                gameData.Conversion,
+                gameData.Issues[gameData.current_Issue].romaji,
+                gameData.current_inputed
+              );
+              alphabet_text.x = win_pos.x - alphabet_text.width / 2;
+              alphabet_current_text.text = gameData.current_inputed;
+              alphabet_current_text.x =
+                win_pos.x - alphabet_current_text.width / 2;
+              next_text.x = win_pos.x - next_text.width / 2;
+              progressDot.x =
+                (keybord_size.width / gameData.Issues_num) *
+                  scale *
+                  gameData.current_Issue +
+                (app.screen.width - keybord_size.width * scale) / 2;
+              combo_text.text = "";
+              combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
+              accuracyLine.clear();
+              accuracyLine.moveTo(
+                win_pos.x - (keybord_size.width * scale) / 2,
+                win_pos.y - 250
+              );
+              accuracyLine.lineTo(
+                win_pos.x + (keybord_size.width * scale) / 2,
+                win_pos.y - 250
+              );
+              accuracyLine.stroke({
+                width: 4,
+                color: replaceHash(settings.colorTheme.colors.MainColor),
+                alpha: 1,
+              });
+              kpm_text.text = "";
+              kpm_text.x =
+                win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
+              score_text.text = "";
+              score_text.x = win_pos.x - score_text.width / 2;
+            }
           }
+        } catch (error) {
+          gameData.CurrentSceneName = "error_scene";
+          gameData.EndTime = Date.now();
+          resolve();
         }
       }
     }, 100);
@@ -511,4 +637,17 @@ function isFibonacci(n: number): boolean {
   if (n < 0) return false;
   // Check if one of (5*n*n + 4) or (5*n*n - 4) is a perfect square
   return isPerfectSquare(5 * n * n + 4) || isPerfectSquare(5 * n * n - 4);
+}
+import { ColorMatrixFilter } from "pixi.js";
+function filterflash(app: PIXI.Application) {
+  const colorMatrix = new ColorMatrixFilter();
+  colorMatrix.negative(true); // Enable negative effect
+
+  // Retrieve the always-on GlowFilter from gameData and add the negative filter on top
+  app.stage.filters = [colorMatrix];
+
+  // After 200ms, remove the negative effect while keeping the glow filter active
+  setTimeout(() => {
+    app.stage.filters = [];
+  }, 200);
 }

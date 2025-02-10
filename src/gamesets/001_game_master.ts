@@ -11,6 +11,7 @@ import { game_select } from "./004_game_select";
 import { setting_scene } from "./007_setting_scene";
 import { result_scene } from "./006_result_scene";
 import { reload_game } from "./016_reload_game";
+import { error_scene } from "./017_error_scene";
 
 import { settings } from "../SiteInterface";
 import { fetchTexts /*, postPlayData */ } from "./010_APIget";
@@ -68,6 +69,9 @@ export async function initializeGame(app: PIXI.Application) {
       case "reload_game":
         playCollect();
         await reload_game(app);
+        break;
+      case "error_scene":
+        await error_scene(app);
         break;
       default:
         gameData.CurrentSceneName = "exit";
