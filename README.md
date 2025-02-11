@@ -7,5 +7,6 @@ ProtoType はタイピングゲームです。
 ```
 npm install
 npm install pixi.js
-npm install axios
+npm install pixi-filters
+npm install gsap
 ```

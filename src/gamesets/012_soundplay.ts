@@ -4,7 +4,6 @@ import miss_Sound from "../assets/SE/miss.wav";
 export function playAudio(url: string, volume: number = 1.0): Promise<void> {
   return new Promise((resolve, reject) => {
     const audio = new Audio(url);
-    // ここで音量を設定（例: 0.5 は50%の音量）
     audio.volume = volume;
 
     audio.oncanplaythrough = () => {

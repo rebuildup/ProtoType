@@ -261,7 +261,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         ratio = kpm / 10;
       }
       let offset = anim_max_width * ratio;
-      let rect_alphas = kpm < 10 ? 0.2 : 0.6;
+      let rect_alphas = kpm < 10 ? 0.4 : 0.8;
       frame_left.alpha = rect_alphas;
       frame_right.alpha = rect_alphas;
       frame_top.alpha = rect_alphas;
