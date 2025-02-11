@@ -18,8 +18,8 @@ export function error_scene(app: PIXI.Application): Promise<void> {
         },
       });
 
-      sentetce_text.x = app.screen.width - sentetce_text.width / 2;
-      sentetce_text.y = app.screen.height - sentetce_text.height / 2 - 2;
+      sentetce_text.x = app.screen.width / 2 - sentetce_text.width / 2;
+      sentetce_text.y = app.screen.height / 2 - sentetce_text.height / 2;
       app.stage.addChild(sentetce_text);
       setTimeout(() => {
         gameData.CurrentSceneName = "opening";
