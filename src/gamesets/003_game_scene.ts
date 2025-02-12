@@ -1,5 +1,7 @@
 import * as PIXI from "pixi.js";
 import gsap from "gsap";
+import { PixiPlugin } from "gsap/PixiPlugin";
+PixiPlugin.registerPIXI(PIXI);
 import { replaceHash } from "./001_game_master";
 import { gameData } from "./002_gameConfig";
 import { Keyboard, keybord_size, scale } from "./011_keybord";
@@ -14,10 +16,16 @@ import {
 } from "./008_generate_pattern";
 import { GlowFilter } from "pixi-filters";
 
+import { BG_grid } from "./018_grid";
+
+import { GM_start } from "./014_mogura";
+
 const anim_max_width = 100;
 export async function game_scene(app: PIXI.Application): Promise<void> {
   return new Promise(async (resolve) => {
     app.stage.removeChildren();
+
+    app.stage.sortableChildren = true;
 
     const BG_plane = new PIXI.Graphics();
     app.stage.addChild(BG_plane);
@@ -26,6 +34,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     );
     //console.log(gameData.KeyLayout);
     //console.log(settings.keyLayout);
+    const grid = BG_grid(app);
 
     const glowFilter = new GlowFilter({
       distance: 28, // Glow distance
@@ -349,6 +358,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     gameData.Score = 0;
     gameData.MaxScore = 0;
     gameData.MaxKPM = 0;
+
     setTimeout(async () => {
       await makeIssues();
       setTimeout(() => {
@@ -507,10 +517,15 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             kpm_text.x =
               win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
           } else {
+            if (keyCode.code === "Escape") {
+              gameData.CurrentSceneName = "game_select";
+              gameData.EndTime = Date.now();
+              resolve();
+            }
             if (keyCode.code === "Space") {
+              await GM_start(app);
               gameData.IsStarted = true;
               gameData.StartTime = Date.now();
-
               if (gameData.current_Issue >= gameData.Issues_num) {
                 gameData.CurrentSceneName = "result_scene";
                 resolve();
@@ -560,6 +575,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
               score_text.text = "";
               score_text.x = win_pos.x - score_text.width / 2;
+              frame_anim(9);
+              grid_anim(grid);
             }
           }
         } catch (error) {
@@ -570,6 +587,18 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       }
     }, 100);
   });
+}
+
+function grid_anim(grid: PIXI.Graphics) {
+  gsap.fromTo(
+    grid,
+    { alpha: 2 },
+    {
+      alpha: 1,
+      duration: 4,
+      ease: "power1.out",
+    }
+  );
 }
 
 import { Issue } from "./002_gameConfig";

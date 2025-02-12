@@ -1,5 +1,5 @@
-import { settings } from "../SiteInterface";
-import { keyLayouts } from "../components/012_KeyLayout";
+//import { settings } from "../SiteInterface";
+//import { keyLayouts } from "../components/012_KeyLayout";
 //import { gameData } from "./002_gameConfig";
 export function getLatestKey(): Promise<{ code: string; shift: boolean }> {
   return new Promise((resolve) => {
@@ -14,12 +14,14 @@ export function getLatestKey(): Promise<{ code: string; shift: boolean }> {
   });
 }
 export function keyCodeToText(code: string, shift: boolean): string {
-  let imported_layout = {};
+  //let imported_layout = {};
   let output = "";
+  /*
   for (let i = 0; i < keyLayouts.length; i++) {
     if (settings.keyLayout == keyLayouts[i].name)
       imported_layout = keyLayouts[i];
   }
+*/
   switch (code) {
     case "Digit1":
       output = shift ? "!" : "1";
