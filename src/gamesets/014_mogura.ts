@@ -12,7 +12,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
       distance: 28, // Glow distance
       outerStrength: 6, // Outer glow strength
       innerStrength: 0, // Inner glow strength
-      color: 0xff0000, // Glow color
+      color: replaceHash(settings.colorTheme.colors.MainAccent), // Glow color
       quality: 0.4,
       alpha: 0.1, // Glow quality
     });
@@ -47,10 +47,44 @@ export function GM_start(app: PIXI.Application): Promise<void> {
       yoyo: true, // Alternate between fade in and fade out
       ease: "none", // Linear transition
     });
+    
+    const sec_star = new PIXI.Graphics();
+    sec_star.x = app.screen.width / 2;
+    sec_star.y = app.screen.height / 2;
 
+    sec_star.moveTo(0, -200);
+    sec_star
+      .quadraticCurveTo(0, 0, 200, 0)
+      .quadraticCurveTo(0, 0, 0, 200)
+      .quadraticCurveTo(0, 0, -200, 0)
+      .quadraticCurveTo(0, 0, 0, -200)
+      .fill(replaceHash(settings.colorTheme.colors.SecondAccent));
+      sec_star.filters = glowFilter;
+    app.stage.addChild(star);
+    sec_star.alpha = 0.5;
+    setTimeout(() => {
+      gsap.fromTo(
+      sec_star,
+      { rotation: 3.14 / 5 },
+      {
+        rotation: 0,
+        duration: 1,
+        ease: "power4.out",
+      }
+    );
+    gsap.to(sec_star, {
+      alpha: 0,
+      duration: 0.05, // Fade out duration
+      repeat: 3, // Total 4 transitions (2 full blinks)
+      yoyo: true, // Alternate between fade in and fade out
+      ease: "none", // Linear transition
+    });
+    }, 1000);
+    
     setTimeout(() => {
       app.stage.removeChild(star);
+      app.stage.removeChild(sec_star);
       resolve();
-    }, 2500);
+    }, 2000);
   });
 }

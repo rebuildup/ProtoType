@@ -230,18 +230,18 @@ export function getRomanizedTextFromTendency(
   readingText: string,
   currentInput: string
 ): string {
-  // Utility: ひらがなかどうか判定
+  // Check if a character is hiragana
   function isHiragana(char: string): boolean {
     const code = char.charCodeAt(0);
     return code >= 0x3041 && code <= 0x3096;
   }
-  // Utility: 次の文字がナ行かどうか判定（な, に, ぬ, ね, の）
+  // Check if the next character is in the Na-row
   function isNextNaRow(text: string, i: number): boolean {
     if (i + 1 >= text.length) return false;
     const next = text[i + 1];
     return ["な", "に", "ぬ", "ね", "の"].includes(next);
   }
-  // Utility: 現在の出力が currentInput と接頭一致しているか
+  // Ensure the current output is a prefix of the user input
   function prefixMatches(out: string): boolean {
     if (out.length > currentInput.length) {
       return currentInput === out.slice(0, currentInput.length);
@@ -249,36 +249,45 @@ export function getRomanizedTextFromTendency(
       return out === currentInput.slice(0, out.length);
     }
   }
+  // Determine if a character is a consonant (excluding vowels and 'y')
+  function isConsonant(char: string): boolean {
+    return !"aiueoy".includes(char.toLowerCase());
+  }
 
-  const results: string[] = [];
+  // Candidate type with a penalty count (nonPreferred)
+  type Candidate = { out: string; nonPreferred: number };
+
+  const results: Candidate[] = [];
 
   /**
-   * DFS による全変換候補探索
-   * @param i 読みテキストの現在位置
-   * @param dup 直前に「っ」で子音重複させる必要があった場合のフラグ
-   * @param out これまでの変換結果
+   * DFS to explore conversion candidates.
+   * @param i Current index in readingText.
+   * @param dup Flag for pending doubling from small tsu.
+   * @param out Current conversion result.
+   * @param nonPreferred Penalty count when not using stored tendency.
    */
-  function dfs(i: number, dup: boolean, out: string): void {
+  function dfs(
+    i: number,
+    dup: boolean,
+    out: string,
+    nonPreferred: number
+  ): void {
     if (!prefixMatches(out)) return;
-
-    // 完了時：読みテキスト全体を処理済みなら、out が currentInput を接頭辞としていれば採用
     if (i >= readingText.length) {
-      if (out.startsWith(currentInput)) results.push(out);
+      if (out.startsWith(currentInput)) results.push({ out, nonPreferred });
       return;
     }
-
     const ch = readingText[i];
 
-    // 非ひらがなならそのまま出力
+    // Non-hiragana: output directly.
     if (!isHiragana(ch)) {
-      dfs(i + 1, false, out + ch);
+      dfs(i + 1, false, out + ch, nonPreferred);
       return;
     }
 
-    // 「っ」の処理
+    // Handling for small tsu "っ"
     if (ch === "っ") {
       const nextIndex = i + 1;
-      // doublingCandidates：次のセグメント（readingText[nextIndex]）の候補
       const doublingCandidates = (function () {
         const letters = new Set<string>();
         for (const config of KEY_CONFIGS) {
@@ -292,49 +301,33 @@ export function getRomanizedTextFromTendency(
         }
         return Array.from(letters);
       })();
-      // 固定変換候補群（固定の4通りの変換文字列）
       const fixedAlternatives = ["ltu", "xtu", "ltsu", "xtsu"];
-      // raw 固定候補＝各固定変換の1文字目
       const rawFixedCandidates = Array.from(
         new Set(fixedAlternatives.map((s) => s.charAt(0)))
       );
-      // 現在、これまでの出力の長さが、ユーザー入力における消費済み文字数とみなすので、
-      // 次にユーザーが入力すべき文字は currentInput.charAt(out.length)
       const userCandidate = currentInput.charAt(out.length) || "";
       if (userCandidate) {
         if (doublingCandidates.includes(userCandidate)) {
-          // ユーザー入力が次の文字の子音重複を示す場合
-          dfs(nextIndex, true, out);
+          dfs(nextIndex, true, out, nonPreferred);
         } else if (rawFixedCandidates.includes(userCandidate)) {
-          // ユーザー入力が固定変換候補の raw 値に合致する場合は、
-          // 固定変換候補（例："ltu","ltsu" など）のうち、先頭文字が合致するものを採用
           for (const alt of fixedAlternatives) {
             if (alt.charAt(0) === userCandidate) {
-              dfs(nextIndex, false, out + alt);
+              dfs(nextIndex, false, out + alt, nonPreferred);
             }
           }
         } else {
-          // どちらにも該当しなければ、両方の候補を枝分かれさせる
-          /*
-          for (const alt of doublingCandidates) {
-            dfs(nextIndex, true, out);
-          }
-            */
-          for (const alt of fixedAlternatives) {
-            dfs(nextIndex, false, out + alt);
-          }
+          return;
         }
       } else {
-        // ユーザー入力がない場合は、両方の候補を試す
-        dfs(nextIndex, true, out);
+        dfs(nextIndex, true, out, nonPreferred);
         for (const alt of fixedAlternatives) {
-          dfs(nextIndex, false, out + alt);
+          dfs(nextIndex, false, out + alt, nonPreferred);
         }
       }
       return;
     }
 
-    // 「ん」の処理
+    // Handling for "ん"
     if (ch === "ん") {
       let candidates: string[];
       if (i === readingText.length - 1 || isNextNaRow(readingText, i)) {
@@ -343,40 +336,58 @@ export function getRomanizedTextFromTendency(
         candidates = ["n", "nn"];
       }
       for (const cand of candidates) {
-        dfs(i + 1, false, out + cand);
+        dfs(i + 1, false, out + cand, nonPreferred);
       }
       return;
     }
 
-    // 通常のひらがな（または複合キー）の処理
-    for (const t of tendencies) {
-      if (readingText.startsWith(t.key, i)) {
-        let conv = t.tendency;
-        if (dup && conv.length > 0) {
-          conv = conv.charAt(0) + conv;
+    // Normal hiragana conversion: use KEY_CONFIGS.
+    for (const config of KEY_CONFIGS) {
+      if (readingText.startsWith(config.key, i)) {
+        // Find stored tendency for this key if any.
+        const tendencyEntry = tendencies.find((t) => t.key === config.key);
+        let candidateOrigins: string[];
+        if (tendencyEntry) {
+          // 優先候補として保存された変換を先頭に
+          candidateOrigins = [tendencyEntry.tendency];
+          for (const origin of config.origins) {
+            if (origin !== tendencyEntry.tendency) {
+              candidateOrigins.push(origin);
+            }
+          }
+        } else {
+          candidateOrigins = config.origins;
         }
-        dfs(i + t.key.length, false, out + conv);
+        for (const origin of candidateOrigins) {
+          // もし保存された変換と異なる場合、重み（ペナルティ）を加算
+          const additionalPenalty =
+            tendencyEntry && origin === tendencyEntry.tendency ? 0 : 1;
+          let conv = origin;
+          if (dup && conv.length > 0) {
+            conv = conv.charAt(0) + conv;
+          }
+          dfs(
+            i + config.key.length,
+            false,
+            out + conv,
+            nonPreferred + additionalPenalty
+          );
+        }
       }
     }
   }
 
-  dfs(0, false, "");
+  dfs(0, false, "", 0);
 
-  /*
-  if (results.length === 0) {
-    throw new Error("入力済みのテキストと変換結果が一致しません。");
-  }
-    */
-  // 複数候補がある場合、余分な文字数が少ないものを優先して返す
+  // ソート時に、非好ましい枝の重みを大きく評価するため、重み*10000 を加算
   results.sort((a, b) => {
-    const extraA = a.length - currentInput.length;
-    const extraB = b.length - currentInput.length;
-    if (extraA === extraB) {
-      return a.localeCompare(b);
-    }
-    return extraA - extraB;
+    const scoreA =
+      a.nonPreferred * 10000 + (a.out.length - currentInput.length);
+    const scoreB =
+      b.nonPreferred * 10000 + (b.out.length - currentInput.length);
+    return scoreA - scoreB;
   });
-  return results[0];
+  return results[0] ? results[0].out : "";
 }
 
 // 補助: 子音かどうか (母音 "a","i","u","e","o" および "y" は除く)
