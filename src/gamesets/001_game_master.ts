@@ -4,7 +4,7 @@ import { game_scene } from "./003_game_scene";
 
 import { playCollect, playMiss } from "./012_soundplay";
 
-import { gameData } from "./002_gameConfig";
+import { gameData, Issue } from "./002_gameConfig";
 
 import { opening_scene } from "./005_opening";
 import { game_select } from "./004_game_select";
@@ -31,12 +31,26 @@ export async function initializeGame(app: PIXI.Application) {
   loading_text.x = app.screen.width / 2 - loading_text.width / 2;
   loading_text.y = app.screen.height / 2 - loading_text.height / 2;
   app.stage.addChild(loading_text);
-  try {
-    const textsData = await fetchTexts();
-    gameData.textsData = textsData;
-  } catch (error) {
-    console.error(error);
+  console.clear();
+  let fetchtext = await fetchTexts();
+  let textsData: Issue[][] = [];
+  for (let i = 0; i < fetchtext.length; i++) {
+    for (let j = 0; j < fetchtext[i].length; j += 3) {
+      if (fetchtext[i][j] !== "") {
+        let tmp_Issue: Issue = {
+          text: fetchtext[i][j],
+          romaji: fetchtext[i][j + 1],
+        };
+        let groupIndex = j / 3;
+        if (!textsData[groupIndex]) {
+          textsData[groupIndex] = [];
+        }
+        textsData[groupIndex].push(tmp_Issue);
+      }
+    }
   }
+  console.log(textsData);
+  gameData.textsData = textsData;
 
   gameData.CurrentSceneName = "game_scene";
   gameData.GameMode = "nomal";

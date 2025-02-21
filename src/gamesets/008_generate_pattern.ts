@@ -225,6 +225,7 @@ export type NextKeyInfo = {
   letter: string;
   flag: ConversionFlag;
 };
+
 export function getRomanizedTextFromTendency(
   tendencies: ConversionTendencies,
   readingText: string,

@@ -360,7 +360,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     gameData.MaxKPM = 0;
 
     setTimeout(async () => {
-      await makeIssues();
+      await makeIssues(3, 6, gameData.Issues_num);
       setTimeout(() => {
         app.stage.removeChild(load_text);
       }, 100);
@@ -407,6 +407,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 gameData.Miss++;
                 gameData.combo_cnt = 0;
                 gameData.total_hit_cnt++;
+                console.log(collectkeys);
+                console.log(keyCode.code);
               } else {
                 //console.log("collect");
                 //console.log(keyCode);
@@ -603,24 +605,30 @@ function grid_anim(grid: PIXI.Graphics) {
 
 import { Issue } from "./002_gameConfig";
 import { playCollect, playMiss } from "./012_soundplay";
-async function makeIssues(): Promise<void> {
+async function makeIssues(
+  FromLen: number,
+  ToLen: number,
+  N: number
+): Promise<void> {
   return new Promise<void>(async (resolve) => {
     let Issues: Issue[] = [];
-
-    for (let i = 0; i < gameData.Issues_num + 1; i++) {
-      let new_Issue: Issue = {
-        text: example[i].text,
-        romaji: example[i].hiragana,
-      };
-
+    for (let i = 0; i < N + 1; i++) {
+      // Choose a random group index between FromLen and ToLen - 1
+      const groupIndex =
+        FromLen - 1 + Math.floor(Math.random() * (ToLen - FromLen + 1));
+      const groupArray = gameData.textsData[groupIndex];
+      // Choose a random issue within the group
+      const issueIndex = Math.floor(Math.random() * groupArray.length);
+      const new_Issue: Issue = groupArray[issueIndex];
       Issues.push(new_Issue);
     }
     gameData.Issues = Issues;
-
+    console.log(gameData.Issues);
     resolve();
   });
 }
 
+/*
 const example = [
   { text: "レンタルひらがな「ぬ」", hiragana: "れんたるひらがな[ぬ]" },
   { text: "青眼の白龍", hiragana: "ぶる-あいずほわいとどらごん" },
@@ -654,6 +662,7 @@ const example = [
   { text: "Xをフォローしといてね", hiragana: "Xをふぉろ-しといてね" },
   { text: "青眼の白龍", hiragana: "ぶるーあいずほわいとどらごん" },
 ];
+*/
 
 function isPerfectSquare(x: number): boolean {
   // Calculate the integer square root and check if its square equals x

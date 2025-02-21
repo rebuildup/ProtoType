@@ -15,7 +15,7 @@ export interface GameData {
   Accuracy: number;
   Miss: number;
   GameMode: string;
-  textsData: string[][];
+  textsData: Issue[][];
   Issues: Issue[];
   Issues_num: number;
   current_Issue: number;
@@ -43,7 +43,7 @@ export const gameData: GameData = {
   Accuracy: 100.0,
   Miss: 0,
   GameMode: "nomal",
-  textsData: [["none"], ["none"]],
+  textsData: [],
   Issues: [],
   Issues_num: 15,
   current_Issue: 0,
