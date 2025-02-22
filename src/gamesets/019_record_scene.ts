@@ -6,12 +6,12 @@ import { BG_grid } from "./018_grid";
 
 import { getLatestKey } from "./009_keyinput";
 
-export function setting_scene(app: PIXI.Application): Promise<void> {
+export function record_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
     app.stage.removeChildren();
     BG_grid(app);
     const select_select = new PIXI.Text({
-      text: "ゲーム設定",
+      text: "プレイ記録",
       style: {
         fontFamily: gameData.FontFamily,
         fontSize: 30,
@@ -27,7 +27,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       resolve();
     });
     app.stage.addChild(select_select);
-    while (gameData.CurrentSceneName == "setting_scene") {
+    while (gameData.CurrentSceneName == "record_scene") {
       const keyCode = await getLatestKey();
       if (keyCode.code == "Escape") {
         gameData.CurrentSceneName = "game_select";

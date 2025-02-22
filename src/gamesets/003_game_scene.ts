@@ -68,6 +68,10 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         keybord_flag = true;
         win_pos.y = app.screen.height / 2 - 210;
         break;
+      case "number":
+        keybord_flag = true;
+        win_pos.y = app.screen.height / 2 - 210;
+        break;
       default:
         console.log("gamemode nothing");
         resolve();

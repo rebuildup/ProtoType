@@ -16,6 +16,7 @@ import { setting_scene } from "./007_setting_scene";
 import { result_scene } from "./006_result_scene";
 import { reload_game } from "./016_reload_game";
 import { error_scene } from "./017_error_scene";
+import { record_scene } from "./019_record_scene";
 
 import { BG_grid } from "./018_grid";
 
@@ -141,6 +142,10 @@ export async function initializeGame(app: PIXI.Application) {
         break;
       case "error_scene":
         await error_scene(app);
+        break;
+      case "record_scene":
+        playCollect();
+        await record_scene(app);
         break;
       default:
         gameData.CurrentSceneName = "exit";

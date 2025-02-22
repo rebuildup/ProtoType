@@ -9,7 +9,7 @@ export function opening_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>((resolve) => {
     app.stage.removeChildren();
     BG_grid(app);
-    let i = 3;
+    let i = 1;
 
     const sentence_text = new PIXI.Text({
       text: i.toString(),
@@ -33,7 +33,7 @@ export function opening_scene(app: PIXI.Application): Promise<void> {
         return;
       }
 
-      console.log(i);
+      //console.log(i);
 
       i--;
       playCollect();
