@@ -2,11 +2,12 @@ import * as PIXI from "pixi.js";
 import { gameData } from "./002_gameConfig";
 import { replaceHash } from "./001_game_master";
 import { settings } from "../SiteInterface";
+import { BG_grid } from "./018_grid";
 
 export function setting_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>((resolve) => {
     app.stage.removeChildren();
-
+    BG_grid(app);
     const select_select = new PIXI.Text({
       text: "ゲーム選択に戻る",
       style: {

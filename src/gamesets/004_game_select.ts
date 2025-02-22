@@ -3,9 +3,11 @@ import { gameData } from "./002_gameConfig";
 import { settings } from "../SiteInterface";
 import { replaceHash } from "./001_game_master";
 import { playCollect } from "./012_soundplay";
+import { BG_grid } from "./018_grid";
 export function game_select(app: PIXI.Application): Promise<void> {
   return new Promise<void>((resolve) => {
     app.stage.removeChildren();
+    BG_grid(app);
     const game_select_text = make_Button("ゲーム選択");
     game_select_text.x = app.screen.width / 2 - game_select_text.width / 2;
     game_select_text.y = app.screen.height / 2 - game_select_text.height / 2;
@@ -42,7 +44,7 @@ export function game_select(app: PIXI.Application): Promise<void> {
 function game_mode_select(app: PIXI.Application): Promise<void> {
   return new Promise<void>((resolve) => {
     app.stage.removeChildren();
-
+    BG_grid(app);
     playCollect();
 
     const select_nomal = make_Button("スタンダード");

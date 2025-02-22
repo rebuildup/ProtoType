@@ -48,19 +48,17 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     const win_pos = { x: app.screen.width / 2, y: app.screen.height / 2 };
 
     let keybord_flag = true;
-
+    gameData.current_Issue = 0;
     switch (gameData.GameMode) {
       case "nomal":
         keybord_flag = true;
         win_pos.y = app.screen.height / 2 - 210;
-
         gameData.Issues_num = 15;
-        gameData.current_Issue = 0;
         break;
       case "focus":
         keybord_flag = false;
         gameData.Issues_num = 15;
-        gameData.current_Issue = 0;
+        win_pos.y = app.screen.height / 2 - 100;
         break;
       case "exact":
         keybord_flag = true;

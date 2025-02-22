@@ -1,5 +1,9 @@
 // game_master.ts
 import * as PIXI from "pixi.js";
+import gsap from "gsap";
+import { PixiPlugin } from "gsap/PixiPlugin";
+PixiPlugin.registerPIXI(PIXI);
+
 import { game_scene } from "./003_game_scene";
 
 import { playCollect, playMiss } from "./012_soundplay";
@@ -13,12 +17,16 @@ import { result_scene } from "./006_result_scene";
 import { reload_game } from "./016_reload_game";
 import { error_scene } from "./017_error_scene";
 
+import { BG_grid } from "./018_grid";
+
 import { settings } from "../SiteInterface";
 import { fetchTexts /*, postPlayData */ } from "./010_APIget";
 
 //import { getNextKeysOptimized } from "./008_generate_pattern";
 
 export async function initializeGame(app: PIXI.Application) {
+  app.stage.removeChildren();
+  BG_grid(app);
   const loading_text = new PIXI.Text({
     text: "Loading",
     style: {
@@ -31,8 +39,55 @@ export async function initializeGame(app: PIXI.Application) {
   loading_text.x = app.screen.width / 2 - loading_text.width / 2;
   loading_text.y = app.screen.height / 2 - loading_text.height / 2;
   app.stage.addChild(loading_text);
-  console.clear();
+
+  const lineWidth = 600;
+  const lineHeight = 10;
+  const spacing = lineHeight * 12;
+  const startX = app.screen.width / 2 - lineWidth / 2;
+  const startY = app.screen.height / 2 - spacing / 2 - 10;
+
+  const lines = [];
+  const masks = [];
+
+  for (let i = 0; i < 2; i++) {
+    const line = new PIXI.Graphics();
+    line.rect(0, 0, lineWidth, lineHeight).fill(0xffffff);
+
+    line.x = startX;
+    line.y = startY + i * (lineHeight + spacing);
+    app.stage.addChild(line);
+    lines.push(line);
+
+    const maskSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+    maskSprite.width = 0;
+    maskSprite.height = lineHeight;
+    maskSprite.x = startX;
+    maskSprite.y = line.y;
+    app.stage.addChild(maskSprite);
+
+    line.mask = maskSprite;
+    masks.push(maskSprite);
+  }
+
+  masks.forEach((mask, index) => {
+    gsap
+      .timeline({ repeat: -1, delay: index * 0.2 })
+      .to(mask, {
+        duration: 1,
+        width: lineWidth,
+        ease: "power2.out",
+      })
+      .to(mask, {
+        duration: 1,
+        width: 0,
+        x: startX + lineWidth,
+        ease: "power2.in",
+        delay: 0.5,
+      })
+      .set(mask, { x: startX });
+  });
   let fetchtext = await fetchTexts();
+
   let textsData: Issue[][] = [];
   for (let i = 0; i < fetchtext.length; i++) {
     for (let j = 0; j < fetchtext[i].length; j += 3) {
@@ -49,10 +104,10 @@ export async function initializeGame(app: PIXI.Application) {
       }
     }
   }
-  console.log(textsData);
+  //console.log(textsData);
   gameData.textsData = textsData;
 
-  gameData.CurrentSceneName = "game_scene";
+  gameData.CurrentSceneName = "opening";
   gameData.GameMode = "nomal";
   gameData.FontFamily = settings.fontTheme.fontFamily;
   gameData.KeyLayout = settings.keyLayout;
@@ -94,13 +149,13 @@ export async function initializeGame(app: PIXI.Application) {
   }
   console.log("何が起こった？");
   playMiss();
-  //console.log(TextToRomaji("げつようがちかいよ"));
 }
 export function replaceHash(color: string): string {
   if (typeof color !== "string") return "";
   return color.startsWith("#") ? color.replace("#", "0x") : color;
 }
 import { ConversionTendencies } from "./008_generate_pattern";
+
 function TendenciesInit() {
   const CONVERSION_TENDENCIES: ConversionTendencies = [
     {
