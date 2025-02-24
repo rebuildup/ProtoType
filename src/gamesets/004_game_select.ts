@@ -5,25 +5,88 @@ PixiPlugin.registerPIXI(PIXI);
 import { gameData } from "./002_gameConfig";
 import { settings } from "../SiteInterface";
 import { replaceHash } from "./001_game_master";
-import { playCollect } from "./012_soundplay";
+import { playCollect, playMiss } from "./012_soundplay";
 import { BG_grid } from "./018_grid";
 import { getLatestKey } from "./009_keyinput";
 
 import { GlowFilter } from "pixi-filters";
+//import { scale } from "./011_keybord";
 
 const button_spacing = 120;
-export function game_select(app: PIXI.Application): Promise<void> {
+export async function game_select(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
     app.stage.removeChildren();
     const glowFilter = new GlowFilter({
       distance: 28, // Glow distance
       outerStrength: 20, // Outer glow strength
       innerStrength: 0, // Inner glow strength
-      color: 0xffffff, // Glow color
-      quality: 0.4,
-      alpha: 0.02, // Glow quality
+      color: replaceHash(settings.colorTheme.colors.MainColor), // Glow color
+      quality: 0.001,
+      alpha: 0.01, // Glow quality
     });
     BG_grid(app);
+
+    const waku_circle = new PIXI.Graphics();
+    waku_circle.circle(0, 0, 840);
+    waku_circle.x = app.screen.width / 2;
+    waku_circle.y = app.screen.height / 2;
+
+    waku_circle.stroke({
+      width: 2,
+      color: replaceHash(settings.colorTheme.colors.MainColor),
+    });
+    app.stage.addChild(waku_circle);
+    waku_circle.filters = [glowFilter];
+    gsap.fromTo(
+      waku_circle.scale,
+      {
+        x: 1.2,
+        y: 1.2,
+      },
+      {
+        x: 1,
+        y: 1,
+        duration: 2,
+        ease: "power4.out",
+      }
+    );
+
+    const circle_acc = new PIXI.Graphics();
+    circle_acc.label = "circle_acc";
+    circle_acc.circle(0, 0, 1000);
+    circle_acc.x = app.screen.width / 2 - 300;
+    circle_acc.y = app.screen.height / 2 - 280;
+    circle_acc.fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    circle_acc.scale = 0.3;
+    circle_acc.alpha = 0.8;
+    circle_acc.filters = [glowFilter];
+    app.stage.addChild(circle_acc);
+    gsap.from(circle_acc.scale, {
+      x: 0,
+      y: 0,
+      duration: 2,
+      ease: "power4.out",
+      delay: 0.2,
+    });
+
+    const circle_main = new PIXI.Graphics();
+    circle_main.label = "circle_main";
+    circle_main.circle(0, 0, 1000);
+    circle_main.x = app.screen.width / 2 + 300;
+    circle_main.y = app.screen.height / 2 + 280;
+    circle_main.fill(replaceHash(settings.colorTheme.colors.MainColor));
+    circle_main.scale = 0.2;
+    circle_main.alpha = 0.8;
+    circle_main.filters = [glowFilter];
+    app.stage.addChild(circle_main);
+    gsap.from(circle_main.scale, {
+      x: 0,
+      y: 0,
+      duration: 2,
+      ease: "power4.out",
+      delay: 0.4,
+    });
+
     const game_select_text = make_Button("ゲーム選択");
     game_select_text.x = app.screen.width / 2 - game_select_text.width / 2;
     game_select_text.y = app.screen.height / 2 - game_select_text.height / 2;
@@ -60,40 +123,53 @@ export function game_select(app: PIXI.Application): Promise<void> {
     app.stage.addChild(record_text);
     record_text.filters = [glowFilter];
 
-    const SelectDot_red = new PIXI.Graphics();
-    SelectDot_red.circle(0, 0, 8);
-    SelectDot_red.x = app.screen.width / 2 + (game_select_text.width / 2 + 20);
-    SelectDot_red.y = app.screen.height / 2;
-    SelectDot_red.fill(replaceHash(settings.colorTheme.colors.MainAccent));
-    SelectDot_red.stroke({
+    const SelectDot_acc = new PIXI.Graphics();
+    SelectDot_acc.circle(0, 0, 8);
+    SelectDot_acc.x = app.screen.width / 2 + (game_select_text.width / 2 + 20);
+    SelectDot_acc.y = app.screen.height / 2;
+    SelectDot_acc.fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    SelectDot_acc.stroke({
       width: 4,
       color: replaceHash(settings.colorTheme.colors.MainAccent),
     });
-    app.stage.addChild(SelectDot_red);
-    SelectDot_red.filters = [glowFilter];
+    app.stage.addChild(SelectDot_acc);
+    SelectDot_acc.filters = [glowFilter];
+    gsap.from(SelectDot_acc.scale, {
+      x: 0,
+      y: 0,
+      duration: 2,
+      ease: "power4.out",
+    });
 
-    const SelectDot_white = new PIXI.Graphics();
-    SelectDot_white.circle(0, 0, 8);
-    SelectDot_white.x =
-      app.screen.width / 2 - (game_select_text.width / 2 + 15);
-    SelectDot_white.y = app.screen.height / 2;
-    SelectDot_white.fill(replaceHash(settings.colorTheme.colors.MainColor));
-    SelectDot_white.stroke({
+    const SelectDot_main = new PIXI.Graphics();
+    SelectDot_main.circle(0, 0, 8);
+    SelectDot_main.x = app.screen.width / 2 - (game_select_text.width / 2 + 15);
+    SelectDot_main.y = app.screen.height / 2;
+    SelectDot_main.fill(replaceHash(settings.colorTheme.colors.MainColor));
+    SelectDot_main.stroke({
       width: 4,
       color: replaceHash(settings.colorTheme.colors.MainColor),
     });
-    app.stage.addChild(SelectDot_white);
-    SelectDot_white.filters = [glowFilter];
+    app.stage.addChild(SelectDot_main);
+    SelectDot_main.filters = [glowFilter];
+    gsap.from(SelectDot_main.scale, {
+      x: 0,
+      y: 0,
+      duration: 2,
+      ease: "power4.out",
+    });
 
     let select = 1;
     let fragloop = true;
     while (fragloop) {
       const keyCode = await getLatestKey();
+
       if (
         keyCode.code == "ArrowDown" ||
         keyCode.code == "ArrowRight" ||
         keyCode.code == "ShiftRight"
       ) {
+        playMiss();
         switch (select) {
           case 0:
             select = 1;
@@ -108,31 +184,31 @@ export function game_select(app: PIXI.Application): Promise<void> {
         switch (select) {
           case 0:
             select_anim(
-              SelectDot_red,
+              SelectDot_acc,
               app.screen.height / 2 - button_spacing,
               0,
               true
             );
             select_anim(
-              SelectDot_white,
+              SelectDot_main,
               app.screen.height / 2 - button_spacing,
               0.03,
               true
             );
             break;
           case 1:
-            select_anim(SelectDot_red, app.screen.height / 2, 0, true);
-            select_anim(SelectDot_white, app.screen.height / 2, 0.03, true);
+            select_anim(SelectDot_acc, app.screen.height / 2, 0, true);
+            select_anim(SelectDot_main, app.screen.height / 2, 0.03, true);
             break;
           case 2:
             select_anim(
-              SelectDot_red,
+              SelectDot_acc,
               app.screen.height / 2 + button_spacing,
               0,
               true
             );
             select_anim(
-              SelectDot_white,
+              SelectDot_main,
               app.screen.height / 2 + button_spacing,
               0.03,
               true
@@ -144,6 +220,7 @@ export function game_select(app: PIXI.Application): Promise<void> {
         keyCode.code == "ArrowLeft" ||
         keyCode.code == "ShiftLeft"
       ) {
+        playMiss();
         switch (select) {
           case 0:
             select = 2;
@@ -158,31 +235,31 @@ export function game_select(app: PIXI.Application): Promise<void> {
         switch (select) {
           case 0:
             select_anim(
-              SelectDot_red,
+              SelectDot_acc,
               app.screen.height / 2 - button_spacing,
               0.03,
               false
             );
             select_anim(
-              SelectDot_white,
+              SelectDot_main,
               app.screen.height / 2 - button_spacing,
               0,
               false
             );
             break;
           case 1:
-            select_anim(SelectDot_red, app.screen.height / 2, 0.03, false);
-            select_anim(SelectDot_white, app.screen.height / 2, 0, false);
+            select_anim(SelectDot_acc, app.screen.height / 2, 0.03, false);
+            select_anim(SelectDot_main, app.screen.height / 2, 0, false);
             break;
           case 2:
             select_anim(
-              SelectDot_red,
+              SelectDot_acc,
               app.screen.height / 2 + button_spacing,
               0.03,
               false
             );
             select_anim(
-              SelectDot_white,
+              SelectDot_main,
               app.screen.height / 2 + button_spacing,
               0,
               false
@@ -191,10 +268,57 @@ export function game_select(app: PIXI.Application): Promise<void> {
         }
       } else if (keyCode.code == "Enter" || keyCode.code == "Space") {
         fragloop = false;
+        gsap.to(waku_circle.scale, {
+          x: 1.2,
+          y: 1.2,
+          duration: 0.5,
+          ease: "power4.out",
+        });
+        gsap.to(record_text, { alpha: 0, duration: 0.5, ease: "power4.out" });
+        gsap.to(setting_select_text, {
+          alpha: 0,
+          duration: 0.5,
+          ease: "power4.out",
+        });
+        gsap.to(game_select_text, {
+          alpha: 0,
+          duration: 0.5,
+          ease: "power4.out",
+        });
+        gsap.to(SelectDot_acc, { alpha: 0, duration: 0.5, ease: "power4.out" });
+        gsap.to(SelectDot_main, {
+          alpha: 0,
+          duration: 0.5,
+          ease: "power4.out",
+        });
+
         switch (select) {
           case 0:
             gameData.CurrentSceneName = "record_scene";
-            resolve();
+            gsap.to(circle_main, {
+              alpha: 0,
+              ease: "power4.out",
+              duration: 0.5,
+            });
+            gsap.to(circle_acc, {
+              x: app.screen.width / 2,
+              y: app.screen.height / 2,
+
+              ease: "power4.out",
+              duration: 1,
+            });
+            gsap.to(circle_acc.scale, {
+              x: 1,
+              y: 1,
+              ease: "power4.out",
+              duration: 1,
+              delay: 0.5,
+            });
+            gameData.pass = circle_acc;
+            setTimeout(() => {
+              resolve();
+            }, 1000);
+
             break;
           case 1:
             await game_mode_select(app);
@@ -202,7 +326,28 @@ export function game_select(app: PIXI.Application): Promise<void> {
             break;
           case 2:
             gameData.CurrentSceneName = "setting_scene";
-            resolve();
+            gsap.to(circle_acc, {
+              alpha: 0,
+              ease: "power4.out",
+              duration: 0.5,
+            });
+            gsap.to(circle_main, {
+              x: app.screen.width / 2,
+              y: app.screen.height / 2,
+
+              ease: "power4.out",
+              duration: 1,
+            });
+            gsap.to(circle_main.scale, {
+              x: 1,
+              y: 1,
+              ease: "power4.out",
+              duration: 1,
+              delay: 0.5,
+            });
+            setTimeout(() => {
+              resolve();
+            }, 1000);
             break;
         }
       }
@@ -217,7 +362,7 @@ function select_anim(
 ) {
   gsap.fromTo(
     g,
-    { y: direction ? to_Y - 50 : to_Y + 50, alpha: 0 },
+    { y: direction ? to_Y - 10 : to_Y + 10, alpha: 0 },
     { y: to_Y, alpha: 1, duration: 0.5, ease: "power4.out", delay: delay }
   );
 }

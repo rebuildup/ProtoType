@@ -3,7 +3,7 @@ export interface Issue {
   romaji: string;
 }
 import { ConversionTendencies } from "./008_generate_pattern";
-
+import * as PIXI from "pixi.js";
 export interface GameData {
   CurrentSceneName: string;
   FontFamily: string;
@@ -30,6 +30,7 @@ export interface GameData {
   game_failure: boolean;
   instant_key_n: number;
   App_Filters: any[];
+  pass: PIXI.Graphics;
 }
 
 export const gameData: GameData = {
@@ -58,4 +59,5 @@ export const gameData: GameData = {
   game_failure: false,
   instant_key_n: 20,
   App_Filters: [],
+  pass: new PIXI.Graphics(),
 };

@@ -42,17 +42,19 @@ export async function initializeGame(app: PIXI.Application) {
   app.stage.addChild(loading_text);
 
   const lineWidth = 600;
-  const lineHeight = 10;
-  const spacing = lineHeight * 12;
+  const lineHeight = 4;
+  const spacing = lineHeight * 32;
   const startX = app.screen.width / 2 - lineWidth / 2;
-  const startY = app.screen.height / 2 - spacing / 2 - 10;
+  const startY = app.screen.height / 2 - spacing / 2 - lineHeight;
 
   const lines = [];
   const masks = [];
 
   for (let i = 0; i < 2; i++) {
     const line = new PIXI.Graphics();
-    line.rect(0, 0, lineWidth, lineHeight).fill(0xffffff);
+    line
+      .rect(0, 0, lineWidth, lineHeight)
+      .fill(replaceHash(settings.colorTheme.colors.MainColor));
 
     line.x = startX;
     line.y = startY + i * (lineHeight + spacing);
