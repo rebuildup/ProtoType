@@ -38,10 +38,10 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
     const glowFilter = new GlowFilter({
       distance: 28, // Glow distance
-      outerStrength: 20, // Outer glow strength
+      outerStrength: 10, // Outer glow strength
       innerStrength: 0, // Inner glow strength
       color: 0xffffff, // Glow color
-      quality: 0.4,
+      quality: 0.01,
       alpha: 0.02, // Glow quality
     });
 

@@ -7,8 +7,9 @@
   width: (720) px;
   height: (600) px;
   background-color: var(--MainBG);
-  border: 2px solid var(--MainColor);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /*border: 2px solid var(--MainColor);*/
+  box-shadow: -5px -5px 60px 0px rgba(128, 128, 128, 0.1),
+    5px 5px 60px 0px rgba(128, 128, 128, 0.1);
   z-index: 1000;
 }
 

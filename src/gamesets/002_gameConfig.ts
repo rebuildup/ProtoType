@@ -31,6 +31,7 @@ export interface GameData {
   instant_key_n: number;
   App_Filters: any[];
   pass: PIXI.Graphics;
+  IsLoggedin: false;
 }
 
 export const gameData: GameData = {
@@ -60,4 +61,5 @@ export const gameData: GameData = {
   instant_key_n: 20,
   App_Filters: [],
   pass: new PIXI.Graphics(),
+  IsLoggedin: false,
 };
