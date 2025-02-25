@@ -5,6 +5,7 @@ export function getLatestKey(): Promise<{ code: string; shift: boolean }> {
   return new Promise((resolve) => {
     const handler = (event: KeyboardEvent) => {
       window.removeEventListener("keydown", handler);
+      //console.log(event.code);
       resolve({
         code: event.code,
         shift: event.shiftKey,
@@ -154,6 +155,9 @@ export function keyCodeToText(code: string, shift: boolean): string {
       break;
     case "Backslash":
       output = shift ? "}" : "]";
+      break;
+    case "Slash":
+      output = shift ? "?" : "/";
       break;
     case "Minus":
       output = shift ? "=" : "-";

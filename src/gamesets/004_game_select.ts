@@ -152,7 +152,6 @@ export async function game_select(app: PIXI.Application): Promise<void> {
     });
 
     let select = 1;
-    let fragloop = true;
     function scene_m() {
       gsap.to(waku_circle.scale, {
         x: 1.2,
@@ -226,6 +225,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
     });
     function game_mode_m() {
       scene_m();
+      gameData.CurrentSceneName = "game_mode_select_scene";
       gsap.to(circle_main, {
         alpha: 0,
         ease: "power4.out",
@@ -254,7 +254,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       game_mode_m();
     });
 
-    while (fragloop) {
+    while (gameData.CurrentSceneName == "game_select") {
       const keyCode = await getLatestKey();
 
       if (
@@ -360,8 +360,6 @@ export async function game_select(app: PIXI.Application): Promise<void> {
             break;
         }
       } else if (keyCode.code == "Enter" || keyCode.code == "Space") {
-        fragloop = false;
-
         switch (select) {
           case 0:
             rec_m();
@@ -446,8 +444,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     gsap.from(mask.scale, { x: 0, y: 0, duration: 1.5, ease: "power4.out" });
 
     const SelectDot_acc = new PIXI.Graphics();
-    SelectDot_acc.circle(circle_radius - 20, 0, 8);
-    SelectDot_acc.x = app.screen.width / 2 - 200;
+    SelectDot_acc.circle(circle_radius, 0, 8);
+    SelectDot_acc.x = app.screen.width / 2 - 200 - 20;
     SelectDot_acc.y = app.screen.height / 2;
     SelectDot_acc.fill(replaceHash(settings.colorTheme.colors.MainAccent));
     SelectDot_acc.stroke({
@@ -460,14 +458,14 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       { alpha: 0 },
       { alpha: 1, duration: 2, ease: "power3.out" }
     );
-    function dot_move(selected: number, d: boolean) {
+    function dot_move(selected: number) {
       let rot;
       switch (selected) {
         case 0:
-          rot = Math.PI / 5;
+          rot = -Math.PI / 5;
           break;
         case 1:
-          rot = Math.PI / 10;
+          rot = -Math.PI / 10;
           break;
         case 2:
           rot = 0;
@@ -482,11 +480,18 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
           rot = 0;
           break;
       }
+      /*
       gsap.fromTo(
         SelectDot_acc,
-        { rotation: d ? rot + 0.01 : rot - 0.01, alpha: 0 },
-        { rotation: rot, alpha: 1, duration: 0.5, ease: "power4.out" }
-      );
+        { rotation: d ? rot - 0.5 : rot + 0.5, alpha: 0 },
+        { rotation: rot, alpha: 1, duration: 1, ease: "power4.out" }
+      );*/
+
+      gsap.to(SelectDot_acc, {
+        rotation: rot,
+        duration: 0.5,
+        ease: "power3.out",
+      });
     }
 
     const select_long = make_Button("長文モード");
@@ -504,7 +509,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     ).y;
     select_long.on("pointerdown", async () => {
       gameData.GameMode = "long";
-      get_out();
+      gameData.CurrentSceneName = "game_scene";
+      resolve();
     });
 
     const select_focus = make_Button("集中モード");
@@ -522,7 +528,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     ).y;
     select_focus.on("pointerdown", async () => {
       gameData.GameMode = "focus";
-      get_out();
+      gameData.CurrentSceneName = "game_scene";
+      resolve();
     });
     select_focus.interactive = true;
     app.stage.addChild(select_focus);
@@ -542,7 +549,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     ).y;
     select_nomal.on("pointerdown", async () => {
       gameData.GameMode = "nomal";
-      get_out();
+      gameData.CurrentSceneName = "game_scene";
+      resolve();
     });
     select_nomal.interactive = true;
     app.stage.addChild(select_nomal);
@@ -562,7 +570,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     ).y;
     select_exact.on("pointerdown", async () => {
       gameData.GameMode = "exact";
-      get_out();
+      gameData.CurrentSceneName = "game_scene";
+      resolve();
     });
     select_exact.interactive = true;
     app.stage.addChild(select_exact);
@@ -585,8 +594,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     ).y;
     select_number.on("pointerdown", async () => {
       gameData.GameMode = "number";
-      gameData.CurrentSceneName = "game_select";
-      get_out();
+      gameData.CurrentSceneName = "game_scene";
+      resolve();
     });
     select_number.interactive = true;
     app.stage.addChild(select_number);
@@ -595,7 +604,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       resolve();
     }
     let select_m = 2;
-    while (gameData.CurrentSceneName == "game_select") {
+    while (gameData.CurrentSceneName == "game_mode_select_scene") {
       const keyCode = await getLatestKey();
       if (
         keyCode.code == "ArrowDown" ||
@@ -606,7 +615,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
         if (select_m > 4) {
           select_m = 0;
         }
-        dot_move(select_m, true);
+        dot_move(select_m);
       } else if (
         keyCode.code == "ArrowUp" ||
         keyCode.code == "ArrowLeft" ||
@@ -616,7 +625,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
         if (select_m < 0) {
           select_m = 4;
         }
-        dot_move(select_m, false);
+        dot_move(select_m);
       } else if (keyCode.code == "Escape") {
         get_out();
       } else if (keyCode.code == "Enter" || keyCode.code == "Space") {

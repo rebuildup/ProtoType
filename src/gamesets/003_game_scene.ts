@@ -14,7 +14,7 @@ import {
   getNextKeysOptimized,
   getRomanizedTextFromTendency,
 } from "./008_generate_pattern";
-import { GlowFilter } from "pixi-filters";
+//import { GlowFilter } from "pixi-filters";
 
 import { BG_grid } from "./018_grid";
 
@@ -35,7 +35,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     //console.log(gameData.KeyLayout);
     //console.log(settings.keyLayout);
     const grid = BG_grid(app);
-
+    /*
     const glowFilter = new GlowFilter({
       distance: 28, // Glow distance
       outerStrength: 10, // Outer glow strength
@@ -43,7 +43,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       color: 0xffffff, // Glow color
       quality: 0.01,
       alpha: 0.02, // Glow quality
-    });
+    });*/
 
     const win_pos = { x: app.screen.width / 2, y: app.screen.height / 2 };
 
@@ -90,7 +90,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
     sentetce_text.x = win_pos.x - sentetce_text.width / 2;
     sentetce_text.y = win_pos.y - sentetce_text.height / 2 - 2;
-    sentetce_text.filters = glowFilter;
+    //sentetce_text.filters = glowFilter;
     app.stage.addChild(sentetce_text);
     const alphabet_text = new PIXI.Text({
       text: "space to start",
@@ -117,7 +117,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     alphabet_current_text.x = win_pos.x - alphabet_current_text.width / 2;
     alphabet_current_text.y = win_pos.y - alphabet_current_text.height / 2 + 40;
-    alphabet_current_text.filters = glowFilter;
+    //alphabet_current_text.filters = glowFilter;
     app.stage.addChild(alphabet_current_text);
 
     const next_text = new PIXI.Text({
@@ -132,7 +132,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
     next_text.x = win_pos.x - next_text.width / 2;
     next_text.y = win_pos.y - next_text.height / 2 + 150;
-    next_text.filters = glowFilter;
+    //next_text.filters = glowFilter;
     app.stage.addChild(next_text);
 
     const score_text = new PIXI.Text({
@@ -146,7 +146,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     score_text.x = win_pos.x - score_text.width / 2;
     score_text.y = win_pos.y - score_text.height / 2 - 200;
-    score_text.filters = glowFilter;
+    //score_text.filters = glowFilter;
     app.stage.addChild(score_text);
 
     const combo_text = new PIXI.Text({
@@ -160,7 +160,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
     combo_text.y = win_pos.y - combo_text.height / 2;
-    combo_text.filters = glowFilter;
+    //combo_text.filters = glowFilter;
     app.stage.addChild(combo_text);
 
     const kpm_text = new PIXI.Text({
@@ -174,7 +174,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     kpm_text.x = win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
     kpm_text.y = win_pos.y - kpm_text.height / 2;
-    kpm_text.filters = glowFilter;
+    //kpm_text.filters = glowFilter;
     app.stage.addChild(kpm_text);
 
     const accuracyLine = new PIXI.Graphics();
@@ -191,7 +191,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       color: replaceHash(settings.colorTheme.colors.MainColor),
       alpha: 1,
     });
-    accuracyLine.filters = glowFilter;
+    //accuracyLine.filters = glowFilter;
     app.stage.addChild(accuracyLine);
     const progressLine = new PIXI.Graphics();
     progressLine.moveTo(
@@ -207,7 +207,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       color: replaceHash(settings.colorTheme.colors.MainColor),
       alpha: 1,
     });
-    progressLine.filters = glowFilter;
+    //progressLine.filters = glowFilter;
     app.stage.addChild(progressLine);
     const progressDot = new PIXI.Graphics();
 
@@ -218,7 +218,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       width: 4,
       color: replaceHash(settings.colorTheme.colors.MainColor),
     });
-    progressDot.filters = glowFilter;
+    //progressDot.filters = glowFilter;
     app.stage.addChild(progressDot);
 
     if (keybord_flag) {
@@ -240,7 +240,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       .rect(0, 0, anim_max_width, app.screen.height)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
     frame_left.x = -anim_max_width;
-    frame_left.filters = glowFilter;
+    //frame_left.filters = glowFilter;
 
     const frame_right = new PIXI.Graphics();
     app.stage.addChild(frame_right);
@@ -248,7 +248,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       .rect(0, 0, anim_max_width, app.screen.height)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
     frame_right.x = app.screen.width;
-    frame_right.filters = glowFilter;
+    //frame_right.filters = glowFilter;
 
     const frame_top = new PIXI.Graphics();
     app.stage.addChild(frame_top);
@@ -256,7 +256,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       .rect(0, 0, app.screen.width, anim_max_width)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
     frame_top.y = -anim_max_width;
-    frame_top.filters = glowFilter;
+    //frame_top.filters = glowFilter;
 
     const frame_bottom = new PIXI.Graphics();
     app.stage.addChild(frame_bottom);
@@ -264,7 +264,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       .rect(0, 0, app.screen.width, anim_max_width)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
     frame_bottom.y = app.screen.height;
-    frame_bottom.filters = glowFilter;
+    //frame_bottom.filters = glowFilter;
 
     function frame_anim(kpm: number) {
       let ratio = 0;
