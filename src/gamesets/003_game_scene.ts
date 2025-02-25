@@ -14,7 +14,6 @@ import {
   getNextKeysOptimized,
   getRomanizedTextFromTendency,
 } from "./008_generate_pattern";
-//import { GlowFilter } from "pixi-filters";
 
 import { BG_grid } from "./018_grid";
 
@@ -32,18 +31,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     BG_plane.rect(0, 0, app.screen.width, app.screen.height).fill(
       replaceHash(settings.colorTheme.colors.MainBG)
     );
-    //console.log(gameData.KeyLayout);
-    //console.log(settings.keyLayout);
     const grid = BG_grid(app);
-    /*
-    const glowFilter = new GlowFilter({
-      distance: 28, // Glow distance
-      outerStrength: 10, // Outer glow strength
-      innerStrength: 0, // Inner glow strength
-      color: 0xffffff, // Glow color
-      quality: 0.01,
-      alpha: 0.02, // Glow quality
-    });*/
 
     const win_pos = { x: app.screen.width / 2, y: app.screen.height / 2 };
 
@@ -90,7 +78,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
     sentetce_text.x = win_pos.x - sentetce_text.width / 2;
     sentetce_text.y = win_pos.y - sentetce_text.height / 2 - 2;
-    //sentetce_text.filters = glowFilter;
     app.stage.addChild(sentetce_text);
     const alphabet_text = new PIXI.Text({
       text: "space to start",
@@ -117,7 +104,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     alphabet_current_text.x = win_pos.x - alphabet_current_text.width / 2;
     alphabet_current_text.y = win_pos.y - alphabet_current_text.height / 2 + 40;
-    //alphabet_current_text.filters = glowFilter;
     app.stage.addChild(alphabet_current_text);
 
     const next_text = new PIXI.Text({
@@ -132,7 +118,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
     next_text.x = win_pos.x - next_text.width / 2;
     next_text.y = win_pos.y - next_text.height / 2 + 150;
-    //next_text.filters = glowFilter;
     app.stage.addChild(next_text);
 
     const score_text = new PIXI.Text({
@@ -146,7 +131,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     score_text.x = win_pos.x - score_text.width / 2;
     score_text.y = win_pos.y - score_text.height / 2 - 200;
-    //score_text.filters = glowFilter;
     app.stage.addChild(score_text);
 
     const combo_text = new PIXI.Text({
@@ -160,7 +144,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
     combo_text.y = win_pos.y - combo_text.height / 2;
-    //combo_text.filters = glowFilter;
     app.stage.addChild(combo_text);
 
     const kpm_text = new PIXI.Text({
@@ -174,7 +157,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     });
     kpm_text.x = win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
     kpm_text.y = win_pos.y - kpm_text.height / 2;
-    //kpm_text.filters = glowFilter;
     app.stage.addChild(kpm_text);
 
     const accuracyLine = new PIXI.Graphics();
@@ -191,7 +173,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       color: replaceHash(settings.colorTheme.colors.MainColor),
       alpha: 1,
     });
-    //accuracyLine.filters = glowFilter;
     app.stage.addChild(accuracyLine);
     const progressLine = new PIXI.Graphics();
     progressLine.moveTo(
@@ -207,7 +188,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       color: replaceHash(settings.colorTheme.colors.MainColor),
       alpha: 1,
     });
-    //progressLine.filters = glowFilter;
     app.stage.addChild(progressLine);
     const progressDot = new PIXI.Graphics();
 
@@ -218,7 +198,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       width: 4,
       color: replaceHash(settings.colorTheme.colors.MainColor),
     });
-    //progressDot.filters = glowFilter;
     app.stage.addChild(progressDot);
 
     if (keybord_flag) {
@@ -240,7 +219,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       .rect(0, 0, anim_max_width, app.screen.height)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
     frame_left.x = -anim_max_width;
-    //frame_left.filters = glowFilter;
 
     const frame_right = new PIXI.Graphics();
     app.stage.addChild(frame_right);
@@ -248,7 +226,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       .rect(0, 0, anim_max_width, app.screen.height)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
     frame_right.x = app.screen.width;
-    //frame_right.filters = glowFilter;
 
     const frame_top = new PIXI.Graphics();
     app.stage.addChild(frame_top);
@@ -256,7 +233,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       .rect(0, 0, app.screen.width, anim_max_width)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
     frame_top.y = -anim_max_width;
-    //frame_top.filters = glowFilter;
 
     const frame_bottom = new PIXI.Graphics();
     app.stage.addChild(frame_bottom);
@@ -264,7 +240,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       .rect(0, 0, app.screen.width, anim_max_width)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
     frame_bottom.y = app.screen.height;
-    //frame_bottom.filters = glowFilter;
 
     function frame_anim(kpm: number) {
       let ratio = 0;
@@ -380,7 +355,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               gameData.Issues[gameData.current_Issue].romaji,
               gameData.current_inputed
             );
-            //console.log(collectkeys);
             if (keyCodeToText(keyCode.code, keyCode.shift) != "") {
               let Ismiss = true;
               for (let i = 0; i < collectkeys.length; i++) {
@@ -402,18 +376,12 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 }
               }
               if (Ismiss) {
-                //console.log("miss");
-                //console.log(keyCode);
                 playMiss();
                 filterflash(app);
                 gameData.Miss++;
                 gameData.combo_cnt = 0;
                 gameData.total_hit_cnt++;
-                console.log(collectkeys);
-                console.log(keyCode.code);
               } else {
-                //console.log("collect");
-                //console.log(keyCode);
                 playCollect();
                 frame_anim(getTypingSpeed());
                 gameData.combo_cnt++;
@@ -489,7 +457,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
             combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
 
-            //console.log(gameData.Miss / gameData.total_hit_cnt);
             if (gameData.total_hit_cnt > 5) {
               accuracyLine.clear();
               accuracyLine.moveTo(
@@ -615,11 +582,9 @@ async function makeIssues(
   return new Promise<void>(async (resolve) => {
     let Issues: Issue[] = [];
     for (let i = 0; i < N + 1; i++) {
-      // Choose a random group index between FromLen and ToLen - 1
       const groupIndex =
         FromLen - 1 + Math.floor(Math.random() * (ToLen - FromLen + 1));
       const groupArray = gameData.textsData[groupIndex];
-      // Choose a random issue within the group
       const issueIndex = Math.floor(Math.random() * groupArray.length);
       const new_Issue: Issue = groupArray[issueIndex];
       Issues.push(new_Issue);
@@ -630,63 +595,20 @@ async function makeIssues(
   });
 }
 
-/*
-const example = [
-  { text: "レンタルひらがな「ぬ」", hiragana: "れんたるひらがな[ぬ]" },
-  { text: "青眼の白龍", hiragana: "ぶる-あいずほわいとどらごん" },
-  {
-    text: "ゴッホより普通にラッセンが好き",
-    hiragana: "ごっほよりふつうにらっせんがすき",
-  },
-  { text: "ああそれいいよね みちお", hiragana: "ああそれいいよね みちお" },
-  {
-    text: "3回見たら死ぬ絵みたいな顔",
-    hiragana: "3かいみたらしぬえみたいなかお",
-  },
-  {
-    text: "ロイター通信じゃないですぅ",
-    hiragana: "ろいた-つうしんじゃないですぅ",
-  },
-  { text: "そんなことって...", hiragana: "そんなことって..." },
-  { text: "𰻞𰻞麺", hiragana: "びゃんびゃんめん" },
-  { text: "踊る方のバレーボール", hiragana: "おどるほうのばれ-ぼ-る" },
-  {
-    text: "テキスト長いと処理落ちする",
-    hiragana: "てきすとながいとしょりおちする",
-  },
-  {
-    text: "まるでミシシッピアカミミガメ",
-    hiragana: "まるでみししっぴあかみみがめ",
-  },
-  { text: "ポリネシアンルーレット", hiragana: "ぽりねしあんる-れっと" },
-  { text: "I my me mine", hiragana: "I my me mine" },
-  { text: "もしかして ムッソリーニ", hiragana: "もしかして むっそり-に" },
-  { text: "Xをフォローしといてね", hiragana: "Xをふぉろ-しといてね" },
-  { text: "青眼の白龍", hiragana: "ぶるーあいずほわいとどらごん" },
-];
-*/
-
 function isPerfectSquare(x: number): boolean {
-  // Calculate the integer square root and check if its square equals x
   const s = Math.floor(Math.sqrt(x));
   return s * s === x;
 }
 
 function isFibonacci(n: number): boolean {
-  // Negative numbers are not Fibonacci numbers
   if (n < 0) return false;
-  // Check if one of (5*n*n + 4) or (5*n*n - 4) is a perfect square
   return isPerfectSquare(5 * n * n + 4) || isPerfectSquare(5 * n * n - 4);
 }
 import { ColorMatrixFilter } from "pixi.js";
 function filterflash(app: PIXI.Application) {
   const colorMatrix = new ColorMatrixFilter();
-  colorMatrix.negative(true); // Enable negative effect
-
-  // Retrieve the always-on GlowFilter from gameData and add the negative filter on top
+  colorMatrix.negative(true);
   app.stage.filters = [colorMatrix];
-
-  // After 200ms, remove the negative effect while keeping the glow filter active
   setTimeout(() => {
     app.stage.filters = [];
   }, 200);

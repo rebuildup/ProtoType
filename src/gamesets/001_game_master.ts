@@ -21,9 +21,7 @@ import { record_scene } from "./019_record_scene";
 import { BG_grid } from "./018_grid";
 
 import { settings } from "../SiteInterface";
-import { fetchTexts /*, postPlayData */ } from "./010_APIget";
-
-//import { getNextKeysOptimized } from "./008_generate_pattern";
+import { fetchTexts } from "./010_APIget";
 
 export async function initializeGame(app: PIXI.Application) {
   app.stage.removeChildren();
@@ -37,8 +35,10 @@ export async function initializeGame(app: PIXI.Application) {
       align: "center",
     },
   });
-  loading_text.x = app.screen.width / 2 - loading_text.width / 2;
-  loading_text.y = app.screen.height / 2 - loading_text.height / 2;
+  loading_text.position = {
+    x: app.screen.width / 2 - loading_text.width / 2,
+    y: app.screen.height / 2 - loading_text.height / 2,
+  };
   app.stage.addChild(loading_text);
 
   const lineWidth = 600;
@@ -55,19 +55,14 @@ export async function initializeGame(app: PIXI.Application) {
     line
       .rect(0, 0, lineWidth, lineHeight)
       .fill(replaceHash(settings.colorTheme.colors.MainColor));
-
-    line.x = startX;
-    line.y = startY + i * (lineHeight + spacing);
+    line.position = { x: startX, y: startY + i * (lineHeight + spacing) };
     app.stage.addChild(line);
     lines.push(line);
-
     const maskSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
     maskSprite.width = 0;
     maskSprite.height = lineHeight;
-    maskSprite.x = startX;
-    maskSprite.y = line.y;
+    maskSprite.position = { x: startX, y: line.y };
     app.stage.addChild(maskSprite);
-
     line.mask = maskSprite;
     masks.push(maskSprite);
   }
@@ -107,7 +102,6 @@ export async function initializeGame(app: PIXI.Application) {
       }
     }
   }
-  //console.log(textsData);
   gameData.textsData = textsData;
 
   gameData.CurrentSceneName = "opening";

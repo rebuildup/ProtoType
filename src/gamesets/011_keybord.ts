@@ -1,7 +1,6 @@
 import * as PIXI from "pixi.js";
 import { settings } from "../SiteInterface";
 import { replaceHash } from "./001_game_master";
-//import { GlowFilter } from "pixi-filters";
 import gsap from "gsap";
 
 export const keybords = [
@@ -81,20 +80,9 @@ export function Keyboard(app: PIXI.Application) {
     x: app.screen.width / 2,
     y: app.screen.height - 320,
   };
-  /*
-  const glowFilter = new GlowFilter({
-    distance: 28,
-    outerStrength: 20,
-    innerStrength: 0,
-    color: 0xffffff,
-    quality: 0.5,
-    alpha: 0.02,
-  });
-  */
 
   const container = new PIXI.Container();
   container.alpha = 0.2;
-  //container.filters = [glowFilter];
   app.stage.addChild(container);
 
   const offsetY = 100;
