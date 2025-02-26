@@ -3,7 +3,6 @@ export interface Issue {
   romaji: string;
 }
 import { ConversionTendencies } from "./008_generate_pattern";
-import * as PIXI from "pixi.js";
 import { RankingPlayer } from "./020_cacheControl";
 export interface GameData {
   CurrentSceneName: string;
@@ -13,7 +12,7 @@ export interface GameData {
   MaxScore: number;
   MaxKPM: number;
   score_extra: number;
-  Accuracy: number;
+
   Miss: number;
   GameMode: string;
   textsData: Issue[][];
@@ -31,10 +30,11 @@ export interface GameData {
   game_failure: boolean;
   instant_key_n: number;
   App_Filters: any[];
-  pass: PIXI.Graphics;
   IsLoggedin: boolean;
   current_Player_name: string;
   localRanking: RankingPlayer[];
+  missKeys: string[];
+  current_Player_id: number;
 }
 
 export const gameData: GameData = {
@@ -45,7 +45,6 @@ export const gameData: GameData = {
   MaxScore: 0,
   MaxKPM: 0,
   score_extra: 0,
-  Accuracy: 100.0,
   Miss: 0,
   GameMode: "nomal",
   textsData: [],
@@ -63,8 +62,9 @@ export const gameData: GameData = {
   game_failure: false,
   instant_key_n: 20,
   App_Filters: [],
-  pass: new PIXI.Graphics(),
   IsLoggedin: false,
   current_Player_name: "",
   localRanking: [],
+  missKeys: [],
+  current_Player_id: 100000,
 };

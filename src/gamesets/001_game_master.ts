@@ -107,7 +107,8 @@ export async function initializeGame(app: PIXI.Application) {
   }
   gameData.textsData = textsData;
 
-  gameData.CurrentSceneName = "opening";
+  //gameData.CurrentSceneName = "opening";
+  gameData.CurrentSceneName = "game_scene";
   gameData.GameMode = "nomal";
   gameData.FontFamily = settings.fontTheme.fontFamily;
   gameData.KeyLayout = settings.keyLayout;

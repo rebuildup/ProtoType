@@ -24,8 +24,8 @@ const anim_max_width = 100;
 export async function game_scene(app: PIXI.Application): Promise<void> {
   return new Promise(async (resolve) => {
     app.stage.removeChildren();
-
-    //app.stage.sortableChildren = true;
+    gameData.current_Player_name = "Temp Samuido";
+    gameData.current_Player_id++;
     let currentKeyController: AbortController | null = null;
     const BG_plane = new PIXI.Graphics();
     app.stage.addChild(BG_plane);
@@ -336,6 +336,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     gameData.Score = 0;
     gameData.MaxScore = 0;
     gameData.MaxKPM = 0;
+    gameData.missKeys = [];
 
     setTimeout(async () => {
       await makeIssues(3, 6, gameData.Issues_num);
@@ -382,9 +383,24 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               if (Ismiss) {
                 playMiss();
                 filterflash(app);
+                console.log(keyCode);
+                console.log(collectkeys);
                 gameData.Miss++;
                 gameData.combo_cnt = 0;
                 gameData.total_hit_cnt++;
+                let is_new_misskey = true;
+                for (let missc = 0; missc < gameData.missKeys.length; missc++) {
+                  if (
+                    keyCodeToText(keyCode.code, keyCode.shift) ==
+                    gameData.missKeys[missc]
+                  )
+                    is_new_misskey = false;
+                }
+                if (is_new_misskey) {
+                  gameData.missKeys.push(
+                    keyCodeToText(keyCode.code, keyCode.shift)
+                  );
+                }
               } else {
                 playCollect();
                 frame_anim(getTypingSpeed());
@@ -598,7 +614,6 @@ async function makeIssues(
       Issues.push(new_Issue);
     }
     gameData.Issues = Issues;
-    console.log(gameData.Issues);
     resolve();
   });
 }

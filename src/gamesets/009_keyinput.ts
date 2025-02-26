@@ -152,10 +152,11 @@ export function keyCodeToText(code: string, shift: boolean): string {
       output = shift ? "Z" : "z";
       break;
     case "Comma":
-      output = shift ? "*" : ":";
+      output = shift ? "<" : ",";
       break;
     case "Period":
       output = shift ? ">" : ".";
+
       break;
     case "Semicolon":
       output = shift ? "+" : ";";
