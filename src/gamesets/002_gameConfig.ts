@@ -4,6 +4,7 @@ export interface Issue {
 }
 import { ConversionTendencies } from "./008_generate_pattern";
 import * as PIXI from "pixi.js";
+import { RankingPlayer } from "./020_cacheControl";
 export interface GameData {
   CurrentSceneName: string;
   FontFamily: string;
@@ -31,7 +32,9 @@ export interface GameData {
   instant_key_n: number;
   App_Filters: any[];
   pass: PIXI.Graphics;
-  IsLoggedin: false;
+  IsLoggedin: boolean;
+  current_Player_name: string;
+  localRanking: RankingPlayer[];
 }
 
 export const gameData: GameData = {
@@ -62,4 +65,6 @@ export const gameData: GameData = {
   App_Filters: [],
   pass: new PIXI.Graphics(),
   IsLoggedin: false,
+  current_Player_name: "",
+  localRanking: [],
 };

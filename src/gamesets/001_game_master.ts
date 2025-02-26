@@ -23,9 +23,12 @@ import { BG_grid } from "./018_grid";
 import { settings } from "../SiteInterface";
 import { fetchTexts } from "./010_APIget";
 
+import { loadcache_localranking } from "./020_cacheControl";
+
 export async function initializeGame(app: PIXI.Application) {
   app.stage.removeChildren();
   BG_grid(app);
+  loadcache_localranking();
   const loading_text = new PIXI.Text({
     text: "Loading",
     style: {

@@ -3,6 +3,7 @@ import { gameData } from "./002_gameConfig";
 import { replaceHash } from "./001_game_master";
 import { settings } from "../SiteInterface";
 import { BG_grid } from "./018_grid";
+import { savecache_localranking } from "./020_cacheControl";
 
 export function result_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>((resolve) => {
@@ -12,7 +13,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     }
     app.stage.removeChildren();
     BG_grid(app);
-
+    savecache_localranking();
     const select_replay = new PIXI.Text({
       text: "リプレイ",
       style: {

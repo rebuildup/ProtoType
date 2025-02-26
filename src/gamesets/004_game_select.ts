@@ -163,6 +163,9 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       ease: "power4.out",
     });
 
+    // Variable to hold the current key input's AbortController
+    let currentKeyController: AbortController | null = null;
+
     function hideSceneElements() {
       gsap.to(wakuCircle.scale, {
         x: 1.2,
@@ -177,6 +180,8 @@ export async function game_select(app: PIXI.Application): Promise<void> {
         selectDotAcc,
         selectDotMain,
       ].forEach((el) => gsap.to(el, { alpha: 0, duration: 0.5 }));
+      // Abort any pending key input
+      currentKeyController?.abort();
     }
 
     function transitionToRecord() {
@@ -196,7 +201,9 @@ export async function game_select(app: PIXI.Application): Promise<void> {
         duration: 1,
         delay: 0.5,
       });
-      setTimeout(resolve, 1000);
+      setTimeout(() => {
+        resolve();
+      }, 1000);
     }
     function transitionToSetting() {
       hideSceneElements();
@@ -215,7 +222,9 @@ export async function game_select(app: PIXI.Application): Promise<void> {
         duration: 1,
         delay: 0.5,
       });
-      setTimeout(resolve, 1000);
+      setTimeout(() => {
+        resolve();
+      }, 1000);
     }
     async function transitionToGameModeSelect() {
       hideSceneElements();
@@ -240,9 +249,19 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       }, 1000);
     }
 
-    recordBtn.on("pointerdown", transitionToRecord);
-    settingSelectBtn.on("pointerdown", transitionToSetting);
-    gameSelectBtn.on("pointerdown", transitionToGameModeSelect);
+    // Pointer events cancel the pending key input
+    recordBtn.on("pointerdown", () => {
+      currentKeyController?.abort();
+      transitionToRecord();
+    });
+    settingSelectBtn.on("pointerdown", () => {
+      currentKeyController?.abort();
+      transitionToSetting();
+    });
+    gameSelectBtn.on("pointerdown", () => {
+      currentKeyController?.abort();
+      transitionToGameModeSelect();
+    });
 
     let selectedIndex = 1;
     const updateSelectDots = (index: number, isDown: boolean) => {
@@ -251,20 +270,39 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       animateSelectionDot(selectDotMain, targetY, isDown ? 0.03 : 0, isDown);
     };
 
+    // Main loop for keyboard input in game_select
     while (gameData.CurrentSceneName === "game_select") {
-      const keyCode = await getLatestKey();
-      if (["ArrowDown", "ArrowRight", "ShiftRight"].includes(keyCode.code)) {
-        playMiss();
-        selectedIndex = (selectedIndex + 1) % 3;
-        updateSelectDots(selectedIndex, true);
-      } else if (["ArrowUp", "ArrowLeft", "ShiftLeft"].includes(keyCode.code)) {
-        playMiss();
-        selectedIndex = (selectedIndex + 2) % 3;
-        updateSelectDots(selectedIndex, false);
-      } else if (["Enter", "Space"].includes(keyCode.code)) {
-        if (selectedIndex === 0) transitionToRecord();
-        else if (selectedIndex === 1) transitionToGameModeSelect();
-        else if (selectedIndex === 2) transitionToSetting();
+      currentKeyController = new AbortController();
+      try {
+        const keyCode = await getLatestKey(currentKeyController.signal);
+        if (["ArrowDown", "ArrowRight", "ShiftRight"].includes(keyCode.code)) {
+          playMiss(0.3);
+          selectedIndex = (selectedIndex + 1) % 3;
+          updateSelectDots(selectedIndex, true);
+        } else if (
+          ["ArrowUp", "ArrowLeft", "ShiftLeft"].includes(keyCode.code)
+        ) {
+          playMiss(0.3);
+          selectedIndex = (selectedIndex + 2) % 3;
+          updateSelectDots(selectedIndex, false);
+        } else if (["Enter", "Space"].includes(keyCode.code)) {
+          // Call transition based on the selected index
+          currentKeyController.abort();
+          if (selectedIndex === 0) {
+            transitionToRecord();
+          } else if (selectedIndex === 1) {
+            transitionToGameModeSelect();
+          } else if (selectedIndex === 2) {
+            transitionToSetting();
+          }
+        }
+      } catch (error: any) {
+        if (error.name === "AbortError") {
+          // Aborted: do nothing and break out if scene changed
+          break;
+        } else {
+          console.error(error);
+        }
       }
     }
   });
@@ -281,13 +319,18 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     const wakuCircle = app.stage.children.find(
       (child) => child.label === "waku_circle"
     );
-
     if (wakuCircle) {
-      gsap.fromTo(
-        wakuCircle.scale,
-        { x: 1.2, y: 1.2 },
-        { x: 0.95, y: 0.95, duration: 1.5, ease: "power4.out" }
-      );
+      wakuCircle.alpha = 0;
+      wakuCircle.scale = 1.2;
+    }
+    if (wakuCircle) {
+      wakuCircle.alpha = 1;
+      gsap.to(wakuCircle.scale, {
+        x: 0.95,
+        y: 0.95,
+        duration: 1.5,
+        ease: "power4.out",
+      });
     }
     if (circleAcc) {
       gsap.to(circleAcc, {
@@ -363,6 +406,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       );
       btn.position.set(pos.x, pos.y);
       btn.on("pointerdown", async () => {
+        currentKeyController?.abort();
         gameData.GameMode = item.mode;
         gameData.CurrentSceneName = "game_scene";
         resolve();
@@ -370,23 +414,42 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       app.stage.addChild(btn);
     });
 
+    // Variable to hold the current key input's AbortController
+    let currentKeyController: AbortController | null = null;
     let selectedModeIndex = 2;
+
+    // Main loop for keyboard input in game_mode_select_scene
     while (gameData.CurrentSceneName === "game_mode_select_scene") {
-      const keyCode = await getLatestKey();
-      if (["ArrowDown", "ArrowRight", "ShiftRight"].includes(keyCode.code)) {
-        selectedModeIndex = (selectedModeIndex + 1) % modes.length;
-        moveDot(selectedModeIndex);
-      } else if (["ArrowUp", "ArrowLeft", "ShiftLeft"].includes(keyCode.code)) {
-        selectedModeIndex =
-          (selectedModeIndex + modes.length - 1) % modes.length;
-        moveDot(selectedModeIndex);
-      } else if (keyCode.code === "Escape") {
-        gameData.CurrentSceneName = "game_select";
-        resolve();
-      } else if (["Enter", "Space"].includes(keyCode.code)) {
-        gameData.GameMode = modes[selectedModeIndex].mode;
-        gameData.CurrentSceneName = "game_scene";
-        resolve();
+      currentKeyController = new AbortController();
+      try {
+        const keyCode = await getLatestKey(currentKeyController.signal);
+        if (["ArrowDown", "ArrowRight", "ShiftRight"].includes(keyCode.code)) {
+          playMiss(0.3);
+          selectedModeIndex = (selectedModeIndex + 1) % modes.length;
+          moveDot(selectedModeIndex);
+        } else if (
+          ["ArrowUp", "ArrowLeft", "ShiftLeft"].includes(keyCode.code)
+        ) {
+          playMiss(0.3);
+          selectedModeIndex =
+            (selectedModeIndex + modes.length - 1) % modes.length;
+          moveDot(selectedModeIndex);
+        } else if (keyCode.code === "Escape") {
+          currentKeyController.abort();
+          gameData.CurrentSceneName = "game_select";
+          resolve();
+        } else if (["Enter", "Space"].includes(keyCode.code)) {
+          currentKeyController.abort();
+          gameData.GameMode = modes[selectedModeIndex].mode;
+          gameData.CurrentSceneName = "game_scene";
+          resolve();
+        }
+      } catch (error: any) {
+        if (error.name === "AbortError") {
+          break;
+        } else {
+          console.error(error);
+        }
       }
     }
   });

@@ -1,17 +1,36 @@
 //import { settings } from "../SiteInterface";
 //import { keyLayouts } from "../components/012_KeyLayout";
 //import { gameData } from "./002_gameConfig";
-export function getLatestKey(): Promise<{ code: string; shift: boolean }> {
-  return new Promise((resolve) => {
+export function getLatestKey(
+  signal: AbortSignal
+): Promise<{ code: string; shift: boolean }> {
+  return new Promise((resolve, reject) => {
+    // If the signal is already aborted, reject immediately
+    if (signal.aborted) {
+      reject(new DOMException("Aborted", "AbortError"));
+      return;
+    }
+
+    // Handler for the keydown event
     const handler = (event: KeyboardEvent) => {
+      // Remove the event listeners when a key is pressed
       window.removeEventListener("keydown", handler);
-      //console.log(event.code);
+      signal.removeEventListener("abort", abortHandler);
       resolve({
         code: event.code,
         shift: event.shiftKey,
       });
     };
+
+    // Handler for the abort event
+    const abortHandler = () => {
+      window.removeEventListener("keydown", handler);
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+
+    // Add the event listeners
     window.addEventListener("keydown", handler);
+    signal.addEventListener("abort", abortHandler);
   });
 }
 export function keyCodeToText(code: string, shift: boolean): string {

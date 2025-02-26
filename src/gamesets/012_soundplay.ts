@@ -20,6 +20,6 @@ export function playCollect() {
   playAudio(collect_Sound, 0.5);
 }
 
-export function playMiss() {
-  playAudio(miss_Sound, 0.5);
+export function playMiss(volume: number = 0.5) {
+  playAudio(miss_Sound, volume);
 }
