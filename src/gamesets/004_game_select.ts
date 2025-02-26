@@ -163,7 +163,6 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       ease: "power4.out",
     });
 
-    // Variable to hold the current key input's AbortController
     let currentKeyController: AbortController | null = null;
 
     function hideSceneElements() {
@@ -180,7 +179,6 @@ export async function game_select(app: PIXI.Application): Promise<void> {
         selectDotAcc,
         selectDotMain,
       ].forEach((el) => gsap.to(el, { alpha: 0, duration: 0.5 }));
-      // Abort any pending key input
       currentKeyController?.abort();
     }
 
@@ -249,7 +247,6 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       }, 1000);
     }
 
-    // Pointer events cancel the pending key input
     recordBtn.on("pointerdown", () => {
       currentKeyController?.abort();
       transitionToRecord();
@@ -270,7 +267,6 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       animateSelectionDot(selectDotMain, targetY, isDown ? 0.03 : 0, isDown);
     };
 
-    // Main loop for keyboard input in game_select
     while (gameData.CurrentSceneName === "game_select") {
       currentKeyController = new AbortController();
       try {
@@ -286,7 +282,6 @@ export async function game_select(app: PIXI.Application): Promise<void> {
           selectedIndex = (selectedIndex + 2) % 3;
           updateSelectDots(selectedIndex, false);
         } else if (["Enter", "Space"].includes(keyCode.code)) {
-          // Call transition based on the selected index
           currentKeyController.abort();
           if (selectedIndex === 0) {
             transitionToRecord();
@@ -298,7 +293,6 @@ export async function game_select(app: PIXI.Application): Promise<void> {
         }
       } catch (error: any) {
         if (error.name === "AbortError") {
-          // Aborted: do nothing and break out if scene changed
           break;
         } else {
           console.error(error);
@@ -414,11 +408,9 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       app.stage.addChild(btn);
     });
 
-    // Variable to hold the current key input's AbortController
     let currentKeyController: AbortController | null = null;
     let selectedModeIndex = 2;
 
-    // Main loop for keyboard input in game_mode_select_scene
     while (gameData.CurrentSceneName === "game_mode_select_scene") {
       currentKeyController = new AbortController();
       try {

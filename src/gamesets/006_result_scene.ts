@@ -1,4 +1,7 @@
 import * as PIXI from "pixi.js";
+import gsap from "gsap";
+import { PixiPlugin } from "gsap/PixiPlugin";
+PixiPlugin.registerPIXI(PIXI);
 import { gameData } from "./002_gameConfig";
 import { replaceHash } from "./001_game_master";
 import { settings } from "../SiteInterface";
@@ -8,6 +11,8 @@ import {
   insertLocalRanking,
   RankingPlayer,
 } from "./020_cacheControl";
+import { getLatestKey } from "./009_keyinput";
+import { playMiss } from "./012_soundplay";
 
 function createText(
   app: PIXI.Application,
@@ -63,7 +68,7 @@ function padNumber(num: number) {
 }
 
 export function result_scene(app: PIXI.Application): Promise<void> {
-  return new Promise<void>((resolve) => {
+  return new Promise<void>(async (resolve) => {
     if (!app.stage) {
       app.stage = new PIXI.Container();
     }
@@ -318,7 +323,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       result_t_f_s,
       align_opt.left
     );
-    console.log(gameData.missKeys);
+
     let misskey_text_out = "無し";
     if (gameData.missKeys.length > 0) {
       misskey_text_out = gameData.missKeys[0];
@@ -344,17 +349,16 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       text: "リトライ",
       style: {
         fontFamily: gameData.FontFamily,
-        fontSize: 38,
+        fontSize: 32,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
       },
     });
-    select_replay.x = app.screen.width - select_replay.width - 100;
+    select_replay.x = app.screen.width - select_replay.width - 130;
     select_replay.y = app.screen.height - select_replay.height / 2 - 190;
     select_replay.interactive = true;
     select_replay.on("pointerdown", async () => {
-      gameData.CurrentSceneName = "game_scene";
-      resolve();
+      retry();
     });
     app.stage.addChild(select_replay);
 
@@ -362,35 +366,101 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       text: "ゲーム選択に戻る",
       style: {
         fontFamily: gameData.FontFamily,
-        fontSize: 38,
+        fontSize: 32,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
       },
     });
-    select_select.x = app.screen.width - select_select.width - 100;
+    select_select.x = app.screen.width - select_select.width - 130;
     select_select.y = app.screen.height - select_select.height / 2 - 120;
     select_select.interactive = true;
     select_select.on("pointerdown", async () => {
+      over();
+    });
+    function retry() {
+      currentKeyController?.abort();
+      gameData.CurrentSceneName = "game_scene";
+      resolve();
+    }
+    function over() {
+      currentKeyController?.abort();
       gameData.CurrentSceneName = "game_select";
       resolve();
-    });
+    }
     app.stage.addChild(select_select);
+    const selectDotAcc = new PIXI.Graphics();
+    selectDotAcc.circle(0, 0, 8);
+    selectDotAcc.x = app.screen.width - 110;
+    selectDotAcc.y = app.screen.height - 190;
+    selectDotAcc.fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    selectDotAcc.stroke({
+      width: 4,
+      color: replaceHash(settings.colorTheme.colors.MainAccent),
+    });
+    app.stage.addChild(selectDotAcc);
+    gsap.fromTo(
+      selectDotAcc,
+      { alpha: 0 },
+      { alpha: 1, duration: 2, ease: "power3.out" }
+    );
+    function dot_anim(y: number) {
+      gsap.to(selectDotAcc, {
+        y: y,
+        duration: 0.5,
+        ease: "power4.out",
+      });
+    }
+    let currentKeyController: AbortController | null = null;
+    let select = 0;
+    while (gameData.CurrentSceneName === "result_scene") {
+      currentKeyController = new AbortController();
+      try {
+        const keyCode = await getLatestKey(currentKeyController.signal);
+        if (
+          [
+            "ArrowDown",
+            "ArrowRight",
+            "ShiftRight",
+            "ArrowUp",
+            "ArrowLeft",
+            "ShiftLeft",
+          ].includes(keyCode.code)
+        ) {
+          playMiss(0.3);
+          select = select == 0 ? 1 : 0;
+          switch (select) {
+            case 0:
+              dot_anim(app.screen.height - 190);
+              break;
+            case 1:
+              dot_anim(app.screen.height - 120);
+              break;
+            default:
+              dot_anim(app.screen.height - 190);
+              break;
+          }
+        } else if (["Escape", "KeyR"].includes(keyCode.code)) {
+          retry();
+        } else if (["Enter", "Space"].includes(keyCode.code)) {
+          switch (select) {
+            case 0:
+              retry();
+              break;
+            case 1:
+              over();
+              break;
+            default:
+              over();
+              break;
+          }
+        }
+      } catch (error: any) {
+        if (error.name === "AbortError") {
+          break;
+        } else {
+          console.error(error);
+        }
+      }
+    }
   });
 }
-/*
- const combo_text = new PIXI.Text({
-      text: "30",
-      style: {
-        fontFamily: getProp("FontFamily"),
-        fontSize: 100,
-        fill: replaceHash(settings.colorTheme.colors.MainColor),
-        align: "center",
-      },
-    });
-    combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
-    combo_text.y = win_pos.y - combo_text.height / 2;
-    app.stage.addChild(combo_text);
-
-
-
-*/
