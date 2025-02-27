@@ -8,7 +8,11 @@ import { Keyboard, keybord_size, scale } from "./011_keybord";
 
 import { settings } from "../SiteInterface";
 
-import { getLatestKey, keyCodeToText } from "./009_keyinput";
+import {
+  getLatestKey,
+  keyCodeToText,
+  light_key_from_code,
+} from "./009_keyinput";
 import { loadcache_localranking } from "./020_cacheControl";
 
 import {
@@ -383,6 +387,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               if (Ismiss) {
                 playMiss();
                 filterflash(app);
+                light_key_from_code(app, keyCode.code);
                 console.log(keyCode);
                 console.log(collectkeys);
                 gameData.Miss++;

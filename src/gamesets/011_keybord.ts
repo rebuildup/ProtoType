@@ -107,6 +107,7 @@ export function Keyboard(app: PIXI.Application) {
         .rect(1, 1, w * scale, h * scale)
         .fill(replaceHash(settings.colorTheme.colors.MainAccent));
       accentKey.zIndex = 50;
+      accentKey.alpha = 0.5;
       keyContainer.addChild(accentKey);
     }
 
@@ -128,4 +129,45 @@ export function Keyboard(app: PIXI.Application) {
       delay: i * delayIncrement,
     });
   }
+}
+export function light_key(app: PIXI.Application, index: number) {
+  const keyData = keybords[index];
+  if (!keyData) {
+    return;
+  }
+  const [w, h, keyX, keyY] = keyData;
+
+  const keybord_pos = {
+    x: app.screen.width / 2,
+    y: app.screen.height - 320,
+  };
+
+  const finalX =
+    keyX * scale - (keybord_size.width * scale) / 2 + keybord_pos.x;
+  const finalY =
+    keyY * scale - (keybord_size.height * scale) / 2 + keybord_pos.y;
+
+  const lightContainer = new PIXI.Container();
+  lightContainer.x = finalX;
+  lightContainer.y = finalY;
+  lightContainer.alpha = 1;
+
+  const lightKey = new PIXI.Graphics();
+  lightKey
+    .rect(0, 0, w * scale, h * scale)
+    .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+
+  lightContainer.addChild(lightKey);
+
+  app.stage.addChild(lightContainer);
+
+  gsap.to(lightContainer, {
+    duration: 0.5,
+    alpha: 0,
+    ease: "power2.out",
+    onComplete: () => {
+      app.stage.removeChild(lightContainer);
+      lightContainer.destroy({ children: true });
+    },
+  });
 }

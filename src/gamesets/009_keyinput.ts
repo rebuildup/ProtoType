@@ -1,19 +1,15 @@
-//import { settings } from "../SiteInterface";
-//import { keyLayouts } from "../components/012_KeyLayout";
-//import { gameData } from "./002_gameConfig";
+import { settings } from "../SiteInterface";
+import { keyLayouts } from "../components/012_KeyLayout";
+import { gameData } from "./002_gameConfig";
 export function getLatestKey(
   signal: AbortSignal
 ): Promise<{ code: string; shift: boolean }> {
   return new Promise((resolve, reject) => {
-    // If the signal is already aborted, reject immediately
     if (signal.aborted) {
       reject(new DOMException("Aborted", "AbortError"));
       return;
     }
-
-    // Handler for the keydown event
     const handler = (event: KeyboardEvent) => {
-      // Remove the event listeners when a key is pressed
       window.removeEventListener("keydown", handler);
       signal.removeEventListener("abort", abortHandler);
       resolve({
@@ -21,175 +17,265 @@ export function getLatestKey(
         shift: event.shiftKey,
       });
     };
-
-    // Handler for the abort event
     const abortHandler = () => {
       window.removeEventListener("keydown", handler);
       reject(new DOMException("Aborted", "AbortError"));
     };
-
-    // Add the event listeners
     window.addEventListener("keydown", handler);
     signal.addEventListener("abort", abortHandler);
   });
 }
 export function keyCodeToText(code: string, shift: boolean): string {
-  //let imported_layout = {};
+  const root_layout = keyLayouts.find(
+    (layout) => layout.name === settings.keyLayout
+  ) as KeyboardLayout;
+  const play_layout = keyLayouts.find(
+    (layout) => layout.name === gameData.KeyLayout
+  ) as KeyboardLayout;
   let output = "";
-  /*
-  for (let i = 0; i < keyLayouts.length; i++) {
-    if (settings.keyLayout == keyLayouts[i].name)
-      imported_layout = keyLayouts[i];
-  }
-*/
   switch (code) {
     case "Digit1":
-      output = shift ? "!" : "1";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "1") as string)
+        : (mapKey(root_layout, play_layout, "1") as string);
       break;
     case "Digit2":
-      output = shift ? '"' : "2";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "2") as string)
+        : (mapKey(root_layout, play_layout, "2") as string);
       break;
     case "Digit3":
-      output = shift ? "#" : "3";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "3") as string)
+        : (mapKey(root_layout, play_layout, "3") as string);
       break;
     case "Digit4":
-      output = shift ? "$" : "4";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "4") as string)
+        : (mapKey(root_layout, play_layout, "4") as string);
       break;
     case "Digit5":
-      output = shift ? "%" : "5";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "5") as string)
+        : (mapKey(root_layout, play_layout, "5") as string);
       break;
     case "Digit6":
-      output = shift ? "&" : "6";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "6") as string)
+        : (mapKey(root_layout, play_layout, "6") as string);
       break;
     case "Digit7":
-      output = shift ? "'" : "7";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "7") as string)
+        : (mapKey(root_layout, play_layout, "7") as string);
       break;
     case "Digit8":
-      output = shift ? "(" : "8";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "8") as string)
+        : (mapKey(root_layout, play_layout, "8") as string);
       break;
     case "Digit9":
-      output = shift ? ")" : "9";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "9") as string)
+        : (mapKey(root_layout, play_layout, "9") as string);
       break;
     case "Digit0":
-      output = shift ? "" : "0";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "0") as string)
+        : (mapKey(root_layout, play_layout, "0") as string);
       break;
     case "KeyA":
-      output = shift ? "A" : "a";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "a") as string)
+        : (mapKey(root_layout, play_layout, "a") as string);
       break;
     case "KeyB":
-      output = shift ? "B" : "b";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "b") as string)
+        : (mapKey(root_layout, play_layout, "b") as string);
       break;
     case "KeyC":
-      output = shift ? "C" : "c";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "c") as string)
+        : (mapKey(root_layout, play_layout, "c") as string);
       break;
     case "KeyD":
-      output = shift ? "D" : "d";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "d") as string)
+        : (mapKey(root_layout, play_layout, "d") as string);
       break;
     case "KeyE":
-      output = shift ? "E" : "e";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "e") as string)
+        : (mapKey(root_layout, play_layout, "e") as string);
       break;
     case "KeyF":
-      output = shift ? "F" : "f";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "f") as string)
+        : (mapKey(root_layout, play_layout, "f") as string);
       break;
     case "KeyG":
-      output = shift ? "G" : "g";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "g") as string)
+        : (mapKey(root_layout, play_layout, "g") as string);
       break;
     case "KeyH":
-      output = shift ? "H" : "h";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "h") as string)
+        : (mapKey(root_layout, play_layout, "h") as string);
       break;
     case "KeyI":
-      output = shift ? "I" : "i";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "i") as string)
+        : (mapKey(root_layout, play_layout, "i") as string);
       break;
     case "KeyJ":
-      output = shift ? "J" : "j";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "j") as string)
+        : (mapKey(root_layout, play_layout, "j") as string);
       break;
     case "KeyK":
-      output = shift ? "K" : "k";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "k") as string)
+        : (mapKey(root_layout, play_layout, "k") as string);
       break;
     case "KeyL":
-      output = shift ? "L" : "l";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "l") as string)
+        : (mapKey(root_layout, play_layout, "l") as string);
       break;
     case "KeyM":
-      output = shift ? "M" : "m";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "m") as string)
+        : (mapKey(root_layout, play_layout, "m") as string);
       break;
     case "KeyN":
-      output = shift ? "N" : "n";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "n") as string)
+        : (mapKey(root_layout, play_layout, "n") as string);
       break;
     case "KeyO":
-      output = shift ? "O" : "o";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "o") as string)
+        : (mapKey(root_layout, play_layout, "o") as string);
       break;
     case "KeyP":
-      output = shift ? "P" : "p";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "p") as string)
+        : (mapKey(root_layout, play_layout, "p") as string);
       break;
     case "KeyQ":
-      output = shift ? "Q" : "q";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "q") as string)
+        : (mapKey(root_layout, play_layout, "q") as string);
       break;
     case "KeyR":
-      output = shift ? "R" : "r";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "r") as string)
+        : (mapKey(root_layout, play_layout, "r") as string);
       break;
     case "KeyS":
-      output = shift ? "S" : "s";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "s") as string)
+        : (mapKey(root_layout, play_layout, "s") as string);
       break;
     case "KeyT":
-      output = shift ? "T" : "t";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "t") as string)
+        : (mapKey(root_layout, play_layout, "t") as string);
       break;
     case "KeyU":
-      output = shift ? "U" : "u";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "u") as string)
+        : (mapKey(root_layout, play_layout, "u") as string);
       break;
     case "KeyV":
-      output = shift ? "V" : "v";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "v") as string)
+        : (mapKey(root_layout, play_layout, "v") as string);
       break;
     case "KeyW":
-      output = shift ? "W" : "w";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "w") as string)
+        : (mapKey(root_layout, play_layout, "w") as string);
       break;
     case "KeyX":
-      output = shift ? "X" : "x";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "x") as string)
+        : (mapKey(root_layout, play_layout, "x") as string);
       break;
     case "KeyY":
-      output = shift ? "Y" : "y";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "y") as string)
+        : (mapKey(root_layout, play_layout, "y") as string);
       break;
     case "KeyZ":
-      output = shift ? "Z" : "z";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "z") as string)
+        : (mapKey(root_layout, play_layout, "z") as string);
       break;
     case "Comma":
-      output = shift ? "<" : ",";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, ",") as string)
+        : (mapKey(root_layout, play_layout, ",") as string);
       break;
     case "Period":
-      output = shift ? ">" : ".";
-
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, ".") as string)
+        : (mapKey(root_layout, play_layout, ".") as string);
       break;
     case "Semicolon":
-      output = shift ? "+" : ";";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, ";") as string)
+        : (mapKey(root_layout, play_layout, ";") as string);
       break;
     case "Quote":
-      output = shift ? "*" : ":";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, ":") as string)
+        : (mapKey(root_layout, play_layout, ":") as string);
       break;
     case "BracketLeft":
-      output = shift ? "`" : "@";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "@") as string)
+        : (mapKey(root_layout, play_layout, "@") as string);
       break;
     case "BracketRight":
-      output = shift ? "{" : "[";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "[") as string)
+        : (mapKey(root_layout, play_layout, "[") as string);
       break;
     case "Backquote":
-      output = "`";
+      output = mapKey(root_layout, play_layout, "`") as string;
       break;
     case "Backslash":
-      output = shift ? "}" : "]";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "]") as string)
+        : (mapKey(root_layout, play_layout, "]") as string);
       break;
     case "Slash":
-      output = shift ? "?" : "/";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "/") as string)
+        : (mapKey(root_layout, play_layout, "/") as string);
       break;
     case "Minus":
-      output = shift ? "=" : "-";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "-") as string)
+        : (mapKey(root_layout, play_layout, "-") as string);
       break;
     case "Equal":
-      output = shift ? "~" : "^";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "^") as string)
+        : (mapKey(root_layout, play_layout, "^") as string);
       break;
     case "IntlYen":
-      output = shift ? "|" : "\\";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "\\") as string, false)
+        : (mapKey(root_layout, play_layout, "\\") as string);
       break;
     case "IntlRo":
-      output = shift ? "_" : "\\";
+      output = shift
+        ? shift_get(mapKey(root_layout, play_layout, "\\") as string, true)
+        : (mapKey(root_layout, play_layout, "\\") as string);
       break;
     case "Space":
       output = " ";
@@ -243,14 +329,550 @@ export function keyCodeToText(code: string, shift: boolean): string {
       output = "";
       break;
   }
-
   return output;
 }
-/*
-// Usage example with the getLatestKey function:
-async function handleKeyPress() {
-  const { code, shift } = await getLatestKey();
-  const text = keyCodeToText(code, shift);
-  console.log(`Key pressed: ${text}`);
+function shift_get(input_char: string, backs: boolean = true) {
+  switch (input_char) {
+    case "1":
+      return "!";
+      break;
+    case "2":
+      return '"';
+      break;
+    case "3":
+      return "#";
+      break;
+    case "4":
+      return "$";
+      break;
+    case "5":
+      return "%";
+      break;
+    case "6":
+      return "&";
+      break;
+    case "7":
+      return "'";
+      break;
+    case "8":
+      return "(";
+      break;
+    case "9":
+      return ")";
+      break;
+    case "0":
+      return "";
+      break;
+    case "a":
+      return "A";
+      break;
+    case "b":
+      return "B";
+      break;
+    case "c":
+      return "C";
+      break;
+    case "d":
+      return "D";
+      break;
+    case "e":
+      return "E";
+      break;
+    case "f":
+      return "F";
+      break;
+    case "g":
+      return "G";
+      break;
+    case "h":
+      return "H";
+      break;
+    case "i":
+      return "I";
+      break;
+    case "j":
+      return "J";
+      break;
+    case "k":
+      return "K";
+      break;
+    case "l":
+      return "L";
+      break;
+    case "m":
+      return "M";
+      break;
+    case "n":
+      return "N";
+      break;
+    case "o":
+      return "O";
+      break;
+    case "p":
+      return "P";
+      break;
+    case "q":
+      return "Q";
+      break;
+    case "r":
+      return "R";
+      break;
+    case "s":
+      return "S";
+      break;
+    case "t":
+      return "T";
+      break;
+    case "u":
+      return "U";
+      break;
+    case "v":
+      return "V";
+      break;
+    case "w":
+      return "W";
+      break;
+    case "x":
+      return "X";
+      break;
+    case "y":
+      return "Y";
+      break;
+    case "z":
+      return "Z";
+      break;
+    case ",":
+      return "<";
+      break;
+    case ".":
+      return ">";
+      break;
+    case ";":
+      return "+";
+      break;
+    case ":":
+      return "*";
+      break;
+    case "@":
+      return "`";
+      break;
+    case "[":
+      return "{";
+      break;
+    case "]":
+      return "}";
+      break;
+    case "/":
+      return "?";
+      break;
+    case "-":
+      return "=";
+      break;
+    case "^":
+      return "~";
+      break;
+    case "\\":
+      return backs ? "_" : "|";
+      break;
+    default:
+      return "";
+      break;
+  }
 }
-*/
+interface KeyboardLayout {
+  name: string;
+  layout: string[][];
+}
+function mapKey(
+  source: KeyboardLayout,
+  target: KeyboardLayout,
+  key: string
+): string | undefined {
+  for (let rowIndex = 0; rowIndex < source.layout.length; rowIndex++) {
+    const row = source.layout[rowIndex];
+    const colIndex = row.findIndex(
+      (item) => item.toLowerCase() === key.toLowerCase()
+    );
+    if (colIndex !== -1) {
+      if (
+        target.layout[rowIndex] &&
+        target.layout[rowIndex][colIndex] !== undefined
+      ) {
+        let mappedKey = target.layout[rowIndex][colIndex];
+        if (key === key.toLowerCase() && /^[A-Z]$/.test(mappedKey)) {
+          mappedKey = mappedKey.toLowerCase();
+        }
+        return mappedKey;
+      }
+    }
+  }
+  return undefined;
+}
+
+import { light_key } from "./011_keybord";
+import * as PIXI from "pixi.js";
+export function light_key_from_code(app: PIXI.Application, code: string) {
+  let index = 0;
+  const root_layout = keyLayouts.find(
+    (layout) => layout.name === settings.keyLayout
+  ) as KeyboardLayout;
+  const play_layout = keyLayouts.find(
+    (layout) => layout.name === "QWERTY"
+  ) as KeyboardLayout;
+  let output = "";
+  switch (code) {
+    case "Digit1":
+      output = mapKey(root_layout, play_layout, "1") as string;
+      break;
+    case "Digit2":
+      output = mapKey(root_layout, play_layout, "2") as string;
+      break;
+    case "Digit3":
+      output = mapKey(root_layout, play_layout, "3") as string;
+      break;
+    case "Digit4":
+      output = mapKey(root_layout, play_layout, "4") as string;
+      break;
+    case "Digit5":
+      output = mapKey(root_layout, play_layout, "5") as string;
+      break;
+    case "Digit6":
+      output = mapKey(root_layout, play_layout, "6") as string;
+      break;
+    case "Digit7":
+      output = mapKey(root_layout, play_layout, "7") as string;
+      break;
+    case "Digit8":
+      output = mapKey(root_layout, play_layout, "8") as string;
+      break;
+    case "Digit9":
+      output = mapKey(root_layout, play_layout, "9") as string;
+      break;
+    case "Digit0":
+      output = mapKey(root_layout, play_layout, "0") as string;
+      break;
+    case "KeyA":
+      output = mapKey(root_layout, play_layout, "a") as string;
+      break;
+    case "KeyB":
+      output = mapKey(root_layout, play_layout, "b") as string;
+      break;
+    case "KeyC":
+      output = mapKey(root_layout, play_layout, "c") as string;
+      break;
+    case "KeyD":
+      output = mapKey(root_layout, play_layout, "d") as string;
+      break;
+    case "KeyE":
+      output = mapKey(root_layout, play_layout, "e") as string;
+      break;
+    case "KeyF":
+      output = mapKey(root_layout, play_layout, "f") as string;
+      break;
+    case "KeyG":
+      output = mapKey(root_layout, play_layout, "g") as string;
+      break;
+    case "KeyH":
+      output = mapKey(root_layout, play_layout, "h") as string;
+      break;
+    case "KeyI":
+      output = mapKey(root_layout, play_layout, "i") as string;
+      break;
+    case "KeyJ":
+      output = mapKey(root_layout, play_layout, "j") as string;
+      break;
+    case "KeyK":
+      output = mapKey(root_layout, play_layout, "k") as string;
+      break;
+    case "KeyL":
+      output = mapKey(root_layout, play_layout, "l") as string;
+      break;
+    case "KeyM":
+      output = mapKey(root_layout, play_layout, "m") as string;
+      break;
+    case "KeyN":
+      output = mapKey(root_layout, play_layout, "n") as string;
+      break;
+    case "KeyO":
+      output = mapKey(root_layout, play_layout, "o") as string;
+      break;
+    case "KeyP":
+      output = mapKey(root_layout, play_layout, "p") as string;
+      break;
+    case "KeyQ":
+      output = mapKey(root_layout, play_layout, "q") as string;
+      break;
+    case "KeyR":
+      output = mapKey(root_layout, play_layout, "r") as string;
+      break;
+    case "KeyS":
+      output = mapKey(root_layout, play_layout, "s") as string;
+      break;
+    case "KeyT":
+      output = mapKey(root_layout, play_layout, "t") as string;
+      break;
+    case "KeyU":
+      output = mapKey(root_layout, play_layout, "u") as string;
+      break;
+    case "KeyV":
+      output = mapKey(root_layout, play_layout, "v") as string;
+      break;
+    case "KeyW":
+      output = mapKey(root_layout, play_layout, "w") as string;
+      break;
+    case "KeyX":
+      output = mapKey(root_layout, play_layout, "x") as string;
+      break;
+    case "KeyY":
+      output = mapKey(root_layout, play_layout, "y") as string;
+      break;
+    case "KeyZ":
+      output = mapKey(root_layout, play_layout, "z") as string;
+      break;
+    case "Comma":
+      output = mapKey(root_layout, play_layout, ",") as string;
+      break;
+    case "Period":
+      output = mapKey(root_layout, play_layout, ".") as string;
+      break;
+    case "Semicolon":
+      output = mapKey(root_layout, play_layout, ";") as string;
+      break;
+    case "Quote":
+      output = mapKey(root_layout, play_layout, ":") as string;
+      break;
+    case "BracketLeft":
+      output = mapKey(root_layout, play_layout, "@") as string;
+      break;
+    case "BracketRight":
+      output = mapKey(root_layout, play_layout, "[") as string;
+      break;
+    case "Backquote":
+      output = mapKey(root_layout, play_layout, "`") as string;
+      break;
+    case "Backslash":
+      output = mapKey(root_layout, play_layout, "]") as string;
+      break;
+    case "Slash":
+      output = mapKey(root_layout, play_layout, "/") as string;
+      break;
+    case "Minus":
+      output = mapKey(root_layout, play_layout, "-") as string;
+      break;
+    case "Equal":
+      output = mapKey(root_layout, play_layout, "^") as string;
+      break;
+    case "IntlYen":
+      output = mapKey(root_layout, play_layout, "\\") as string;
+      break;
+    case "IntlRo":
+      output = mapKey(root_layout, play_layout, "\\") as string;
+      break;
+    case "Space":
+      output = " ";
+      break;
+    case "Numpad0":
+      output = "0";
+      break;
+    case "Numpad1":
+      output = "1";
+      break;
+    case "Numpad2":
+      output = "2";
+      break;
+    case "Numpad3":
+      output = "3";
+      break;
+    case "Numpad4":
+      output = "4";
+      break;
+    case "Numpad5":
+      output = "5";
+      break;
+    case "Numpad6":
+      output = "6";
+      break;
+    case "Numpad7":
+      output = "7";
+      break;
+    case "Numpad8":
+      output = "8";
+      break;
+    case "Numpad9":
+      output = "9";
+      break;
+    case "NumpadComma":
+      output = ".";
+      break;
+    case "NumpadDivide":
+      output = "/";
+      break;
+    case "NumpadMultply":
+      output = "*";
+      break;
+    case "NumpadSubtract":
+      output = "-";
+      break;
+    case "NumpadAdd":
+      output = "+";
+      break;
+    default:
+      output = "";
+      break;
+  }
+  switch (output) {
+    case "1":
+      index = 1;
+      break;
+    case "2":
+      index = 2;
+      break;
+    case "3":
+      index = 3;
+      break;
+    case "4":
+      index = 4;
+      break;
+    case "5":
+      index = 5;
+      break;
+    case "6":
+      index = 6;
+      break;
+    case "7":
+      index = 7;
+      break;
+    case "8":
+      index = 8;
+      break;
+    case "9":
+      index = 9;
+      break;
+    case "0":
+      index = 10;
+      break;
+    case "a":
+      index = 30;
+      break;
+    case "b":
+      index = 48;
+      break;
+    case "c":
+      index = 46;
+      break;
+    case "d":
+      index = 32;
+      break;
+    case "e":
+      index = 18;
+      break;
+    case "f":
+      index = 33;
+      break;
+    case "g":
+      index = 34;
+      break;
+    case "h":
+      index = 35;
+      break;
+    case "i":
+      index = 23;
+      break;
+    case "j":
+      index = 36;
+      break;
+    case "k":
+      index = 37;
+      break;
+    case "l":
+      index = 38;
+      break;
+    case "m":
+      index = 50;
+      break;
+    case "n":
+      index = 49;
+      break;
+    case "o":
+      index = 24;
+      break;
+    case "p":
+      index = 25;
+      break;
+    case "q":
+      index = 16;
+      break;
+    case "r":
+      index = 19;
+      break;
+    case "s":
+      index = 31;
+      break;
+    case "t":
+      index = 20;
+      break;
+    case "u":
+      index = 22;
+      break;
+    case "v":
+      index = 47;
+      break;
+    case "w":
+      index = 17;
+      break;
+    case "x":
+      index = 45;
+      break;
+    case "y":
+      index = 21;
+      break;
+    case "z":
+      index = 44;
+      break;
+    case ",":
+      index = 51;
+      break;
+    case ".":
+      index = 52;
+      break;
+    case ";":
+      index = 39;
+      break;
+    case ":":
+      index = 40;
+      break;
+    case "@":
+      index = 26;
+      break;
+    case "[":
+      index = 27;
+      break;
+    case "`":
+      index = 15;
+      break;
+    case "]":
+      index = 41;
+      break;
+    case "/":
+      index = 53;
+      break;
+    case "-":
+      index = 11;
+      break;
+    case "^":
+      index = 12;
+      break;
+    case "\\":
+      if (code == "IntlYen") index = 13;
+      else index = 54;
+
+      break;
+    case " ":
+      index = 60;
+      break;
+    default:
+      index = 28;
+      break;
+  }
+  light_key(app, index);
+}

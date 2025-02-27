@@ -1,5 +1,5 @@
 import { useState, useLayoutEffect } from "react";
-import { saveToCache, loadFromCache } from "../SiteInterface.ts";
+import { saveToCache, loadFromCache, updateSetting } from "../SiteInterface.ts";
 
 // キー配列のリスト
 export const keyLayouts = [
@@ -26,7 +26,7 @@ export const keyLayouts = [
     layout: [
       ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "/", "^", "\\"],
       ["Q", "L", "U", ",", ".", "F", "W", "R", "Y", "P", "@", "["],
-      ["E", "I", "A", "O", "=", "K", "T", "N", "S", "H", ":", "]"],
+      ["E", "I", "A", "O", "-", "K", "T", "N", "S", "H", ":", "]"],
       ["Z", "X", "C", "V", ";", "G", "D", "M", "J", "B", "\\"],
     ],
   },
@@ -74,6 +74,7 @@ export default function KeyLayoutSelector() {
     setSelectedLayout(layout);
     document.documentElement.setAttribute("data-keylayout", layout);
     saveToCache("keyLayout", layout);
+    updateSetting("keyLayout", layout);
   };
 
   return (

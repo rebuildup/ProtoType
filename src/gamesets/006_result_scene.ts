@@ -439,7 +439,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
               dot_anim(app.screen.height - 190);
               break;
           }
-        } else if (["Escape", "KeyR"].includes(keyCode.code)) {
+        } else if (["Escape"].includes(keyCode.code)) {
           retry();
         } else if (["Enter", "Space"].includes(keyCode.code)) {
           switch (select) {
