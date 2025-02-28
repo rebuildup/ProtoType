@@ -12,6 +12,7 @@ import {
   getLatestKey,
   keyCodeToText,
   light_key_from_code,
+  acc_key_from_code,
 } from "./009_keyinput";
 import { loadcache_localranking } from "./020_cacheControl";
 
@@ -343,7 +344,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     gameData.missKeys = [];
 
     setTimeout(async () => {
-      await makeIssues(3, 6, gameData.Issues_num);
+      //await makeIssues(3, 6, gameData.Issues_num);
+      await makeIssues(14, 14, gameData.Issues_num);
       loadcache_localranking();
       setTimeout(() => {
         app.stage.removeChild(load_text);
@@ -351,19 +353,22 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       while (gameData.CurrentSceneName == "game_scene") {
         currentKeyController = new AbortController();
         try {
-          const keyCode = await getLatestKey(currentKeyController.signal);
-
           if (gameData.IsStarted) {
+            let collectkeys = getNextKeysOptimized(
+              gameData.Issues[gameData.current_Issue].romaji,
+              gameData.current_inputed
+            );
+            for (let collec = 0; collec < collectkeys.length; collec++) {
+              acc_key_from_code(app, collectkeys[collec].letter, true);
+            }
+            const keyCode = await getLatestKey(currentKeyController.signal);
             if (keyCode.code === "Escape") {
               gameData.CurrentSceneName = "reload_game";
               gameData.EndTime = Date.now();
               currentKeyController?.abort();
               resolve();
             }
-            let collectkeys = getNextKeysOptimized(
-              gameData.Issues[gameData.current_Issue].romaji,
-              gameData.current_inputed
-            );
+
             if (keyCodeToText(keyCode.code, keyCode.shift) != "") {
               let Ismiss = true;
               for (let i = 0; i < collectkeys.length; i++) {
@@ -386,6 +391,9 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               }
               if (Ismiss) {
                 playMiss();
+                for (let i = 0; i < collectkeys.length; i++) {
+                  acc_key_from_code(app, collectkeys[i].letter, false);
+                }
                 filterflash(app);
                 light_key_from_code(app, keyCode.code);
                 console.log(keyCode);
@@ -408,6 +416,9 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 }
               } else {
                 playCollect();
+                for (let i = 0; i < collectkeys.length; i++) {
+                  acc_key_from_code(app, collectkeys[i].letter, false);
+                }
                 frame_anim(getTypingSpeed());
                 gameData.combo_cnt++;
                 if (gameData.combo_cnt > gameData.max_combo)
@@ -514,6 +525,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             kpm_text.x =
               win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
           } else {
+            const keyCode = await getLatestKey(currentKeyController.signal);
             if (keyCode.code === "Escape") {
               gameData.CurrentSceneName = "game_select";
               gameData.EndTime = Date.now();

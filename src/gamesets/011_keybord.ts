@@ -2,6 +2,7 @@ import * as PIXI from "pixi.js";
 import { settings } from "../SiteInterface";
 import { replaceHash } from "./001_game_master";
 import gsap from "gsap";
+import { gameData } from "./002_gameConfig";
 
 export const keybords = [
   [26, 28, 0, 0],
@@ -170,4 +171,51 @@ export function light_key(app: PIXI.Application, index: number) {
       lightContainer.destroy({ children: true });
     },
   });
+}
+const Acc_Key_Container = new PIXI.Container();
+export function update_Acc_key(app: PIXI.Application) {
+  // Remove the previous highlight container from the stage
+  if (app.stage.children.includes(Acc_Key_Container)) {
+    app.stage.removeChild(Acc_Key_Container);
+  }
+  // Clear all children from the global container
+  Acc_Key_Container.removeChildren();
+
+  // Iterate over each key index in gameData.acc_keys
+  for (let i = 0; i < gameData.acc_keys.length; i++) {
+    const keyData = keybords[gameData.acc_keys[i]];
+    if (!keyData) {
+      // Skip if the key data is not available
+      continue;
+    }
+    const [w, h, keyX, keyY] = keyData;
+
+    // Create a new container for each highlighted key
+    const keyContainer = new PIXI.Container();
+
+    // Calculate the key position relative to the stage
+    const keybord_pos = {
+      x: app.screen.width / 2,
+      y: app.screen.height - 320,
+    };
+    keyContainer.x =
+      keyX * scale - (keybord_size.width * scale) / 2 + keybord_pos.x;
+    keyContainer.y =
+      keyY * scale - (keybord_size.height * scale) / 2 + keybord_pos.y;
+    keyContainer.alpha = 1;
+
+    // Create the highlighted key graphic
+    const lightKey = new PIXI.Graphics();
+    lightKey
+      .rect(0, 0, w * scale, h * scale)
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+
+    // Add the graphic to the key container
+    keyContainer.addChild(lightKey);
+
+    // Add the key container to the global highlight container
+    Acc_Key_Container.addChild(keyContainer);
+  }
+  // Add the global highlight container to the stage
+  app.stage.addChild(Acc_Key_Container);
 }

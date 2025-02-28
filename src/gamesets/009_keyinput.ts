@@ -876,3 +876,471 @@ export function light_key_from_code(app: PIXI.Application, code: string) {
   }
   light_key(app, index);
 }
+
+import { update_Acc_key } from "./011_keybord";
+
+export function acc_key_from_code(
+  app: PIXI.Application,
+  code: string,
+  set: boolean
+) {
+  let index = 0;
+  let output = "";
+  switch (code) {
+    case "1":
+      output = "1";
+      break;
+    case "!":
+      output = "1";
+      break;
+    case "2":
+      output = "2";
+      break;
+    case '"':
+      output = "2";
+      break;
+    case "3":
+      output = "3";
+      break;
+    case "#":
+      output = "3";
+      break;
+    case "4":
+      output = "4";
+      break;
+    case "$":
+      output = "4";
+      break;
+    case "5":
+      output = "5";
+      break;
+    case "%":
+      output = "5";
+      break;
+    case "6":
+      output = "6";
+      break;
+    case "&":
+      output = "6";
+      break;
+    case "7":
+      output = "7";
+      break;
+    case "'":
+      output = "7";
+      break;
+    case "8":
+      output = "8";
+      break;
+    case "(":
+      output = "8";
+      break;
+    case "9":
+      output = "9";
+      break;
+    case ")":
+      output = "9";
+      break;
+    case "0":
+      output = "0";
+      break;
+    case "a":
+      output = "a";
+      break;
+    case "A":
+      output = "a";
+      break;
+    case "b":
+      output = "b";
+      break;
+    case "B":
+      output = "b";
+      break;
+    case "c":
+      output = "c";
+      break;
+    case "C":
+      output = "c";
+      break;
+    case "d":
+      output = "d";
+      break;
+    case "D":
+      output = "d";
+      break;
+    case "e":
+      output = "e";
+      break;
+    case "E":
+      output = "e";
+      break;
+    case "f":
+      output = "f";
+      break;
+    case "F":
+      output = "f";
+      break;
+    case "g":
+      output = "g";
+      break;
+    case "G":
+      output = "g";
+      break;
+    case "h":
+      output = "h";
+      break;
+    case "H":
+      output = "h";
+      break;
+    case "i":
+      output = "i";
+      break;
+    case "I":
+      output = "i";
+      break;
+    case "j":
+      output = "j";
+      break;
+    case "J":
+      output = "j";
+      break;
+    case "k":
+      output = "k";
+      break;
+    case "K":
+      output = "k";
+      break;
+    case "l":
+      output = "l";
+      break;
+    case "L":
+      output = "l";
+      break;
+    case "m":
+      output = "m";
+      break;
+    case "M":
+      output = "m";
+      break;
+    case "n":
+      output = "n";
+      break;
+    case "N":
+      output = "n";
+      break;
+    case "o":
+      output = "o";
+      break;
+    case "O":
+      output = "o";
+      break;
+    case "p":
+      output = "p";
+      break;
+    case "P":
+      output = "p";
+      break;
+    case "q":
+      output = "q";
+      break;
+    case "Q":
+      output = "q";
+      break;
+    case "r":
+      output = "r";
+      break;
+    case "R":
+      output = "r";
+      break;
+    case "s":
+      output = "s";
+      break;
+    case "S":
+      output = "s";
+      break;
+    case "t":
+      output = "t";
+      break;
+    case "T":
+      output = "t";
+      break;
+    case "u":
+      output = "u";
+      break;
+    case "U":
+      output = "u";
+      break;
+    case "v":
+      output = "v";
+      break;
+    case "V":
+      output = "v";
+      break;
+    case "w":
+      output = "w";
+      break;
+    case "W":
+      output = "w";
+      break;
+    case "x":
+      output = "x";
+      break;
+    case "X":
+      output = "x";
+      break;
+    case "y":
+      output = "y";
+      break;
+    case "Y":
+      output = "y";
+      break;
+    case "z":
+      output = "z";
+      break;
+    case "Z":
+      output = "z";
+      break;
+    case ",":
+      output = ",";
+      break;
+    case "<":
+      output = ",";
+      break;
+    case ".":
+      output = ".";
+      break;
+    case ">":
+      output = ".";
+      break;
+    case ";":
+      output = ";";
+      break;
+    case "+":
+      output = ";";
+      break;
+    case ":":
+      output = ":";
+      break;
+    case "*":
+      output = ":";
+      break;
+    case "@":
+      output = "@";
+      break;
+    case "`":
+      output = "@";
+      break;
+    case "[":
+      output = "[";
+      break;
+    case "{":
+      output = "[";
+      break;
+    case "`":
+      output = "`";
+      break;
+    case "]":
+      output = "]";
+      break;
+    case "}":
+      output = "]";
+      break;
+    case "/":
+      output = "/";
+      break;
+    case "|":
+      output = "/";
+      break;
+    case "_":
+      output = "/";
+      break;
+    case "-":
+      output = "-";
+      break;
+    case "=":
+      output = "-";
+      break;
+    case "^":
+      output = "^";
+      break;
+    case "~":
+      output = "^";
+      break;
+    case "\\":
+      output = "\\";
+      break;
+    case " ":
+      output = " ";
+      break;
+    default:
+      output = "";
+      break;
+  }
+  switch (output) {
+    case "1":
+      index = 1;
+      break;
+    case "2":
+      index = 2;
+      break;
+    case "3":
+      index = 3;
+      break;
+    case "4":
+      index = 4;
+      break;
+    case "5":
+      index = 5;
+      break;
+    case "6":
+      index = 6;
+      break;
+    case "7":
+      index = 7;
+      break;
+    case "8":
+      index = 8;
+      break;
+    case "9":
+      index = 9;
+      break;
+    case "0":
+      index = 10;
+      break;
+    case "a":
+      index = 30;
+      break;
+    case "b":
+      index = 48;
+      break;
+    case "c":
+      index = 46;
+      break;
+    case "d":
+      index = 32;
+      break;
+    case "e":
+      index = 18;
+      break;
+    case "f":
+      index = 33;
+      break;
+    case "g":
+      index = 34;
+      break;
+    case "h":
+      index = 35;
+      break;
+    case "i":
+      index = 23;
+      break;
+    case "j":
+      index = 36;
+      break;
+    case "k":
+      index = 37;
+      break;
+    case "l":
+      index = 38;
+      break;
+    case "m":
+      index = 50;
+      break;
+    case "n":
+      index = 49;
+      break;
+    case "o":
+      index = 24;
+      break;
+    case "p":
+      index = 25;
+      break;
+    case "q":
+      index = 16;
+      break;
+    case "r":
+      index = 19;
+      break;
+    case "s":
+      index = 31;
+      break;
+    case "t":
+      index = 20;
+      break;
+    case "u":
+      index = 22;
+      break;
+    case "v":
+      index = 47;
+      break;
+    case "w":
+      index = 17;
+      break;
+    case "x":
+      index = 45;
+      break;
+    case "y":
+      index = 21;
+      break;
+    case "z":
+      index = 44;
+      break;
+    case ",":
+      index = 51;
+      break;
+    case ".":
+      index = 52;
+      break;
+    case ";":
+      index = 39;
+      break;
+    case ":":
+      index = 40;
+      break;
+    case "@":
+      index = 26;
+      break;
+    case "[":
+      index = 27;
+      break;
+    case "`":
+      index = 15;
+      break;
+    case "]":
+      index = 41;
+      break;
+    case "/":
+      index = 53;
+      break;
+    case "-":
+      index = 11;
+      break;
+    case "^":
+      index = 12;
+      break;
+    case "\\":
+      if (code == "IntlYen") index = 13;
+      else index = 54;
+
+      break;
+    case " ":
+      index = 60;
+      break;
+    default:
+      index = 28;
+      break;
+  }
+  if (set) {
+    if (!gameData.acc_keys.includes(index)) {
+      gameData.acc_keys.push(index);
+    }
+  } else {
+    if (gameData.acc_keys.includes(index)) {
+      gameData.acc_keys = gameData.acc_keys.filter((key) => key !== index);
+    }
+  }
+  console.log(
+    `${code} ${settings.keyLayout} ${gameData.KeyLayout} ${output} ${index}`
+  );
+  update_Acc_key(app);
+}

@@ -35,6 +35,7 @@ export interface GameData {
   localRanking: RankingPlayer[];
   missKeys: string[];
   current_Player_id: number;
+  acc_keys: number[];
 }
 
 export const gameData: GameData = {
@@ -67,4 +68,5 @@ export const gameData: GameData = {
   localRanking: [],
   missKeys: [],
   current_Player_id: 100000,
+  acc_keys: [],
 };
