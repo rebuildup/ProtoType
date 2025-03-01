@@ -1,7 +1,6 @@
 import { useState, useLayoutEffect } from "react";
 import { saveToCache, loadFromCache, updateSetting } from "../SiteInterface.ts";
 
-// キー配列のリスト
 export const keyLayouts = [
   {
     name: "QWERTY",
@@ -60,16 +59,13 @@ export const keyLayouts = [
 ];
 
 export default function KeyLayoutSelector() {
-  // キャッシュからキー配列を取得（デフォルトは QWERTY）
   const cachedLayout = loadFromCache<string>("keyLayout", keyLayouts[0].name);
   const [selectedLayout, setSelectedLayout] = useState(cachedLayout);
 
-  // 初回レンダリング時に適用
   useLayoutEffect(() => {
     document.documentElement.setAttribute("data-keylayout", cachedLayout);
   }, [cachedLayout]);
 
-  // キー配列変更処理
   const changeLayout = (layout: string) => {
     setSelectedLayout(layout);
     document.documentElement.setAttribute("data-keylayout", layout);

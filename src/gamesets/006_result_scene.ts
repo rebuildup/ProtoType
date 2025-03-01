@@ -74,6 +74,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     }
     app.stage.removeChildren();
     BG_grid(app);
+    gameData.current_Player_id++;
     const newPlayer: RankingPlayer = {
       player_id: gameData.current_Player_id,
       player_name: gameData.current_Player_name,
@@ -102,7 +103,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     for (let i = 0; i < 10; i++) {
       createText(
         app,
-        padNumber(i + 1) + "     " + gameData.localRanking[i].player_name,
+        padNumber(i + 1) + "   " + gameData.localRanking[i].player_name,
         150,
         70 * i + 200,
         35,
@@ -379,7 +380,12 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     });
     function retry() {
       currentKeyController?.abort();
-      gameData.CurrentSceneName = "game_scene";
+      if (gameData.IsLoggedin) {
+        gameData.CurrentSceneName = "game_scene";
+      } else {
+        gameData.CurrentSceneName = "register_scene";
+      }
+
       resolve();
     }
     function over() {

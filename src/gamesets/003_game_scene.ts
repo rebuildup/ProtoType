@@ -29,8 +29,6 @@ const anim_max_width = 100;
 export async function game_scene(app: PIXI.Application): Promise<void> {
   return new Promise(async (resolve) => {
     app.stage.removeChildren();
-    gameData.current_Player_name = "Temp Samuido";
-    gameData.current_Player_id++;
     let currentKeyController: AbortController | null = null;
     const BG_plane = new PIXI.Graphics();
     app.stage.addChild(BG_plane);

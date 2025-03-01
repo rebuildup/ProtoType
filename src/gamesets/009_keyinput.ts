@@ -885,295 +885,289 @@ export function acc_key_from_code(
   set: boolean
 ) {
   let index = 0;
+  const root_layout = keyLayouts.find(
+    (layout) => layout.name === gameData.KeyLayout
+  ) as KeyboardLayout;
+  const play_layout = keyLayouts.find(
+    (layout) => layout.name === "QWERTY"
+  ) as KeyboardLayout;
   let output = "";
   switch (code) {
     case "1":
-      output = "1";
+      output = mapKey(root_layout, play_layout, "1") as string;
       break;
     case "!":
-      output = "1";
+      output = mapKey(root_layout, play_layout, "1") as string;
       break;
     case "2":
-      output = "2";
+      output = mapKey(root_layout, play_layout, "2") as string;
       break;
     case '"':
-      output = "2";
+      output = mapKey(root_layout, play_layout, "2") as string;
       break;
     case "3":
-      output = "3";
+      output = mapKey(root_layout, play_layout, "3") as string;
       break;
     case "#":
-      output = "3";
+      output = mapKey(root_layout, play_layout, "3") as string;
       break;
     case "4":
-      output = "4";
+      output = mapKey(root_layout, play_layout, "4") as string;
       break;
     case "$":
-      output = "4";
+      output = mapKey(root_layout, play_layout, "4") as string;
       break;
     case "5":
-      output = "5";
+      output = mapKey(root_layout, play_layout, "5") as string;
       break;
     case "%":
-      output = "5";
+      output = mapKey(root_layout, play_layout, "5") as string;
       break;
     case "6":
-      output = "6";
+      output = mapKey(root_layout, play_layout, "6") as string;
       break;
     case "&":
-      output = "6";
+      output = mapKey(root_layout, play_layout, "6") as string;
       break;
     case "7":
-      output = "7";
+      output = mapKey(root_layout, play_layout, "7") as string;
       break;
     case "'":
-      output = "7";
+      output = mapKey(root_layout, play_layout, "7") as string;
       break;
     case "8":
-      output = "8";
+      output = mapKey(root_layout, play_layout, "8") as string;
       break;
     case "(":
-      output = "8";
+      output = mapKey(root_layout, play_layout, "8") as string;
       break;
     case "9":
-      output = "9";
+      output = mapKey(root_layout, play_layout, "9") as string;
       break;
     case ")":
-      output = "9";
+      output = mapKey(root_layout, play_layout, "9") as string;
       break;
     case "0":
-      output = "0";
+      output = mapKey(root_layout, play_layout, "0") as string;
       break;
     case "a":
-      output = "a";
+      output = mapKey(root_layout, play_layout, "a") as string;
       break;
     case "A":
-      output = "a";
+      output = mapKey(root_layout, play_layout, "a") as string;
       break;
     case "b":
-      output = "b";
+      output = mapKey(root_layout, play_layout, "b") as string;
       break;
     case "B":
-      output = "b";
+      output = mapKey(root_layout, play_layout, "b") as string;
       break;
     case "c":
-      output = "c";
+      output = mapKey(root_layout, play_layout, "c") as string;
       break;
     case "C":
-      output = "c";
-      break;
-    case "d":
-      output = "d";
+      output = mapKey(root_layout, play_layout, "c") as string;
       break;
     case "D":
-      output = "d";
+      output = mapKey(root_layout, play_layout, "d") as string;
+      break;
+    case "d":
+      output = mapKey(root_layout, play_layout, "d") as string;
       break;
     case "e":
-      output = "e";
+      output = mapKey(root_layout, play_layout, "e") as string;
       break;
     case "E":
-      output = "e";
+      output = mapKey(root_layout, play_layout, "e") as string;
       break;
     case "f":
-      output = "f";
+      output = mapKey(root_layout, play_layout, "f") as string;
       break;
     case "F":
-      output = "f";
+      output = mapKey(root_layout, play_layout, "f") as string;
       break;
     case "g":
-      output = "g";
+      output = mapKey(root_layout, play_layout, "g") as string;
       break;
     case "G":
-      output = "g";
+      output = mapKey(root_layout, play_layout, "g") as string;
       break;
     case "h":
-      output = "h";
+      output = mapKey(root_layout, play_layout, "h") as string;
       break;
     case "H":
-      output = "h";
+      output = mapKey(root_layout, play_layout, "h") as string;
       break;
     case "i":
-      output = "i";
+      output = mapKey(root_layout, play_layout, "i") as string;
       break;
     case "I":
-      output = "i";
+      output = mapKey(root_layout, play_layout, "i") as string;
       break;
     case "j":
-      output = "j";
+      output = mapKey(root_layout, play_layout, "j") as string;
       break;
     case "J":
-      output = "j";
+      output = mapKey(root_layout, play_layout, "j") as string;
       break;
     case "k":
-      output = "k";
+      output = mapKey(root_layout, play_layout, "k") as string;
       break;
     case "K":
-      output = "k";
+      output = mapKey(root_layout, play_layout, "k") as string;
       break;
     case "l":
-      output = "l";
+      output = mapKey(root_layout, play_layout, "l") as string;
       break;
     case "L":
-      output = "l";
+      output = mapKey(root_layout, play_layout, "l") as string;
       break;
     case "m":
-      output = "m";
+      output = mapKey(root_layout, play_layout, "m") as string;
       break;
     case "M":
-      output = "m";
+      output = mapKey(root_layout, play_layout, "m") as string;
       break;
     case "n":
-      output = "n";
+      output = mapKey(root_layout, play_layout, "n") as string;
       break;
     case "N":
-      output = "n";
+      output = mapKey(root_layout, play_layout, "n") as string;
       break;
     case "o":
-      output = "o";
+      output = mapKey(root_layout, play_layout, "o") as string;
       break;
     case "O":
-      output = "o";
+      output = mapKey(root_layout, play_layout, "o") as string;
       break;
     case "p":
-      output = "p";
+      output = mapKey(root_layout, play_layout, "p") as string;
       break;
     case "P":
-      output = "p";
+      output = mapKey(root_layout, play_layout, "p") as string;
       break;
     case "q":
-      output = "q";
+      output = mapKey(root_layout, play_layout, "q") as string;
       break;
     case "Q":
-      output = "q";
+      output = mapKey(root_layout, play_layout, "q") as string;
       break;
     case "r":
-      output = "r";
+      output = mapKey(root_layout, play_layout, "r") as string;
       break;
     case "R":
-      output = "r";
+      output = mapKey(root_layout, play_layout, "r") as string;
       break;
     case "s":
-      output = "s";
+      output = mapKey(root_layout, play_layout, "s") as string;
       break;
     case "S":
-      output = "s";
+      output = mapKey(root_layout, play_layout, "s") as string;
       break;
     case "t":
-      output = "t";
+      output = mapKey(root_layout, play_layout, "t") as string;
       break;
     case "T":
-      output = "t";
+      output = mapKey(root_layout, play_layout, "t") as string;
       break;
     case "u":
-      output = "u";
+      output = mapKey(root_layout, play_layout, "u") as string;
       break;
     case "U":
-      output = "u";
+      output = mapKey(root_layout, play_layout, "u") as string;
       break;
     case "v":
-      output = "v";
+      output = mapKey(root_layout, play_layout, "v") as string;
       break;
     case "V":
-      output = "v";
+      output = mapKey(root_layout, play_layout, "v") as string;
       break;
     case "w":
-      output = "w";
+      output = mapKey(root_layout, play_layout, "w") as string;
       break;
     case "W":
-      output = "w";
+      output = mapKey(root_layout, play_layout, "w") as string;
       break;
     case "x":
-      output = "x";
+      output = mapKey(root_layout, play_layout, "x") as string;
       break;
     case "X":
-      output = "x";
+      output = mapKey(root_layout, play_layout, "x") as string;
       break;
     case "y":
-      output = "y";
+      output = mapKey(root_layout, play_layout, "y") as string;
       break;
     case "Y":
-      output = "y";
+      output = mapKey(root_layout, play_layout, "y") as string;
       break;
     case "z":
-      output = "z";
+      output = mapKey(root_layout, play_layout, "z") as string;
       break;
     case "Z":
-      output = "z";
+      output = mapKey(root_layout, play_layout, "z") as string;
       break;
     case ",":
-      output = ",";
+      output = mapKey(root_layout, play_layout, ",") as string;
       break;
     case "<":
-      output = ",";
+      output = mapKey(root_layout, play_layout, ",") as string;
       break;
     case ".":
-      output = ".";
+      output = mapKey(root_layout, play_layout, ".") as string;
       break;
     case ">":
-      output = ".";
+      output = mapKey(root_layout, play_layout, ".") as string;
       break;
     case ";":
-      output = ";";
+      output = mapKey(root_layout, play_layout, ";") as string;
       break;
     case "+":
-      output = ";";
+      output = mapKey(root_layout, play_layout, ";") as string;
       break;
     case ":":
-      output = ":";
+      output = mapKey(root_layout, play_layout, ":") as string;
       break;
     case "*":
-      output = ":";
+      output = mapKey(root_layout, play_layout, ":") as string;
       break;
     case "@":
-      output = "@";
+      output = mapKey(root_layout, play_layout, "@") as string;
       break;
     case "`":
-      output = "@";
+      output = mapKey(root_layout, play_layout, "@") as string;
       break;
     case "[":
-      output = "[";
+      output = mapKey(root_layout, play_layout, "[") as string;
       break;
     case "{":
-      output = "[";
-      break;
-    case "`":
-      output = "`";
+      output = mapKey(root_layout, play_layout, "[") as string;
       break;
     case "]":
-      output = "]";
+      output = mapKey(root_layout, play_layout, "]") as string;
       break;
     case "}":
-      output = "]";
+      output = mapKey(root_layout, play_layout, "]") as string;
       break;
     case "/":
-      output = "/";
-      break;
-    case "|":
-      output = "/";
-      break;
-    case "_":
-      output = "/";
+      output = mapKey(root_layout, play_layout, "/") as string;
       break;
     case "-":
-      output = "-";
-      break;
-    case "=":
-      output = "-";
+      output = mapKey(root_layout, play_layout, "-") as string;
       break;
     case "^":
-      output = "^";
+      output = mapKey(root_layout, play_layout, "^") as string;
       break;
-    case "~":
-      output = "^";
+    case "|":
+      output = mapKey(root_layout, play_layout, "\\") as string;
       break;
-    case "\\":
-      output = "\\";
+    case "_":
+      output = mapKey(root_layout, play_layout, "\\") as string;
       break;
     case " ":
       output = " ";
       break;
     default:
-      output = "";
+      output = code;
       break;
   }
   switch (output) {
@@ -1343,4 +1337,79 @@ export function acc_key_from_code(
     `${code} ${settings.keyLayout} ${gameData.KeyLayout} ${output} ${index}`
   );
   update_Acc_key(app);
+}
+
+export function isNomalKey(code: string) {
+  let output = false;
+  const Nomalkeys = [
+    "Digit1",
+    "Digit2",
+    "Digit3",
+    "Digit4",
+    "Digit5",
+    "Digit6",
+    "Digit7",
+    "Digit8",
+    "Digit9",
+    "Digit0",
+    "KeyA",
+    "KeyB",
+    "KeyC",
+    "KeyD",
+    "KeyE",
+    "KeyF",
+    "KeyG",
+    "KeyH",
+    "KeyI",
+    "KeyJ",
+    "KeyK",
+    "KeyL",
+    "KeyM",
+    "KeyN",
+    "KeyO",
+    "KeyP",
+    "KeyQ",
+    "KeyR",
+    "KeyS",
+    "KeyT",
+    "KeyU",
+    "KeyV",
+    "KeyW",
+    "KeyX",
+    "KeyY",
+    "KeyZ",
+    "Comma",
+    "Period",
+    "Semicolon",
+    "Quote",
+    "BracketLeft",
+    "BracketRight",
+    "Backquote",
+    "Backslash",
+    "Slash",
+    "Minus",
+    "Equal",
+    "IntlYen",
+    "IntlRo",
+    "Space",
+    "Numpad0",
+    "Numpad1",
+    "Numpad2",
+    "Numpad3",
+    "Numpad4",
+    "Numpad5",
+    "Numpad6",
+    "Numpad7",
+    "Numpad8",
+    "Numpad9",
+    "NumpadComma",
+    "NumpadDivide",
+    "NumpadMultply",
+    "NumpadSubtract",
+    "NumpadAdd",
+  ];
+  for (let i = 0; i < Nomalkeys.length; i++) {
+    if (code == Nomalkeys[i]) output = true;
+  }
+  return output;
 }

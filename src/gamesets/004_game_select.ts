@@ -402,7 +402,11 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       btn.on("pointerdown", async () => {
         currentKeyController?.abort();
         gameData.GameMode = item.mode;
-        gameData.CurrentSceneName = "game_scene";
+        if (gameData.IsLoggedin) {
+          gameData.CurrentSceneName = "game_scene";
+        } else {
+          gameData.CurrentSceneName = "register_scene";
+        }
         resolve();
       });
       app.stage.addChild(btn);
@@ -433,7 +437,11 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
         } else if (["Enter", "Space"].includes(keyCode.code)) {
           currentKeyController.abort();
           gameData.GameMode = modes[selectedModeIndex].mode;
-          gameData.CurrentSceneName = "game_scene";
+          if (gameData.IsLoggedin) {
+            gameData.CurrentSceneName = "game_scene";
+          } else {
+            gameData.CurrentSceneName = "register_scene";
+          }
           resolve();
         }
       } catch (error: any) {

@@ -18,6 +18,8 @@ import { reload_game } from "./016_reload_game";
 import { error_scene } from "./017_error_scene";
 import { record_scene } from "./019_record_scene";
 
+import { Player_register } from "./021_Player_register";
+
 import { BG_grid } from "./018_grid";
 
 import { settings } from "../SiteInterface";
@@ -107,12 +109,13 @@ export async function initializeGame(app: PIXI.Application) {
   }
   gameData.textsData = textsData;
 
-  //gameData.CurrentSceneName = "opening";
-  gameData.CurrentSceneName = "game_scene";
+  gameData.CurrentSceneName = "opening";
+  //gameData.CurrentSceneName = "game_scene";
   gameData.GameMode = "nomal";
   gameData.FontFamily = settings.fontTheme.fontFamily;
-  gameData.KeyLayout = "QWERTY";
-  //gameData.KeyLayout = "大西配列";
+  //gameData.KeyLayout = "QWERTY";
+  gameData.KeyLayout = "大西配列";
+  //gameData.KeyLayout = "Dvorak";
   gameData.acc_keys = [];
   //console.log(`${settings.keyLayout} ${gameData.KeyLayout}`);
   TendenciesInit();
@@ -149,6 +152,10 @@ export async function initializeGame(app: PIXI.Application) {
       case "record_scene":
         playCollect();
         await record_scene(app);
+        break;
+      case "register_scene":
+        playCollect();
+        await Player_register(app);
         break;
       default:
         gameData.CurrentSceneName = "exit";
