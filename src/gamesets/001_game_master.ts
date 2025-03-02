@@ -546,10 +546,6 @@ function TendenciesInit() {
       tendency: "who",
     },
     {
-      key: "うぉ",
-      tendency: "who",
-    },
-    {
       key: "いぇ",
       tendency: "ye",
     },
@@ -622,7 +618,7 @@ function TendenciesInit() {
       tendency: "gwe",
     },
     {
-      key: "くぉ",
+      key: "ぐぉ",
       tendency: "gwo",
     },
     {
@@ -755,7 +751,7 @@ function TendenciesInit() {
     },
     {
       key: "にぇ",
-      tendency: "nyu",
+      tendency: "nye",
     },
     {
       key: "にょ",

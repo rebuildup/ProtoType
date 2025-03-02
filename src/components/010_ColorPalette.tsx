@@ -39,6 +39,15 @@ export const themes = [
       "--SecondAccent": "#0000ee",
     },
   },
+  {
+    name: "Bules",
+    colors: {
+      "--MainBG": "#0000ff",
+      "--MainColor": "#ffffff",
+      "--MainAccent": "#EDE84C",
+      "--SecondAccent": "#EDE84C",
+    },
+  },
 ];
 
 const ColorPalette: React.FC = () => {

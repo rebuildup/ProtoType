@@ -77,7 +77,12 @@ export function Player_register(app: PIXI.Application): Promise<void> {
         } else if (keyCode.code === "Backspace") {
           console.log("baa");
           if (player_name.length > 0) player_name = player_name.slice(0, -1);
-          player_name_text.text = player_name;
+          if (player_name.length == 0) {
+            player_name_text.text = gameData.current_Player_name;
+          } else {
+            player_name_text.text = player_name;
+          }
+
           player_name_text.x = screenCenter.x - player_name_text.width / 2;
         } else if (isNomalKey(keyCode.code)) {
           if (player_name.length < 10) {

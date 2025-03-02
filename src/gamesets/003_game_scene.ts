@@ -356,11 +356,26 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               gameData.Issues[gameData.current_Issue].romaji,
               gameData.current_inputed
             );
-            for (let collec = 0; collec < collectkeys.length; collec++) {
-              acc_key_from_code(app, collectkeys[collec].letter, true);
+            if (gameData.GameMode != "focus") {
+              for (let collec = 0; collec < collectkeys.length; collec++) {
+                acc_key_from_code(app, collectkeys[collec].letter, true);
+              }
             }
+
             const keyCode = await getLatestKey(currentKeyController.signal);
-            if (keyCode.code === "Escape") {
+            console.log(`${keyCode.code} ${keyCode.shift}`);
+            if (keyCode.code === "Escape" && keyCode.shift == true) {
+              gameData.CurrentSceneName = "result_scene";
+              gameData.EndTime = Date.now();
+              currentKeyController?.abort();
+              resolve();
+            }
+            if (keyCode.code === "ControlLeft" && keyCode.shift == true) {
+              gameData.CurrentSceneName = "result_scene";
+              gameData.EndTime = Date.now();
+              currentKeyController?.abort();
+              resolve();
+            } else if (keyCode.code === "Escape") {
               gameData.CurrentSceneName = "reload_game";
               gameData.EndTime = Date.now();
               currentKeyController?.abort();
@@ -389,11 +404,17 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               }
               if (Ismiss) {
                 playMiss();
-                for (let i = 0; i < collectkeys.length; i++) {
-                  acc_key_from_code(app, collectkeys[i].letter, false);
+                if (gameData.GameMode != "focus") {
+                  for (let collec = 0; collec < collectkeys.length; collec++) {
+                    acc_key_from_code(app, collectkeys[collec].letter, false);
+                  }
                 }
+                gameData.acc_keys = [];
                 filterflash(app);
-                light_key_from_code(app, keyCode.code);
+                if (gameData.GameMode != "focus") {
+                  light_key_from_code(app, keyCode.code);
+                }
+
                 console.log(keyCode);
                 console.log(collectkeys);
                 gameData.Miss++;
@@ -414,9 +435,12 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 }
               } else {
                 playCollect();
-                for (let i = 0; i < collectkeys.length; i++) {
-                  acc_key_from_code(app, collectkeys[i].letter, false);
+                if (gameData.GameMode != "focus") {
+                  for (let collec = 0; collec < collectkeys.length; collec++) {
+                    acc_key_from_code(app, collectkeys[collec].letter, false);
+                  }
                 }
+                gameData.acc_keys = [];
                 frame_anim(getTypingSpeed());
                 gameData.combo_cnt++;
                 if (gameData.combo_cnt > gameData.max_combo)

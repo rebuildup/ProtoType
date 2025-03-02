@@ -12,6 +12,7 @@ export function getLatestKey(
     const handler = (event: KeyboardEvent) => {
       window.removeEventListener("keydown", handler);
       signal.removeEventListener("abort", abortHandler);
+      event.preventDefault();
       resolve({
         code: event.code,
         shift: event.shiftKey,
@@ -1333,9 +1334,6 @@ export function acc_key_from_code(
       gameData.acc_keys = gameData.acc_keys.filter((key) => key !== index);
     }
   }
-  console.log(
-    `${code} ${settings.keyLayout} ${gameData.KeyLayout} ${output} ${index}`
-  );
   update_Acc_key(app);
 }
 

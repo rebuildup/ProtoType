@@ -878,6 +878,15 @@ export const KEY_CONFIGS: KeyConfigs = [
     key: "ゔ",
     origins: ["vu"],
   },
+
+  {
+    key: "ゐ",
+    origins: ["wyi", "wi"],
+  },
+  {
+    key: "ゑ",
+    origins: ["wye", "we"],
+  },
   {
     key: "ー",
     origins: ["-"],
@@ -892,11 +901,11 @@ export const KEY_CONFIGS: KeyConfigs = [
   },
   {
     key: "、",
-    origins: [",", "、"],
+    origins: [","],
   },
   {
     key: "。",
-    origins: [".", "。"],
+    origins: ["."],
   },
   {
     key: "うぁ",
@@ -909,10 +918,6 @@ export const KEY_CONFIGS: KeyConfigs = [
   {
     key: "うぇ",
     origins: ["whe", "we"],
-  },
-  {
-    key: "うぉ",
-    origins: ["who"],
   },
   {
     key: "うぉ",
@@ -943,36 +948,20 @@ export const KEY_CONFIGS: KeyConfigs = [
     origins: ["kyo"],
   },
   {
-    key: "くゃ",
-    origins: ["qya"],
-  },
-  {
-    key: "くゅ",
-    origins: ["qyu"],
-  },
-  {
-    key: "くょ",
-    origins: ["qyo"],
-  },
-  {
     key: "くぁ",
-    origins: ["qwa", "qa", "kwa"],
+    origins: ["qa", "kwa"],
   },
   {
     key: "くぃ",
-    origins: ["qwi", "qi", "qyi"],
-  },
-  {
-    key: "くぅ",
-    origins: ["qwu"],
+    origins: ["qi", "kwi"],
   },
   {
     key: "くぇ",
-    origins: ["qwe", "qe", "qye"],
+    origins: ["qe"],
   },
   {
     key: "くぉ",
-    origins: ["qwo", "qo"],
+    origins: ["qo", "qwo"],
   },
   {
     key: "ぐぁ",
@@ -991,7 +980,7 @@ export const KEY_CONFIGS: KeyConfigs = [
     origins: ["gwe"],
   },
   {
-    key: "くぉ",
+    key: "ぐぉ",
     origins: ["gwo"],
   },
   {
@@ -1071,7 +1060,7 @@ export const KEY_CONFIGS: KeyConfigs = [
     origins: ["tso"],
   },
   {
-    key: "てぁ",
+    key: "てゃ",
     origins: ["tha"],
   },
   {
@@ -1124,11 +1113,11 @@ export const KEY_CONFIGS: KeyConfigs = [
   },
   {
     key: "にぇ",
-    origins: ["nyu"],
+    origins: ["nye"],
   },
   {
     key: "にょ",
-    origins: ["nyu"],
+    origins: ["nyo"],
   },
   {
     key: "ひゃ",
@@ -1192,7 +1181,7 @@ export const KEY_CONFIGS: KeyConfigs = [
   },
   {
     key: "ふぁ",
-    origins: ["fa", "fwa"],
+    origins: ["fa", "fwa", "hwa"],
   },
   {
     key: "ふぃ",
