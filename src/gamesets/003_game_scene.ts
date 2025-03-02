@@ -363,7 +363,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             }
 
             const keyCode = await getLatestKey(currentKeyController.signal);
-            console.log(`${keyCode.code} ${keyCode.shift}`);
             if (keyCode.code === "Escape" && keyCode.shift == true) {
               gameData.CurrentSceneName = "result_scene";
               gameData.EndTime = Date.now();

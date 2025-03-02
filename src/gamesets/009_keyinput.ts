@@ -1313,6 +1313,9 @@ export function acc_key_from_code(
     case "^":
       index = 12;
       break;
+    case "?":
+      index = 53;
+      break;
     case "\\":
       if (code == "IntlYen") index = 13;
       else index = 54;
