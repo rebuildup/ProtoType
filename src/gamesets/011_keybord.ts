@@ -83,7 +83,7 @@ export function Keyboard(app: PIXI.Application) {
   };
 
   const container = new PIXI.Container();
-  container.alpha = 0.2;
+  container.alpha = 0.4;
   app.stage.addChild(container);
 
   const offsetY = 100;

@@ -7,9 +7,9 @@ export function BG_grid(app: PIXI.Application) {
   const graphics = new PIXI.Graphics();
 
   graphics.setStrokeStyle({
-    width: 2.8,
+    width: 1.2,
     color: replaceHash(settings.colorTheme.colors.MainColor),
-    alpha: 0.06,
+    alpha: 0.1,
   });
 
   const Width = app.screen.width;
@@ -27,7 +27,6 @@ export function BG_grid(app: PIXI.Application) {
   graphics.stroke();
 
   graphics.position.set(Width, Height);
-  graphics.zIndex = 1;
   const bounds = graphics.getLocalBounds();
   // pivot をバウンディングボックスの中心に設定
   graphics.pivot.set(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);

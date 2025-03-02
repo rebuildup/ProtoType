@@ -10,6 +10,7 @@ PixiPlugin.registerPIXI(PIXI);
 import { getLatestKey } from "./009_keyinput";
 
 import { keyLayouts } from "../components/012_KeyLayout";
+import { playMiss, playCollect } from "./012_soundplay";
 const Select_dot_x = 880;
 export function setting_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
@@ -225,6 +226,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
         } else if (
           ["ArrowDown", "ArrowRight", "ShiftRight"].includes(keyCode.code)
         ) {
+          playMiss(0.3);
           switch (isOpened_option) {
             case opened_options.menu:
               if (option_select >= 1) {
@@ -244,7 +246,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
               break;
             case opened_options.instantkey:
               if (current_select >= 100) {
-                current_select = 0;
+                current_select = 2;
               } else {
                 current_select++;
               }
@@ -254,6 +256,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
         } else if (
           ["ArrowUp", "ArrowLeft", "ShiftLeft"].includes(keyCode.code)
         ) {
+          playMiss(0.3);
           switch (isOpened_option) {
             case opened_options.menu:
               if (option_select <= 0) {
@@ -272,7 +275,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
               update_open(isOpened_option, current_select);
               break;
             case opened_options.instantkey:
-              if (current_select <= 0) {
+              if (current_select <= 2) {
                 current_select = 100;
               } else {
                 current_select--;
@@ -281,6 +284,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
               break;
           }
         } else if (["Enter", "Space"].includes(keyCode.code)) {
+          playCollect();
           if (isOpened_option == opened_options.menu) {
             switch (option_select) {
               case option_select_values.keylayoutset:
