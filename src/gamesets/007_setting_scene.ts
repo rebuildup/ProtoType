@@ -176,12 +176,35 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
           setting_container.addChild(layout_container);
           break;
         case opened_options.instantkey:
-          const tmp_rect2 = new PIXI.Graphics();
-          tmp_rect2
-            .rect(-300, -300, 300, 300)
-            .fill(replaceHash(settings.colorTheme.colors.SecondAccent));
-          tmp_rect2.position = screenCenter;
-          setting_container.addChild(tmp_rect2);
+          const instant_container = new PIXI.Graphics();
+          instant_container.fill(
+            replaceHash(settings.colorTheme.colors.MainBG)
+          );
+          instant_container.position = screenCenter;
+
+          const instant_BG = new PIXI.Graphics();
+          instant_BG
+            .rect(0, 0, 800, 800)
+            .fill(replaceHash(settings.colorTheme.colors.MainBG));
+          instant_BG.alpha = 1;
+          instant_BG.x = -instant_BG.width / 2;
+          instant_BG.y = -instant_BG.height / 2;
+          instant_container.addChild(instant_BG);
+
+          const instant_selection = new PIXI.Text({
+            text: select,
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 40,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          instant_selection.x = -instant_selection.width / 2;
+          instant_selection.y = -instant_selection.height / 2;
+          instant_container.addChild(instant_selection);
+
+          setting_container.addChild(instant_container);
           break;
       }
     }

@@ -110,14 +110,10 @@ export async function initializeGame(app: PIXI.Application) {
   gameData.textsData = textsData;
 
   gameData.CurrentSceneName = "opening";
-  //gameData.CurrentSceneName = "game_scene";
   gameData.GameMode = "nomal";
   gameData.FontFamily = settings.fontTheme.fontFamily;
-  //gameData.KeyLayout = "QWERTY";
-  gameData.KeyLayout = "大西配列";
-  //gameData.KeyLayout = "Dvorak";
+  gameData.KeyLayout = settings.keyLayout;
   gameData.acc_keys = [];
-  //console.log(`${settings.keyLayout} ${gameData.KeyLayout}`);
   TendenciesInit();
 
   while (gameData.CurrentSceneName != "exit") {
