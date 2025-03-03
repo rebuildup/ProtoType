@@ -250,7 +250,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
       let isDragging = false;
       let lastPosition = { y: 0 };
       let velocity = 0;
-      let animationFrame: number | null = null;
+      //let animationFrame: number | null = null;
 
       const maxScroll = Math.max(0, record_container.height);
       let currentScroll = 0;
@@ -310,7 +310,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
         );
         updateScrollPosition();
         if (Math.abs(velocity) > 0.5) {
-          animationFrame = requestAnimationFrame(applyMomentum);
+          //animationFrame = requestAnimationFrame(applyMomentum);
         }
       };
 
