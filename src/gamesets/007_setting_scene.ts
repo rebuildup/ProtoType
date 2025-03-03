@@ -11,10 +11,19 @@ import { getLatestKey } from "./009_keyinput";
 
 import { keyLayouts } from "../components/012_KeyLayout";
 import { playMiss, playCollect } from "./012_soundplay";
+
+import { saveToCache, deleteCache } from "./020_cacheControl";
 const Select_dot_x = 880;
+const option_select_values = { keylayoutset: 0, instantkey_n: 1 };
+const opened_options = { menu: -1, keylayout: 0, instantkey: 1 };
+
 export function setting_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
     const screenCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
+
+    let option_select = option_select_values.keylayoutset;
+    let current_select = 0;
+
     const circle_m = new PIXI.Graphics();
     circle_m
       .circle(0, 0, 800)
@@ -24,7 +33,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
     circle_m.scale = 0;
     gsap.to(circle_m.scale, { x: 1, y: 1, ease: "power4.out", duration: 2 });
 
-    const select_select = new PIXI.Text({
+    const exit_btn = new PIXI.Text({
       text: "↑",
       style: {
         fontFamily: gameData.FontFamily,
@@ -33,17 +42,43 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
-    select_select.x = screenCenter.x - select_select.width / 2;
-    select_select.y = 100;
-    select_select.interactive = true;
+    exit_btn.x = screenCenter.x - exit_btn.width / 2;
+    exit_btn.y = 100;
+    exit_btn.interactive = true;
+    const delete_cache = new PIXI.Text({
+      text: "キャッシュを削除(タイトルに戻ります)",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 20,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    delete_cache.x = app.screen.width - delete_cache.width - 100;
+    delete_cache.y = app.screen.height - 100;
+    delete_cache.interactive = true;
+    delete_cache.on("pointerdown", async () => {
+      playCollect();
+      gameData.CurrentSceneName = "opening";
+      deleteCache("keylayout_GM");
+      deleteCache("instant_key_GM");
+
+      get_out();
+    });
+    app.stage.addChild(delete_cache);
 
     let currentKeyController: AbortController | null = null;
 
-    select_select.on("pointerdown", async () => {
-      gameData.CurrentSceneName = "game_select";
-      get_out();
+    exit_btn.on("pointerdown", async () => {
+      if (isOpened_option == opened_options.menu) {
+        gameData.CurrentSceneName = "game_select";
+        get_out();
+      } else {
+        isOpened_option = opened_options.menu;
+        update_open(isOpened_option);
+      }
     });
-    app.stage.addChild(select_select);
+    app.stage.addChild(exit_btn);
     const keylayout_text = new PIXI.Text({
       text: "キー配列",
       style: {
@@ -56,10 +91,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
     keylayout_text.x = screenCenter.x - keylayout_text.width / 2;
     keylayout_text.y = screenCenter.y - keylayout_text.height / 2 - 80;
     keylayout_text.interactive = true;
-    keylayout_text.on("pointerdown", async () => {
-      gameData.CurrentSceneName = "game_select";
-      get_out();
-    });
+
     app.stage.addChild(keylayout_text);
     const instantkey_n_text = new PIXI.Text({
       text: "瞬間キー数",
@@ -73,10 +105,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
     instantkey_n_text.x = screenCenter.x - instantkey_n_text.width / 2;
     instantkey_n_text.y = screenCenter.y - instantkey_n_text.height / 2 + 80;
     instantkey_n_text.interactive = true;
-    instantkey_n_text.on("pointerdown", async () => {
-      gameData.CurrentSceneName = "game_select";
-      get_out();
-    });
+
     app.stage.addChild(instantkey_n_text);
 
     const selectDotAcc = new PIXI.Graphics();
@@ -109,15 +138,14 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
     function get_out() {
       currentKeyController?.abort();
       gsap.to(circle_m.scale, { x: 0, y: 0, ease: "power4.out", duration: 1 });
-      gsap.to(select_select, { alpha: 0, ease: "power4.out", duration: 1 });
+      gsap.to(exit_btn, { alpha: 0, ease: "power4.out", duration: 1 });
       setTimeout(() => {
         app.stage.removeChild(keylayout_text);
         app.stage.removeChild(instantkey_n_text);
         resolve();
       }, 1000);
     }
-    const option_select_values = { keylayoutset: 0, instantkey_n: 1 };
-    const opened_options = { menu: -1, keylayout: 0, instantkey: 1 };
+
     let isOpened_option = opened_options.menu;
     function dot_pos_update(select: number) {
       switch (select) {
@@ -172,6 +200,13 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
             layout_selection.alpha = i == select ? 1 : 0.5;
             layout_selection.x = -layout_selection.width / 2;
             layout_selection.y = (i - keyLayouts.length / 2) * 80;
+            layout_selection.interactive = true;
+            layout_selection.on("pointerdown", async () => {
+              playMiss(0.3);
+              gameData.KeyLayout = keyLayouts[i].name;
+              isOpened_option = opened_options.menu;
+              update_open(isOpened_option);
+            });
             layout_container.addChild(layout_selection);
           }
           setting_container.addChild(layout_container);
@@ -203,14 +238,82 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
           });
           instant_selection.x = -instant_selection.width / 2;
           instant_selection.y = -instant_selection.height / 2;
+          instant_selection.interactive = true;
+          instant_selection.on("pointerdown", async () => {
+            playCollect();
+            gameData.instant_key_n = current_select;
+            isOpened_option = opened_options.menu;
+            update_open(isOpened_option);
+          });
           instant_container.addChild(instant_selection);
+
+          const ins_up_btn = new PIXI.Text({
+            text: "▲",
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          ins_up_btn.x = -ins_up_btn.width / 2;
+          ins_up_btn.y = -ins_up_btn.height / 2 - 80;
+          ins_up_btn.interactive = true;
+          ins_up_btn.on("pointerdown", async () => {
+            playMiss(0.3);
+            if (current_select >= 100) {
+              current_select = 2;
+            } else {
+              current_select++;
+            }
+            update_open(isOpened_option, current_select);
+          });
+          instant_container.addChild(ins_up_btn);
+          const ins_dwn_btn = new PIXI.Text({
+            text: "▼",
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          ins_dwn_btn.x = -ins_dwn_btn.width / 2;
+          ins_dwn_btn.y = -ins_dwn_btn.height / 2 + 80;
+          ins_dwn_btn.interactive = true;
+          ins_dwn_btn.on("pointerdown", async () => {
+            playMiss(0.3);
+            if (current_select <= 2) {
+              current_select = 100;
+            } else {
+              current_select--;
+            }
+            update_open(isOpened_option, current_select);
+          });
+          instant_container.addChild(ins_dwn_btn);
 
           setting_container.addChild(instant_container);
           break;
       }
     }
-    let option_select = option_select_values.keylayoutset;
-    let current_select = 0;
+
+    keylayout_text.on("pointerdown", async () => {
+      playMiss(0.3);
+      isOpened_option = opened_options.keylayout;
+      current_select = keyLayouts.findIndex(
+        (layout) => layout.name === gameData.KeyLayout
+      );
+      dot_pos_update(option_select);
+      update_open(isOpened_option, current_select);
+    });
+    instantkey_n_text.on("pointerdown", async () => {
+      playMiss(0.3);
+      isOpened_option = opened_options.instantkey;
+      current_select = gameData.instant_key_n;
+      dot_pos_update(option_select);
+      update_open(isOpened_option, current_select);
+    });
+
     while (gameData.CurrentSceneName === "setting_scene") {
       currentKeyController = new AbortController();
       try {
@@ -301,10 +404,12 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
             update_open(isOpened_option, current_select);
           } else if (isOpened_option == opened_options.keylayout) {
             gameData.KeyLayout = keyLayouts[current_select].name;
+            saveToCache("keylayout_GM", gameData.KeyLayout);
             isOpened_option = opened_options.menu;
             update_open(isOpened_option);
           } else if (isOpened_option == opened_options.instantkey) {
             gameData.instant_key_n = current_select;
+            saveToCache("instant_key_GM", gameData.instant_key_n);
             isOpened_option = opened_options.menu;
             update_open(isOpened_option);
           }

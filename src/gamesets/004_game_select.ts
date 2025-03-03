@@ -57,6 +57,8 @@ export async function game_select(app: PIXI.Application): Promise<void> {
     BG_grid(app);
     const winCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
 
+    let selectedIndex = 1;
+
     const wakuCircle = new PIXI.Graphics();
     wakuCircle.label = "waku_circle";
     wakuCircle.circle(0, 0, 840);
@@ -248,20 +250,25 @@ export async function game_select(app: PIXI.Application): Promise<void> {
     }
 
     recordBtn.on("pointerdown", () => {
+      selectedIndex = 0;
+      updateSelectDots(selectedIndex);
       currentKeyController?.abort();
       transitionToRecord();
     });
     settingSelectBtn.on("pointerdown", () => {
+      selectedIndex = 1;
+      updateSelectDots(selectedIndex);
       currentKeyController?.abort();
       transitionToSetting();
     });
     gameSelectBtn.on("pointerdown", () => {
+      selectedIndex = 2;
+      updateSelectDots(selectedIndex);
       currentKeyController?.abort();
       transitionToGameModeSelect();
     });
 
-    let selectedIndex = 1;
-    const updateSelectDots = (index: number, isDown: boolean) => {
+    const updateSelectDots = (index: number, isDown: boolean = true) => {
       const targetY = winCenter.y + (index - 1) * BUTTON_SPACING;
       animateSelectionDot(selectDotAcc, targetY, isDown ? 0 : 0.03, isDown);
       animateSelectionDot(selectDotMain, targetY, isDown ? 0.03 : 0, isDown);

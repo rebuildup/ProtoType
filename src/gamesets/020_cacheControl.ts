@@ -57,3 +57,17 @@ export function insertLocalRanking(newPlayer: RankingPlayer): number {
 
   return -1;
 }
+export async function deleteCache(cacheName: string): Promise<boolean> {
+  try {
+    const result = await caches.delete(cacheName);
+    if (result) {
+      console.log(`Cache '${cacheName}' deleted successfully.`);
+    } else {
+      console.log(`Cache '${cacheName}' not found or deletion failed.`);
+    }
+    return result;
+  } catch (error) {
+    console.error(`Error deleting cache '${cacheName}':`, error);
+    return false;
+  }
+}

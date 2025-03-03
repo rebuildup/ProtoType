@@ -14,8 +14,8 @@ export function Player_register(app: PIXI.Application): Promise<void> {
     app.stage.removeChildren();
     const screenCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
     let player_name = "";
-    const select_select = new PIXI.Text({
-      text: "Go",
+    const enter_text = new PIXI.Text({
+      text: "Enter",
       style: {
         fontFamily: gameData.FontFamily,
         fontSize: 30,
@@ -23,17 +23,30 @@ export function Player_register(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
-    select_select.x = screenCenter.x - select_select.width / 2;
-    select_select.y = screenCenter.y - select_select.height / 2 + 100;
-    select_select.interactive = true;
+    enter_text.x = screenCenter.x - enter_text.width / 2;
+    enter_text.y = screenCenter.y - enter_text.height / 2 + 100;
+    enter_text.interactive = true;
 
     let currentKeyController: AbortController | null = null;
 
-    select_select.on("pointerdown", async () => {
+    enter_text.on("pointerdown", async () => {
       gameData.CurrentSceneName = "game_scene";
       get_out();
     });
-    app.stage.addChild(select_select);
+    app.stage.addChild(enter_text);
+    const title_text = new PIXI.Text({
+      text: "プレイヤー記録名",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 30,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    title_text.x = screenCenter.x - title_text.width / 2;
+    title_text.y = screenCenter.y - title_text.height / 2 - 100;
+
+    app.stage.addChild(title_text);
 
     const input_waku = new PIXI.Graphics();
     input_waku.roundRect(0, 0, 480, 80, 50).stroke({
@@ -60,7 +73,7 @@ export function Player_register(app: PIXI.Application): Promise<void> {
 
     function get_out() {
       currentKeyController?.abort();
-      gsap.to(select_select, { alpha: 0, ease: "power4.out", duration: 1 });
+      gsap.to(enter_text, { alpha: 0, ease: "power4.out", duration: 1 });
       setTimeout(() => {
         resolve();
       }, 1000);

@@ -25,7 +25,7 @@ import { BG_grid } from "./018_grid";
 import { settings } from "../SiteInterface";
 import { fetchTexts } from "./010_APIget";
 
-import { loadcache_localranking } from "./020_cacheControl";
+import { loadcache_localranking, loadFromCache } from "./020_cacheControl";
 
 export async function initializeGame(app: PIXI.Application) {
   app.stage.removeChildren();
@@ -112,7 +112,15 @@ export async function initializeGame(app: PIXI.Application) {
   gameData.CurrentSceneName = "opening";
   gameData.GameMode = "nomal";
   gameData.FontFamily = settings.fontTheme.fontFamily;
-  gameData.KeyLayout = settings.keyLayout;
+  gameData.KeyLayout = loadFromCache<typeof gameData.KeyLayout>(
+    "keylayout_GM",
+    settings.keyLayout
+  );
+  //gameData.KeyLayout = settings.keyLayout;
+  gameData.instant_key_n = loadFromCache<typeof gameData.instant_key_n>(
+    "instant_key_GM",
+    20
+  );
   gameData.acc_keys = [];
   TendenciesInit();
 
