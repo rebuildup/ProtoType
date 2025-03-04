@@ -458,7 +458,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           title_text.text = achieve_text.text;
           title_text.x = screenCenter.x - title_text.width / 2;
           const tmp_achieve = new PIXI.Text({
-            text: "いずれ実装する",
+            text: "いずれ実装します",
             style: {
               fontFamily: gameData.FontFamily,
               fontSize: 30,

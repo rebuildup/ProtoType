@@ -74,7 +74,7 @@ export default function KeyLayoutSelector() {
   };
 
   return (
-    <div>
+    <div style={{ zIndex: 1 }}>
       <h1>キー配列</h1>
       <label className="selectbox-5">
         <select

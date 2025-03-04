@@ -70,7 +70,7 @@ const ColorPalette: React.FC = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4" style={{ zIndex: 1 }}>
       <h1>カラーテーマ</h1>
       <div className="flex gap-4">
         {themes.map((theme) => (

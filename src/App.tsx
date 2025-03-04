@@ -85,7 +85,9 @@ const App: React.FC = () => {
     <div>
       <Header />
       <Tab onTabChange={setCurrentTab} />
-      <div className="Components">{renderCurrentComponent()}</div>
+      <div className="Components" style={{ zIndex: 1 }}>
+        {renderCurrentComponent()}
+      </div>
       {showPopup && <WebGLPopup onClose={handleClosePopup} />}
       <Footer />
     </div>

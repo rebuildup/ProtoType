@@ -6,7 +6,7 @@ import "../styles/007_setting.css";
 
 const Setting: React.FC = () => {
   return (
-    <div className="setting-container">
+    <div className="setting-container" style={{ zIndex: 1 }}>
       <ColorPalette />
       <FontSelector />
       <KeyLayoutSelector />

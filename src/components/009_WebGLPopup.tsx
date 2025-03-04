@@ -51,7 +51,7 @@ const WebGLPopup: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   }, []);
 
   return (
-    <div className="webgl-popup" ref={popupRef}>
+    <div className="webgl-popup" ref={popupRef} style={{ zIndex: 3 }}>
       <div className="webGL-BG" onClick={onClose} />
       <button onClick={onClose}>Close</button>
     </div>

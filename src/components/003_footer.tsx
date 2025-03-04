@@ -1,7 +1,7 @@
 import React from "react";
 const Footer: React.FC = () => {
   return (
-    <div>
+    <div style={{ zIndex: 2 }}>
       <a
         className="mySiteLink"
         href="https://yusuke-kim.com"

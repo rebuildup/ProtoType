@@ -16,10 +16,24 @@
 .title span {
   color: var(--MainAccent);
 }
-
 .current-time {
-  grid-column: 3;
-  transform: translateY(-0.5em);
-  padding-right: 1em;
-  justify-self: end;
+  position: fixed;
+  top: 2em;
+  right: 1em;
+  margin: 0;
+}
+.player-card {
+  position: fixed;
+  top: 2em;
+  left: 1em;
+  margin: 0;
+}
+
+.player-panel {
+  width: 200px;
+  height: 200px;
+  position: fixed;
+  top: 1em;
+  left: 1em;
+  background-color: var(--MainAccent);
 }

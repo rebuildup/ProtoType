@@ -35,7 +35,7 @@ export default function FontSelector() {
   };
 
   return (
-    <div>
+    <div style={{ zIndex: 1 }}>
       <h1>フォント</h1>
       <label className="selectbox-5">
         <select

@@ -27,7 +27,12 @@ const CurrentTime: React.FC = () => {
   }, []);
 
   // CurrentTime.tsx
-  return <div className="current-time"> {currentTime}</div>;
+  return (
+    <div className="current-time" style={{ zIndex: 2 }}>
+      {" "}
+      {currentTime}
+    </div>
+  );
 };
 
 export default CurrentTime;

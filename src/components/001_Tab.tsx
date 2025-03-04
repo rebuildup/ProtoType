@@ -6,10 +6,11 @@ interface TabProps {
 
 const Tab: React.FC<TabProps> = ({ onTabChange }) => {
   return (
-    <div className="tab">
+    <div className="tab" style={{ zIndex: 2 }}>
       <button onClick={() => onTabChange("Game")}>ゲーム</button>
+      {/*
       <br />
-      <button onClick={() => onTabChange("PlayRecord")}>プレイ記録</button>
+      <button onClick={() => onTabChange("PlayRecord")}>プレイ記録</button>*/}
       <br />
       <button onClick={() => onTabChange("Ranking")}>ランキング</button>
       <br />
