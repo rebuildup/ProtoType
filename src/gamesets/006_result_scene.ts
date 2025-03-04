@@ -13,6 +13,7 @@ import {
 } from "./020_cacheControl";
 import { getLatestKey } from "./009_keyinput";
 import { playMiss } from "./012_soundplay";
+import { saveToCache } from "./020_cacheControl";
 
 function createText(
   app: PIXI.Application,
@@ -74,6 +75,10 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     }
     app.stage.removeChildren();
     BG_grid(app);
+    gameData.played_cnt++;
+    saveToCache("played_cnt_GM", gameData.played_cnt);
+    gameData.total_keyhit += gameData.total_hit_cnt;
+    saveToCache("total_keyhit_GM", gameData.total_keyhit);
     gameData.current_Player_id++;
     const newPlayer: RankingPlayer = {
       player_id: gameData.current_Player_id,
@@ -87,6 +92,12 @@ export function result_scene(app: PIXI.Application): Promise<void> {
           (1 - gameData.Miss / gameData.total_hit_cnt) *
           100 +
         gameData.score_extra,
+      player_accracy: (1 - gameData.Miss / gameData.total_hit_cnt) * 100,
+      player_avg_kpm:
+        ((gameData.total_hit_cnt - gameData.Miss) /
+          ((gameData.EndTime - gameData.StartTime) / 1000)) *
+        60,
+      player_max_kpm: gameData.MaxKPM,
     };
     const ur_rank_ind = insertLocalRanking(newPlayer);
     savecache_localranking();

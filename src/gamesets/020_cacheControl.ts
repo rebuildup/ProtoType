@@ -3,12 +3,18 @@ export interface RankingPlayer {
   player_name: string;
   player_id: number;
   player_score: number;
+  player_accracy: number;
+  player_avg_kpm: number;
+  player_max_kpm: number;
 }
 export function loadcache_localranking() {
   let defaultR: RankingPlayer = {
     player_name: "nodata",
     player_id: 0,
     player_score: 0,
+    player_accracy: 0,
+    player_avg_kpm: 0,
+    player_max_kpm: 0,
   };
   let output: RankingPlayer[] = loadFromCache<typeof output>("localRanking", [
     defaultR,

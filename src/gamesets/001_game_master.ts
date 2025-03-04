@@ -121,6 +121,14 @@ export async function initializeGame(app: PIXI.Application) {
     "instant_key_GM",
     20
   );
+  gameData.total_keyhit = loadFromCache<typeof gameData.total_keyhit>(
+    "total_keyhit_GM",
+    0
+  );
+  gameData.played_cnt = loadFromCache<typeof gameData.played_cnt>(
+    "played_cnt_GM",
+    0
+  );
   gameData.acc_keys = [];
   TendenciesInit();
 

@@ -12,6 +12,11 @@ import { playMiss } from "./012_soundplay";
 
 const Select_dot_x = 1170;
 const opened_record = { play: 0, achieve: 1, ranking: 2, graph: 3 };
+
+function padNumber(num: number) {
+  return num < 10 ? "0" + num : num.toString();
+}
+
 export function record_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
     let isOpened_record = opened_record.play;
@@ -207,13 +212,13 @@ export function record_scene(app: PIXI.Application): Promise<void> {
       scroll_mask.y = 0;
       record_container.mask = scroll_mask;
 
-      const tmpBG = new PIXI.Graphics();
-      tmpBG
-        .rect(0, 0, app.screen.width, app.screen.height)
-        .fill(replaceHash(settings.colorTheme.colors.SecondAccent));
-      tmpBG.x = screenCenter.x - tmpBG.width / 2;
-      tmpBG.y = screenCenter.y - tmpBG.height / 2;
-      record_container.addChild(tmpBG);
+      const container_BG = new PIXI.Graphics();
+      container_BG
+        .rect(0, 0, app.screen.width, app.screen.height * 20)
+        .fill(replaceHash(settings.colorTheme.colors.MainBG));
+      container_BG.x = screenCenter.x - container_BG.width / 2;
+      container_BG.y = screenCenter.y - container_BG.height / 2;
+      record_container.addChild(container_BG);
 
       const title_text = new PIXI.Text({
         text: "",
@@ -227,39 +232,321 @@ export function record_scene(app: PIXI.Application): Promise<void> {
       title_text.label = "record_title";
       title_text.y = 220;
       app.stage.addChild(title_text);
-
+      let max_scroll_y = 0;
       switch (opened) {
         case opened_record.play:
+          const play_rec_pad = 76;
+          const play_rec_title_x = screenCenter.x - 200;
+          const play_rec_x = screenCenter.x + 200;
+          max_scroll_y = 0;
           title_text.text = play_record_text.text;
           title_text.x = screenCenter.x - title_text.width / 2;
+          const max_score_title = new PIXI.Text({
+            text: "最高スコア",
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          max_score_title.x = play_rec_title_x;
+          max_score_title.y = play_rec_pad * 5 - max_score_title.height / 2;
+          record_container.addChild(max_score_title);
+          const max_score = new PIXI.Text({
+            text: gameData.localRanking[0].player_score.toFixed(0),
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          max_score.x = play_rec_x - max_score.width;
+          max_score.y = play_rec_pad * 5 - max_score.height / 2;
+          record_container.addChild(max_score);
+          const avg_score_title = new PIXI.Text({
+            text: "平均スコア",
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          avg_score_title.x = play_rec_title_x;
+          avg_score_title.y = play_rec_pad * 6 - avg_score_title.height / 2;
+          record_container.addChild(avg_score_title);
+          const avg_score = new PIXI.Text({
+            text: (gameData.localRanking
+              .map((player) => player.player_score)
+              .filter((score) => score !== 0).length > 0
+              ? gameData.localRanking
+                  .map((player) => player.player_score)
+                  .filter((score) => score !== 0)
+                  .reduce((acc, curr) => acc + curr, 0) /
+                gameData.localRanking
+                  .map((player) => player.player_score)
+                  .filter((score) => score !== 0).length
+              : 0
+            ).toFixed(0),
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          avg_score.x = play_rec_x - avg_score.width;
+          avg_score.y = play_rec_pad * 6 - avg_score.height / 2;
+          record_container.addChild(avg_score);
+          const total_play_title = new PIXI.Text({
+            text: "総プレイ数",
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          total_play_title.x = play_rec_title_x;
+          total_play_title.y = play_rec_pad * 7 - total_play_title.height / 2;
+          record_container.addChild(total_play_title);
+
+          const total_play = new PIXI.Text({
+            text: gameData.played_cnt,
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          total_play.x = play_rec_x - total_play.width;
+          total_play.y = play_rec_pad * 7 - total_play.height / 2;
+          record_container.addChild(total_play);
+
+          const total_type_title = new PIXI.Text({
+            text: "総タイプ数",
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          total_type_title.x = play_rec_title_x;
+          total_type_title.y = play_rec_pad * 8 - total_type_title.height / 2;
+          record_container.addChild(total_type_title);
+          const total_type = new PIXI.Text({
+            text: gameData.total_keyhit,
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          total_type.x = play_rec_x - total_type.width;
+          total_type.y = play_rec_pad * 8 - total_type.height / 2;
+          record_container.addChild(total_type);
+          const max_kpm_title = new PIXI.Text({
+            text: "最大kpm",
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          max_kpm_title.x = play_rec_title_x;
+          max_kpm_title.y = play_rec_pad * 9 - max_kpm_title.height / 2;
+          record_container.addChild(max_kpm_title);
+          const max_kpm = new PIXI.Text({
+            text: gameData.localRanking
+              .reduce(
+                (max, player) => Math.max(max, player.player_max_kpm),
+                -Infinity
+              )
+              .toFixed(0),
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          max_kpm.x = play_rec_x - max_kpm.width;
+          max_kpm.y = play_rec_pad * 9 - max_kpm.height / 2;
+          record_container.addChild(max_kpm);
+          const avg_kpm_title = new PIXI.Text({
+            text: "平均kpm",
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          avg_kpm_title.x = play_rec_title_x;
+          avg_kpm_title.y = play_rec_pad * 10 - avg_kpm_title.height / 2;
+          record_container.addChild(avg_kpm_title);
+          const avg_kpm = new PIXI.Text({
+            text: (gameData.localRanking
+              .map((player) => player.player_avg_kpm)
+              .filter((score) => score !== 0).length > 0
+              ? gameData.localRanking
+                  .map((player) => player.player_avg_kpm)
+                  .filter((score) => score !== 0)
+                  .reduce((acc, curr) => acc + curr, 0) /
+                gameData.localRanking
+                  .map((player) => player.player_avg_kpm)
+                  .filter((score) => score !== 0).length
+              : 0
+            ).toFixed(0),
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          avg_kpm.x = play_rec_x - avg_kpm.width;
+          avg_kpm.y = play_rec_pad * 10 - avg_kpm.height / 2;
+          record_container.addChild(avg_kpm);
+          const avg_accracy_title = new PIXI.Text({
+            text: "平均正確率",
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          avg_accracy_title.x = play_rec_title_x;
+          avg_accracy_title.y =
+            play_rec_pad * 11 - avg_accracy_title.height / 2;
+          record_container.addChild(avg_accracy_title);
+          const avg_accracy = new PIXI.Text({
+            text: String(
+              (gameData.localRanking
+                .map((player) => player.player_accracy)
+                .filter((score) => score !== 0).length > 0
+                ? gameData.localRanking
+                    .map((player) => player.player_accracy)
+                    .filter((score) => score !== 0)
+                    .reduce((acc, curr) => acc + curr, 0) /
+                  gameData.localRanking
+                    .map((player) => player.player_accracy)
+                    .filter((score) => score !== 0).length
+                : 0
+              ).toFixed(1) + "%"
+            ),
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          avg_accracy.x = play_rec_x - avg_accracy.width;
+          avg_accracy.y = play_rec_pad * 11 - avg_kpm.height / 2;
+          record_container.addChild(avg_accracy);
           break;
         case opened_record.achieve:
+          max_scroll_y = 10;
           title_text.text = achieve_text.text;
           title_text.x = screenCenter.x - title_text.width / 2;
+          const tmp_achieve = new PIXI.Text({
+            text: "いずれ実装する",
+            style: {
+              fontFamily: gameData.FontFamily,
+              fontSize: 30,
+              fill: replaceHash(settings.colorTheme.colors.MainColor),
+              align: "center",
+            },
+          });
+          tmp_achieve.x = app.screen.width / 2 - tmp_achieve.width / 2;
+          tmp_achieve.y = app.screen.height / 2 - tmp_achieve.height / 2;
+          record_container.addChild(tmp_achieve);
           break;
         case opened_record.ranking:
+          max_scroll_y = 4600;
           title_text.text = ranking_text.text;
           title_text.x = screenCenter.x - title_text.width / 2;
+          for (let i = 0; i < 99; i++) {
+            const rank_index = new PIXI.Text({
+              text: padNumber(i + 1),
+              style: {
+                fontFamily: gameData.FontFamily,
+                fontSize: 30,
+                fill: replaceHash(settings.colorTheme.colors.MainColor),
+                align: "center",
+              },
+            });
+            rank_index.x = screenCenter.x - 200;
+            rank_index.y = 300 + 50 * i - rank_index.height / 2;
+            record_container.addChild(rank_index);
+            const rank_player = new PIXI.Text({
+              text: gameData.localRanking[i].player_name,
+              style: {
+                fontFamily: gameData.FontFamily,
+                fontSize: 30,
+                fill: replaceHash(settings.colorTheme.colors.MainColor),
+                align: "center",
+              },
+            });
+            rank_player.x = screenCenter.x - 120;
+            rank_player.y = 300 + 50 * i - rank_player.height / 2;
+            record_container.addChild(rank_player);
+            const rank_score = new PIXI.Text({
+              text: gameData.localRanking[i].player_score.toFixed(0),
+              style: {
+                fontFamily: gameData.FontFamily,
+                fontSize: 30,
+                fill: replaceHash(settings.colorTheme.colors.MainColor),
+                align: "center",
+              },
+            });
+            rank_score.x = screenCenter.x + 200 - rank_score.width;
+            rank_score.y = 300 + 50 * i - rank_score.height / 2;
+            record_container.addChild(rank_score);
+          }
           break;
         case opened_record.graph:
+          max_scroll_y = 800;
           title_text.text = graph_text.text;
           title_text.x = screenCenter.x - title_text.width / 2;
+          if (gameData.IsLoggedin) {
+          } else {
+            const graph_no_loggedin = new PIXI.Text({
+              text: "ログインしてね(未実装)",
+              style: {
+                fontFamily: gameData.FontFamily,
+                fontSize: 30,
+                fill: replaceHash(settings.colorTheme.colors.MainColor),
+                align: "center",
+              },
+            });
+            graph_no_loggedin.x =
+              app.screen.width / 2 - graph_no_loggedin.width / 2;
+            graph_no_loggedin.y =
+              app.screen.height / 2 - graph_no_loggedin.height / 2;
+            record_container.addChild(graph_no_loggedin);
+          }
           break;
       }
 
       let isDragging = false;
       let lastPosition = { y: 0 };
       let velocity = 0;
-      //let animationFrame: number | null = null;
 
-      const maxScroll = Math.max(0, record_container.height);
+      const maxScroll = Math.max(0, max_scroll_y);
       let currentScroll = 0;
 
-      // Make the container interactive to receive pointer and wheel events
       record_container.eventMode = "static";
       record_container.cursor = "grab";
 
-      // Pointer (drag) events
       record_container
         .on("pointerdown", (e: PIXI.FederatedPointerEvent) => {
           isDragging = true;
@@ -326,7 +613,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
         }
       });
     }
-
+    update_open(isOpened_record);
     while (gameData.CurrentSceneName === "record_scene") {
       currentKeyController = new AbortController();
       try {

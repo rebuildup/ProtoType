@@ -36,6 +36,8 @@ export interface GameData {
   missKeys: string[];
   current_Player_id: number;
   acc_keys: number[];
+  played_cnt: number;
+  total_keyhit: number;
 }
 
 export const gameData: GameData = {
@@ -69,4 +71,6 @@ export const gameData: GameData = {
   missKeys: [],
   current_Player_id: 100000,
   acc_keys: [],
+  played_cnt: 0,
+  total_keyhit: 0,
 };
