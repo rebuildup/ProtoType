@@ -23,7 +23,7 @@ import { Player_register } from "./021_Player_register";
 import { BG_grid } from "./018_grid";
 
 import { settings } from "../SiteInterface";
-import { fetchTexts } from "./010_APIget";
+import { fetchTexts /*postPlayData*/ } from "./010_APIget";
 
 import { loadcache_localranking, loadFromCache } from "./020_cacheControl";
 
@@ -130,7 +130,17 @@ export async function initializeGame(app: PIXI.Application) {
     0
   );
   gameData.acc_keys = [];
+  if (settings.user.isLoggedin) {
+    gameData.IsLoggedin = true;
+    gameData.current_Player_id = settings.user.id;
+    gameData.current_Player_name = settings.user.name;
+  } else {
+    gameData.IsLoggedin = false;
+    gameData.current_Player_id = 0;
+    gameData.CurrentSceneName = "";
+  }
   TendenciesInit();
+  //console.log(postPlayData(1000, "aaa", 20000, 333, 33, 333));
 
   while (gameData.CurrentSceneName != "exit") {
     switch (gameData.CurrentSceneName) {

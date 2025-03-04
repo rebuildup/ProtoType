@@ -14,6 +14,7 @@ import {
 import { getLatestKey } from "./009_keyinput";
 import { playMiss } from "./012_soundplay";
 import { saveToCache } from "./020_cacheControl";
+import { postPlayData } from "./010_APIget";
 
 function createText(
   app: PIXI.Application,
@@ -79,7 +80,10 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     saveToCache("played_cnt_GM", gameData.played_cnt);
     gameData.total_keyhit += gameData.total_hit_cnt;
     saveToCache("total_keyhit_GM", gameData.total_keyhit);
-    gameData.current_Player_id++;
+    if (!gameData.IsLoggedin) {
+      gameData.current_Player_id++;
+    }
+
     const newPlayer: RankingPlayer = {
       player_id: gameData.current_Player_id,
       player_name: gameData.current_Player_name,
@@ -101,6 +105,23 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     };
     const ur_rank_ind = insertLocalRanking(newPlayer);
     savecache_localranking();
+    postPlayData(
+      gameData.current_Player_id,
+      gameData.current_Player_name,
+      ((gameData.total_hit_cnt - gameData.Miss) /
+        ((gameData.EndTime - gameData.StartTime) / 1000)) *
+        60 *
+        (1 - gameData.Miss / gameData.total_hit_cnt) *
+        (1 - gameData.Miss / gameData.total_hit_cnt) *
+        (1 - gameData.Miss / gameData.total_hit_cnt) *
+        100 +
+        gameData.score_extra,
+      (1 - gameData.Miss / gameData.total_hit_cnt) * 100,
+      ((gameData.total_hit_cnt - gameData.Miss) /
+        ((gameData.EndTime - gameData.StartTime) / 1000)) *
+        60,
+      gameData.MaxKPM
+    );
     const align_opt = { center: 0, left: 1, right: 2 };
 
     createText(
