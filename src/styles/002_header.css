@@ -24,16 +24,20 @@
 }
 .player-card {
   position: fixed;
-  top: 2em;
+  top: 1.4em;
   left: 1em;
   margin: 0;
 }
 
 .player-panel {
-  width: 200px;
+  width: 280px;
   height: 200px;
   position: fixed;
+  /*
   top: 1em;
   left: 1em;
-  background-color: var(--MainAccent);
+  */
+  background-color: var(--MainBG);
+  border: solid 2px var(--MainAccent);
+  border-radius: 8px;
 }

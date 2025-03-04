@@ -4,7 +4,7 @@ import { settings, updateSetting } from "../SiteInterface";
 async function checkUserExists(username: string) {
   console.log(username);
 
-  return true;
+  return false;
 }
 
 const PlayerProfilePanel: React.FC = () => {
@@ -72,50 +72,175 @@ const PlayerProfilePanel: React.FC = () => {
         onClick={togglePanel}
         style={{ zIndex: 2 }}
       >
-        {settings.user.isLoggedin ? settings.user.name : "ログイン"}
+        {settings.user.isLoggedin ? "you : " + settings.user.name : "ログイン"}
       </button>
       {isPanelVisible && (
         <div className="player-panel" style={{ zIndex: 4 }}>
-          <button onClick={closePanel}>Close</button>
+          <button
+            onClick={closePanel}
+            className="close-btn"
+            style={{ position: "absolute", right: 0, fontSize: "16px" }}
+          >
+            Close
+          </button>
+
           {settings.user.isLoggedin ? (
             <div>
-              <div>{settings.user.name}</div>
-              <button onClick={handleLogout}>Logout</button>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "40%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  fontSize: "12px",
+                }}
+              >
+                ユーザーネーム
+              </div>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  fontSize: "24px",
+                }}
+              >
+                {settings.user.name}
+              </div>
+              <button
+                onClick={handleLogout}
+                style={{
+                  position: "absolute",
+                  bottom: "26px",
+                  left: "80px",
+                  fontSize: "16px",
+                }}
+              >
+                ログアウト
+              </button>
             </div>
           ) : (
             <div>
               {step === 1 && (
                 <div>
                   <div>
-                    <label htmlFor="username">Username:</label>
+                    <label
+                      htmlFor="username"
+                      style={{
+                        position: "absolute",
+                        top: "60px",
+                        left: "80px",
+                        fontSize: "16px",
+                      }}
+                    >
+                      ユーザーネーム:
+                    </label>
                     <input
                       id="username"
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
+                      style={{
+                        position: "absolute",
+                        width: "180px",
+                        top: "90px",
+                        left: "46px",
+                      }}
                     />
                   </div>
-                  <button onClick={handleUsernameNext}>次へ</button>
+                  <button
+                    onClick={handleUsernameNext}
+                    style={{
+                      position: "absolute",
+                      bottom: "30px",
+                      left: "98px",
+                      fontSize: "16px",
+                    }}
+                  >
+                    次へ
+                  </button>
                 </div>
               )}
               {step === 2 && (
                 <div>
                   {userExists === false && (
-                    <div>ユーザーが存在しませんでした。</div>
+                    <div>
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "30px",
+                          left: "46px",
+                          fontSize: "8px",
+                        }}
+                      >
+                        ユーザーが見つかりませんでした。
+                        <br />
+                        パスワードを入力してユーザーを登録します
+                      </div>
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: "56px",
+                          left: "20px",
+                          fontSize: "8px",
+                        }}
+                      >
+                        ※セキュリティの確保が出来ていません
+                        <br />
+                        他のサイトで使用したパスワードは絶対に使用しないでください
+                      </div>
+                    </div>
                   )}
                   <div>
-                    <label htmlFor="password">Password:</label>
+                    <label
+                      htmlFor="password"
+                      style={{
+                        position: "absolute",
+                        top: "60px",
+                        left: "98px",
+                        fontSize: "16px",
+                      }}
+                    >
+                      パスワード
+                    </label>
                     <input
                       id="password"
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      style={{
+                        position: "absolute",
+                        width: "180px",
+                        top: "90px",
+                        left: "46px",
+                      }}
                     />
                   </div>
                   {userExists ? (
-                    <button onClick={handleLogin}>ログイン</button>
+                    <button
+                      onClick={handleLogin}
+                      style={{
+                        position: "absolute",
+                        bottom: "30px",
+                        left: "82px",
+                        fontSize: "16px",
+                      }}
+                    >
+                      ログイン
+                    </button>
                   ) : (
-                    <button onClick={handleRegister}>登録</button>
+                    <button
+                      onClick={handleRegister}
+                      style={{
+                        position: "absolute",
+                        bottom: "10px",
+                        left: "98px",
+                        fontSize: "16px",
+                      }}
+                    >
+                      登録
+                    </button>
                   )}
                 </div>
               )}
