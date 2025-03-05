@@ -103,6 +103,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
           ((gameData.EndTime - gameData.StartTime) / 1000)) *
         60,
       player_max_kpm: gameData.MaxKPM,
+      player_play_date: gameData.EndTime,
     };
     let ur_rank_ind = insertLocalRanking(newPlayer);
     if (gameData.IsLoggedin) {

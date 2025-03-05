@@ -175,8 +175,8 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
         case opened_options.menu:
           break;
         case opened_options.keylayout:
-          const layout_container = new PIXI.Graphics();
-          layout_container.fill(replaceHash(settings.colorTheme.colors.MainBG));
+          const layout_container = new PIXI.Container();
+          //layout_container.fill(replaceHash(settings.colorTheme.colors.MainBG));
           layout_container.position = screenCenter;
 
           const layout_BG = new PIXI.Graphics();

@@ -34,6 +34,34 @@ export async function createUser(
   return data;
 }
 
+export async function fetchPlayerData(playerId: string): Promise<any> {
+  // Replace with your deployed App Script web app URL
+  const endpoint =
+    "https://script.google.com/macros/s/AKfycbwFo9EeP6-wrvmPjUL5kPaC86u2gnzKpXA8-Pts2KWhTYj6ZxVGiQHu4ppMEn8x3DEV/exec";
+  const url = `${endpoint}?id=${encodeURIComponent(playerId)}`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching player data:", error);
+    throw error;
+  }
+}
+/*
+// Example usage:
+fetchPlayerData("example_player_id")
+  .then((data) => {
+    console.log("Player data:", data);
+  })
+  .catch((error) => {
+    console.error("Failed to fetch player data:", error);
+  });
+*/
 /*
 (async () => {
   const username = "exampleUser";

@@ -1,4 +1,6 @@
 import { gameData } from "./002_gameConfig";
+import { settings } from "../SiteInterface";
+import { fetchPlayerData } from "./022_Login";
 export interface RankingPlayer {
   player_name: string;
   player_id: number;
@@ -6,8 +8,9 @@ export interface RankingPlayer {
   player_accracy: number;
   player_avg_kpm: number;
   player_max_kpm: number;
+  player_play_date: number;
 }
-export function loadcache_localranking() {
+export async function loadcache_localranking() {
   let defaultR: RankingPlayer = {
     player_name: "nodata",
     player_id: 0,
@@ -15,10 +18,32 @@ export function loadcache_localranking() {
     player_accracy: 0,
     player_avg_kpm: 0,
     player_max_kpm: 0,
+    player_play_date: 0,
   };
   let output: RankingPlayer[] = loadFromCache<typeof output>("localRanking", [
     defaultR,
   ]);
+  if (settings.user.isLoggedin) {
+    await fetchPlayerData(settings.user.id.toString())
+      .then((data) => {
+        output = [];
+        for (let data_l = 0; data_l < data.length; data_l++) {
+          const online_d: RankingPlayer = {
+            player_id: data[data_l][0],
+            player_name: data[data_l][1],
+            player_score: data[data_l][2],
+            player_accracy: data[data_l][3],
+            player_avg_kpm: data[data_l][4],
+            player_max_kpm: data[data_l][5],
+            player_play_date: data[data_l][6],
+          };
+          output[data_l] = online_d;
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch player data:", error);
+      });
+  }
 
   while (output.length <= 100) {
     output.push(defaultR);

@@ -357,6 +357,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             player_accracy: onlineRanking[i][3],
             player_avg_kpm: onlineRanking[i][4],
             player_max_kpm: onlineRanking[i][5],
+            player_play_date: onlineRanking[i][6],
           };
           gameData.onlineRanking.push(newPlayer);
         }

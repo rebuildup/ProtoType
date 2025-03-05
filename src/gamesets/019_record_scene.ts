@@ -519,24 +519,8 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           max_scroll_y = 0;
           title_text.text = graph_text.text;
           title_text.x = screenCenter.x - title_text.width / 2;
-          if (gameData.IsLoggedin) {
-            score_graph(app, record_container);
-          } else {
-            const graph_no_loggedin = new PIXI.Text({
-              text: "表示するにはログインが必要です",
-              style: {
-                fontFamily: gameData.FontFamily,
-                fontSize: 30,
-                fill: replaceHash(settings.colorTheme.colors.MainColor),
-                align: "center",
-              },
-            });
-            graph_no_loggedin.x =
-              app.screen.width / 2 - graph_no_loggedin.width / 2;
-            graph_no_loggedin.y =
-              app.screen.height / 2 - graph_no_loggedin.height / 2;
-            record_container.addChild(graph_no_loggedin);
-          }
+          score_graph(app, record_container);
+
           break;
       }
 
