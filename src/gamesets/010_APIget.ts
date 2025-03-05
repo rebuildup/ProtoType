@@ -1,14 +1,18 @@
 import { saveToCache, loadFromCache } from "../SiteInterface";
 
 const WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbwS5vEMAG21Vc83jLPV8GOEm2JYEVVl3DVROXKOvJaGv3E1kkbLxFtRcNzUo64ipuvV/exec";
+  "https://script.google.com/macros/s/AKfycbx727jT1TLHJmBc4ds0vi8-EQzZR27wPzlbk1hYEY_fx-hwu3GvoRYffwlToKVL5D-i/exec";
 
 export async function fetchTexts(): Promise<any> {
   let data_Cache: string[] = loadFromCache<typeof data_Cache>("api_texts", [
     "no_text",
   ]);
   if (data_Cache[0] == "no_text") {
-    const response = await fetch(WEB_APP_URL);
+    const response = await fetch(
+      WEB_APP_URL +
+        "?sheetName=texts&startRow=1&startCol=1&endRow=250&endCol=50"
+    );
+    console.log(response);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }

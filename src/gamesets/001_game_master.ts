@@ -137,10 +137,9 @@ export async function initializeGame(app: PIXI.Application) {
   } else {
     gameData.IsLoggedin = false;
     gameData.current_Player_id = 0;
-    gameData.CurrentSceneName = "";
+    gameData.current_Player_name = "";
   }
   TendenciesInit();
-  //console.log(postPlayData(1000, "aaa", 20000, 333, 33, 333));
 
   while (gameData.CurrentSceneName != "exit") {
     switch (gameData.CurrentSceneName) {

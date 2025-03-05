@@ -414,8 +414,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                   light_key_from_code(app, keyCode.code);
                 }
 
-                console.log(keyCode);
-                console.log(collectkeys);
+                //console.log(keyCode);
+                //console.log(collectkeys);
                 gameData.Miss++;
                 gameData.combo_cnt = 0;
                 gameData.total_hit_cnt++;

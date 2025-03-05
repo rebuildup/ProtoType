@@ -1,10 +1,25 @@
 import React, { useState } from "react";
 import "../styles/002_header.css";
 import { settings, updateSetting } from "../SiteInterface";
-async function checkUserExists(username: string) {
-  console.log(username);
 
-  return false;
+import {
+  checkUsername,
+  createUser,
+  checkPassword,
+} from "../gamesets/022_Login";
+
+/**
+ * Checks whether the user exists by calling the API.
+ * Returns true if the username exists, false otherwise.
+ */
+async function checkUserExists(username: string): Promise<boolean> {
+  try {
+    const id = await checkUsername(username);
+    return id !== -1;
+  } catch (error) {
+    console.error("Error in checkUserExists:", error);
+    return false;
+  }
 }
 
 const PlayerProfilePanel: React.FC = () => {
@@ -37,17 +52,39 @@ const PlayerProfilePanel: React.FC = () => {
     setStep(2);
   };
 
-  const handleLogin = () => {
-    updateSetting("user", { id: 0, name: username, isLoggedin: true });
-    console.log("Logging in with:", username, password);
+  const handleLogin = async () => {
+    if (username.trim() === "" || password.trim() === "") return;
+    try {
+      const id = await checkUsername(username);
+      if (id === -1) {
+        console.log("User not found, cannot login.");
+      } else {
+        console.log("User found with ID:", id);
+        const isValid = await checkPassword(id, password);
+        if (isValid) {
+          console.log("Password is correct.");
+          updateSetting("user", { id: id, name: username, isLoggedin: true });
+        } else {
+          console.log("Incorrect password.");
+        }
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
     setRefresh((prev) => prev + 1);
     setIsPanelVisible(false);
     setStep(1);
   };
 
-  const handleRegister = () => {
-    updateSetting("user", { id: 0, name: username, isLoggedin: true });
-    console.log("Registering new user:", username, password);
+  const handleRegister = async () => {
+    if (username.trim() === "" || password.trim() === "") return;
+    try {
+      const newId = await createUser(username, password);
+      console.log("New user created with ID:", newId);
+      updateSetting("user", { id: newId, name: username, isLoggedin: true });
+    } catch (error) {
+      console.error("Error during registration:", error);
+    }
     setRefresh((prev) => prev + 1);
     setIsPanelVisible(false);
     setStep(1);

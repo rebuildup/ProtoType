@@ -212,10 +212,12 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
           setting_container.addChild(layout_container);
           break;
         case opened_options.instantkey:
-          const instant_container = new PIXI.Graphics();
+          const instant_container = new PIXI.Container();
+          /*
           instant_container.fill(
             replaceHash(settings.colorTheme.colors.MainBG)
           );
+          */
           instant_container.position = screenCenter;
 
           const instant_BG = new PIXI.Graphics();
