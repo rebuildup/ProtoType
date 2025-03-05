@@ -39,6 +39,7 @@ export interface GameData {
   played_cnt: number;
   total_keyhit: number;
   online_player: { name: string; id: number };
+  onlineRanking: RankingPlayer[];
 }
 
 export const gameData: GameData = {
@@ -75,4 +76,5 @@ export const gameData: GameData = {
   played_cnt: 0,
   total_keyhit: 0,
   online_player: { name: "", id: -1 },
+  onlineRanking: [],
 };

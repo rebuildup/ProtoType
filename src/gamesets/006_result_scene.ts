@@ -10,6 +10,7 @@ import {
   savecache_localranking,
   insertLocalRanking,
   RankingPlayer,
+  insertOnlineRanking,
 } from "./020_cacheControl";
 import { getLatestKey } from "./009_keyinput";
 import { playMiss } from "./012_soundplay";
@@ -103,25 +104,31 @@ export function result_scene(app: PIXI.Application): Promise<void> {
         60,
       player_max_kpm: gameData.MaxKPM,
     };
-    const ur_rank_ind = insertLocalRanking(newPlayer);
+    let ur_rank_ind = insertLocalRanking(newPlayer);
+    if (gameData.IsLoggedin) {
+      ur_rank_ind = insertOnlineRanking(newPlayer);
+    }
     savecache_localranking();
-    postPlayData(
-      gameData.current_Player_id,
-      gameData.current_Player_name,
-      ((gameData.total_hit_cnt - gameData.Miss) /
-        ((gameData.EndTime - gameData.StartTime) / 1000)) *
-        60 *
-        (1 - gameData.Miss / gameData.total_hit_cnt) *
-        (1 - gameData.Miss / gameData.total_hit_cnt) *
-        (1 - gameData.Miss / gameData.total_hit_cnt) *
-        100 +
-        gameData.score_extra,
-      (1 - gameData.Miss / gameData.total_hit_cnt) * 100,
-      ((gameData.total_hit_cnt - gameData.Miss) /
-        ((gameData.EndTime - gameData.StartTime) / 1000)) *
-        60,
-      gameData.MaxKPM
-    );
+    if (gameData.IsLoggedin) {
+      postPlayData(
+        gameData.current_Player_id,
+        gameData.current_Player_name,
+        ((gameData.total_hit_cnt - gameData.Miss) /
+          ((gameData.EndTime - gameData.StartTime) / 1000)) *
+          60 *
+          (1 - gameData.Miss / gameData.total_hit_cnt) *
+          (1 - gameData.Miss / gameData.total_hit_cnt) *
+          (1 - gameData.Miss / gameData.total_hit_cnt) *
+          100 +
+          gameData.score_extra,
+        (1 - gameData.Miss / gameData.total_hit_cnt) * 100,
+        ((gameData.total_hit_cnt - gameData.Miss) /
+          ((gameData.EndTime - gameData.StartTime) / 1000)) *
+          60,
+        gameData.MaxKPM
+      );
+    }
+
     const align_opt = { center: 0, left: 1, right: 2 };
 
     createText(
@@ -135,7 +142,9 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     for (let i = 0; i < 10; i++) {
       createText(
         app,
-        padNumber(i + 1) + "   " + gameData.localRanking[i].player_name,
+        gameData.IsLoggedin
+          ? padNumber(i + 1) + "   " + gameData.onlineRanking[i].player_name
+          : padNumber(i + 1) + "   " + gameData.localRanking[i].player_name,
         150,
         70 * i + 200,
         35,
@@ -143,7 +152,9 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       );
       createText(
         app,
-        String(gameData.localRanking[i].player_score.toFixed(0)),
+        gameData.IsLoggedin
+          ? String(gameData.onlineRanking[i].player_score.toFixed(0))
+          : String(gameData.localRanking[i].player_score.toFixed(0)),
         620,
         70 * i + 200,
         35,

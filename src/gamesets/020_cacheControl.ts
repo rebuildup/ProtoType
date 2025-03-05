@@ -63,6 +63,32 @@ export function insertLocalRanking(newPlayer: RankingPlayer): number {
 
   return -1;
 }
+export function insertOnlineRanking(newPlayer: RankingPlayer): number {
+  const ranking = gameData.onlineRanking;
+
+  let index = ranking.findIndex(
+    (player) => newPlayer.player_score > player.player_score
+  );
+
+  if (index === -1) {
+    index = ranking.length;
+  } else {
+    while (
+      index < ranking.length &&
+      ranking[index].player_score === newPlayer.player_score
+    ) {
+      index++;
+    }
+  }
+
+  if (index < 100) {
+    ranking.splice(index, 0, newPlayer);
+    ranking.pop();
+    return index;
+  }
+
+  return -1;
+}
 export async function deleteCache(cacheName: string): Promise<boolean> {
   try {
     const result = await caches.delete(cacheName);

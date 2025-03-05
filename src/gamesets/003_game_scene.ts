@@ -14,7 +14,7 @@ import {
   light_key_from_code,
   acc_key_from_code,
 } from "./009_keyinput";
-import { loadcache_localranking } from "./020_cacheControl";
+import { loadcache_localranking, RankingPlayer } from "./020_cacheControl";
 
 import {
   getNextKeysOptimized,
@@ -24,6 +24,8 @@ import {
 import { BG_grid } from "./018_grid";
 
 import { GM_start } from "./014_mogura";
+
+import { getRanking_Data } from "./010_APIget";
 
 const anim_max_width = 100;
 export async function game_scene(app: PIXI.Application): Promise<void> {
@@ -344,6 +346,21 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     setTimeout(async () => {
       //await makeIssues(3, 6, gameData.Issues_num);
       await makeIssues(14, 14, gameData.Issues_num);
+      if (gameData.IsLoggedin) {
+        const onlineRanking = await getRanking_Data(0);
+        gameData.onlineRanking = [];
+        for (let i = 0; i < 100; i++) {
+          const newPlayer: RankingPlayer = {
+            player_id: onlineRanking[i][0],
+            player_name: onlineRanking[i][1],
+            player_score: onlineRanking[i][2],
+            player_accracy: onlineRanking[i][3],
+            player_avg_kpm: onlineRanking[i][4],
+            player_max_kpm: onlineRanking[i][5],
+          };
+          gameData.onlineRanking.push(newPlayer);
+        }
+      }
       loadcache_localranking();
       setTimeout(() => {
         app.stage.removeChild(load_text);
