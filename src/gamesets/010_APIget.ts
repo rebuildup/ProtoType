@@ -12,7 +12,6 @@ export async function fetchTexts(): Promise<any> {
       WEB_APP_URL +
         "?sheetName=texts&startRow=1&startCol=1&endRow=250&endCol=50"
     );
-    console.log(response);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -32,7 +31,6 @@ export async function postPlayData(
   maxKpm: number
 ): Promise<any> {
   const params = new URLSearchParams();
-  // パラメータ名を正確に指定する
   params.append("playerId", playerId.toString());
   params.append("playerName", playerName);
   params.append("score", score.toString());
@@ -53,3 +51,16 @@ export async function postPlayData(
   return data;
 }
 //postPlayData(id,name,score,accuracy,avgkpm,maxkpm)
+export async function getRanking_Data(option: number) {
+  const response = await fetch(
+    WEB_APP_URL +
+      `?sheetName=ranking&startRow=2&startCol=${
+        8 * option + 1
+      }&endRow=102&endCol=${8 * option + 7}`
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const data = await response.json();
+  return data;
+}
