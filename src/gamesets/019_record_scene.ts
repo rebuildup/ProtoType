@@ -10,6 +10,8 @@ PixiPlugin.registerPIXI(PIXI);
 import { getLatestKey } from "./009_keyinput";
 import { playMiss } from "./012_soundplay";
 
+import { score_graph } from "./013_graphs";
+
 const Select_dot_x = 1170;
 const opened_record = { play: 0, achieve: 1, ranking: 2, graph: 3 };
 
@@ -514,13 +516,14 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           }
           break;
         case opened_record.graph:
-          max_scroll_y = 800;
+          max_scroll_y = 0;
           title_text.text = graph_text.text;
           title_text.x = screenCenter.x - title_text.width / 2;
           if (gameData.IsLoggedin) {
+            score_graph(app, record_container);
           } else {
             const graph_no_loggedin = new PIXI.Text({
-              text: "ログインしてね(未実装)",
+              text: "表示するにはログインが必要です",
               style: {
                 fontFamily: gameData.FontFamily,
                 fontSize: 30,

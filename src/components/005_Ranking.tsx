@@ -49,7 +49,7 @@ function transposeData(data: any) {
     "最大kpm",
   ];
   output.push(head);
-  for (let i = 1; i <= 100; i++) {
+  for (let i = 0; i < 100; i++) {
     const row: string[] = [
       i,
       data[i][1],
