@@ -8,7 +8,7 @@ import { replaceHash } from "./001_game_master";
 import { playCollect, playMiss } from "./012_soundplay";
 import { BG_grid } from "./018_grid";
 import { getLatestKey } from "./009_keyinput";
-import { closeScene } from "./014_mogura";
+import { closeScene, openScene } from "./014_mogura";
 
 const BUTTON_SPACING = 120;
 const CIRCULAR_BUTTON_CENTER_OFFSET = 200;
@@ -191,74 +191,21 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       hideSceneElements();
 
       gameData.CurrentSceneName = "record_scene";
-      /*
-      gsap.to(circleMain, { alpha: 0, ease: "power4.out", duration: 0.5 });
-      
-      gsap.to(circleAcc, {
-        x: winCenter.x,
-        y: winCenter.y,
-        ease: "power4.out",
-        duration: 1,
-      });
-      gsap.to(circleAcc.scale, {
-        x: 1,
-        y: 1,
-        ease: "power4.out",
-        duration: 1,
-        delay: 0.5,
-      });
-      */
-      await closeScene(app);
+      await closeScene(app, 3);
       resolve();
     }
-    function transitionToSetting() {
+    async function transitionToSetting() {
       hideSceneElements();
       gameData.CurrentSceneName = "setting_scene";
-      /*
-      gsap.to(circleAcc, { alpha: 0, ease: "power4.out", duration: 0.5 });
-      gsap.to(circleMain, {
-        x: winCenter.x,
-        y: winCenter.y,
-        ease: "power4.out",
-        duration: 1,
-      });
-      gsap.to(circleMain.scale, {
-        x: 1,
-        y: 1,
-        ease: "power4.out",
-        duration: 1,
-        delay: 0.5,
-      });
-      */
-      setTimeout(async () => {
-        await closeScene(app);
-        resolve();
-      }, 1000);
+      await closeScene(app, 2);
+      resolve();
     }
     async function transitionToGameModeSelect() {
       hideSceneElements();
       gameData.CurrentSceneName = "game_mode_select_scene";
-      /*
-      gsap.to(circleMain, { alpha: 0, ease: "power4.out", duration: 0.5 });
-    
-      gsap.to(circleAcc, {
-        x: winCenter.x,
-        y: winCenter.y,
-        ease: "power4.out",
-        duration: 1,
-      });
-      gsap.to(circleAcc.scale, {
-        x: 0.16,
-        y: 0.16,
-        ease: "power4.out",
-        duration: 1,
-        delay: 0.5,
-      });
-      */
-      setTimeout(async () => {
-        await game_mode_select(app);
-        resolve();
-      }, 1000);
+      await closeScene(app, 0);
+      await game_mode_select(app);
+      resolve();
     }
 
     recordBtn.on("pointerdown", () => {
@@ -285,6 +232,8 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       animateSelectionDot(selectDotAcc, targetY, isDown ? 0 : 0.03, isDown);
       animateSelectionDot(selectDotMain, targetY, isDown ? 0.03 : 0, isDown);
     };
+
+    openScene(app, gameData.gameselect_open);
 
     while (gameData.CurrentSceneName === "game_select") {
       currentKeyController = new AbortController();
@@ -323,28 +272,14 @@ export async function game_select(app: PIXI.Application): Promise<void> {
 
 function game_mode_select(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
+    app.stage.removeChildren();
+    BG_grid(app);
     playCollect();
     const winCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
     const circleRadius = 410;
     const circleAcc = app.stage.children.find(
       (child) => child.label === "circle_acc"
     );
-    const wakuCircle = app.stage.children.find(
-      (child) => child.label === "waku_circle"
-    );
-    if (wakuCircle) {
-      wakuCircle.alpha = 0;
-      wakuCircle.scale = 1.2;
-    }
-    if (wakuCircle) {
-      wakuCircle.alpha = 1;
-      gsap.to(wakuCircle.scale, {
-        x: 0.95,
-        y: 0.95,
-        duration: 1.5,
-        ease: "power4.out",
-      });
-    }
     if (circleAcc) {
       gsap.to(circleAcc, {
         x: winCenter.x - CIRCULAR_BUTTON_CENTER_OFFSET,
@@ -433,7 +368,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
 
     let currentKeyController: AbortController | null = null;
     let selectedModeIndex = 2;
-
+    openScene(app, 0);
     while (gameData.CurrentSceneName === "game_mode_select_scene") {
       currentKeyController = new AbortController();
       try {
@@ -452,6 +387,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
         } else if (keyCode.code === "Escape") {
           currentKeyController.abort();
           gameData.CurrentSceneName = "game_select";
+          gameData.gameselect_open = 1;
+          await closeScene(app, 1);
           resolve();
         } else if (["Enter", "Space"].includes(keyCode.code)) {
           currentKeyController.abort();
@@ -461,6 +398,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
           } else {
             gameData.CurrentSceneName = "register_scene";
           }
+          gameData.gameselect_open = 1;
+          await closeScene(app, 1);
           resolve();
         }
       } catch (error: any) {

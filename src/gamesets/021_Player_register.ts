@@ -8,6 +8,7 @@ import { PixiPlugin } from "gsap/PixiPlugin";
 PixiPlugin.registerPIXI(PIXI);
 
 import { getLatestKey, isNomalKey, keyCodeToText } from "./009_keyinput";
+import { closeScene, openScene } from "./014_mogura";
 
 export function Player_register(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
@@ -71,14 +72,13 @@ export function Player_register(app: PIXI.Application): Promise<void> {
     player_name_text.y = screenCenter.y - player_name_text.height / 2;
     app.stage.addChild(player_name_text);
 
-    function get_out() {
+    async function get_out() {
       currentKeyController?.abort();
       gsap.to(enter_text, { alpha: 0, ease: "power4.out", duration: 1 });
-      setTimeout(() => {
-        resolve();
-      }, 1000);
+      await closeScene(app, 1);
+      resolve();
     }
-
+    openScene(app, 1);
     while (gameData.CurrentSceneName === "register_scene") {
       currentKeyController = new AbortController();
       try {

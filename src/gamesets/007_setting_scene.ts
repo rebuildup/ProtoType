@@ -13,27 +13,19 @@ import { keyLayouts } from "../components/012_KeyLayout";
 import { playMiss, playCollect } from "./012_soundplay";
 
 import { saveToCache, deleteCache } from "./020_cacheControl";
+import { closeScene, openScene } from "./014_mogura";
+import { BG_grid } from "./018_grid";
 const Select_dot_x = 880;
 const option_select_values = { keylayoutset: 0, instantkey_n: 1 };
 const opened_options = { menu: -1, keylayout: 0, instantkey: 1 };
 
 export function setting_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
+    app.stage.removeChildren();
     const screenCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
-
+    BG_grid(app);
     let option_select = option_select_values.keylayoutset;
     let current_select = 0;
-
-    /*
-    const circle_m = new PIXI.Graphics();
-    circle_m
-      .circle(0, 0, 800)
-      .fill(replaceHash(settings.colorTheme.colors.MainBG));
-    circle_m.position = screenCenter;
-    app.stage.addChild(circle_m);
-    circle_m.scale = 0;
-    gsap.to(circle_m.scale, { x: 1, y: 1, ease: "power4.out", duration: 2 });
-*/
 
     const exit_btn = new PIXI.Text({
       text: "↑",
@@ -137,15 +129,14 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       });
     }
 
-    function get_out() {
+    async function get_out() {
       currentKeyController?.abort();
-      //gsap.to(circle_m.scale, { x: 0, y: 0, ease: "power4.out", duration: 1 });
       gsap.to(exit_btn, { alpha: 0, ease: "power4.out", duration: 1 });
-      setTimeout(() => {
-        app.stage.removeChild(keylayout_text);
-        app.stage.removeChild(instantkey_n_text);
-        resolve();
-      }, 1000);
+      gameData.gameselect_open = 3;
+      await closeScene(app, 3);
+      app.stage.removeChild(keylayout_text);
+      app.stage.removeChild(instantkey_n_text);
+      resolve();
     }
 
     let isOpened_option = opened_options.menu;
@@ -178,7 +169,6 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
           break;
         case opened_options.keylayout:
           const layout_container = new PIXI.Container();
-          //layout_container.fill(replaceHash(settings.colorTheme.colors.MainBG));
           layout_container.position = screenCenter;
 
           const layout_BG = new PIXI.Graphics();
@@ -215,11 +205,6 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
           break;
         case opened_options.instantkey:
           const instant_container = new PIXI.Container();
-          /*
-          instant_container.fill(
-            replaceHash(settings.colorTheme.colors.MainBG)
-          );
-          */
           instant_container.position = screenCenter;
 
           const instant_BG = new PIXI.Graphics();
@@ -317,7 +302,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       dot_pos_update(option_select);
       update_open(isOpened_option, current_select);
     });
-
+    openScene(app, 2);
     while (gameData.CurrentSceneName === "setting_scene") {
       currentKeyController = new AbortController();
       try {

@@ -135,6 +135,7 @@ export async function initializeGame(app: PIXI.Application) {
     gameData.current_Player_id = 0;
     gameData.current_Player_name = "";
   }
+  gameData.gameselect_open = 0;
   TendenciesInit();
 
   while (gameData.CurrentSceneName != "exit") {

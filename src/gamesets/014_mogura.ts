@@ -1,7 +1,8 @@
 import * as PIXI from "pixi.js";
 import gsap from "gsap";
 import { PixiPlugin } from "gsap/PixiPlugin";
-PixiPlugin.registerPIXI(PIXI);
+import { CustomEase } from "gsap/all";
+gsap.registerPlugin(PixiPlugin, CustomEase);
 import { replaceHash } from "./001_game_master";
 
 import { settings } from "../SiteInterface";
@@ -76,63 +77,202 @@ export function GM_start(app: PIXI.Application): Promise<void> {
     }, 1000);
   });
 }
-export function closeScene(app: PIXI.Application): Promise<void> {
+export function closeScene(
+  app: PIXI.Application,
+  option: number
+): Promise<void> {
   return new Promise(async (resolve) => {
+    CustomEase.create("slideOutEase", "M0,0 C1.0,0 0.0,1.33 1,1");
     const closeSecond = new PIXI.Graphics();
     closeSecond
       .rect(0, 0, app.screen.width, app.screen.height)
-      .fill(replaceHash(settings.colorTheme.colors.SecondAccent));
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    closeSecond.alpha = 0.8;
     closeSecond.position = { x: 0, y: 0 };
     app.stage.addChild(closeSecond);
+
     const closeAccent = new PIXI.Graphics();
     closeAccent
       .rect(0, 0, app.screen.width, app.screen.height)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
     app.stage.addChild(closeAccent);
-    gsap.fromTo(
-      closeSecond,
-      { x: -app.screen.width },
-      { x: 0, duration: 1, ease: "power3.inOut", delay: 0 }
-    );
-    gsap.fromTo(
-      closeAccent,
-      { x: -app.screen.width },
-      { x: 0, duration: 1, ease: "power3.inOut", delay: 0.2 }
-    );
+    switch (option) {
+      case 0:
+        gsap.fromTo(
+          closeSecond,
+          { x: -app.screen.width },
+          { x: 0, duration: 1.2, ease: "slideOutEase", delay: 0 }
+        );
+
+        gsap.fromTo(
+          closeAccent,
+          { x: -app.screen.width },
+          { x: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 }
+        );
+        break;
+      case 1:
+        gsap.fromTo(
+          closeSecond,
+          { x: app.screen.width },
+          { x: 0, duration: 1.2, ease: "slideOutEase", delay: 0 }
+        );
+
+        gsap.fromTo(
+          closeAccent,
+          { x: app.screen.width },
+          { x: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 }
+        );
+        break;
+      case 2:
+        gsap.fromTo(
+          closeSecond,
+          { y: -app.screen.height },
+          { y: 0, duration: 1.2, ease: "slideOutEase", delay: 0 }
+        );
+
+        gsap.fromTo(
+          closeAccent,
+          { y: -app.screen.height },
+          { y: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 }
+        );
+        break;
+      case 3:
+        gsap.fromTo(
+          closeSecond,
+          { y: app.screen.height },
+          { y: 0, duration: 1.2, ease: "slideOutEase", delay: 0 }
+        );
+
+        gsap.fromTo(
+          closeAccent,
+          { y: app.screen.height },
+          { y: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 }
+        );
+        break;
+    }
+
     setTimeout(() => {
       app.stage.removeChild(closeSecond);
       app.stage.removeChild(closeAccent);
       resolve();
-    }, 2000);
+    }, 750);
   });
 }
-export function openScene(app: PIXI.Application): Promise<void> {
+export function openScene(
+  app: PIXI.Application,
+  option: number
+): Promise<void> {
   return new Promise(async (resolve) => {
+    CustomEase.create("slideOutEase", "M0,0 C1.0,0 0.0,1.33 1,1");
     const openSecond = new PIXI.Graphics();
     openSecond
       .rect(0, 0, app.screen.width, app.screen.height)
-      .fill(replaceHash(settings.colorTheme.colors.SecondAccent));
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
     openSecond.position = { x: 0, y: 0 };
+    openSecond.alpha = 0.8;
     app.stage.addChild(openSecond);
     const openAccent = new PIXI.Graphics();
     openAccent
       .rect(0, 0, app.screen.width, app.screen.height)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+
     app.stage.addChild(openAccent);
-    gsap.fromTo(
-      openSecond,
-      { x: 0 },
-      { x: app.screen.width, duration: 0.5, ease: "power4.Out", delay: 0 }
-    );
-    gsap.fromTo(
-      openAccent,
-      { x: 0 },
-      { x: app.screen.width, duration: 0.5, ease: "power4.Out", delay: 0.1 }
-    );
+    switch (option) {
+      case 0:
+        gsap.fromTo(
+          openAccent,
+          { x: 0 },
+          {
+            x: app.screen.width,
+            duration: 1.2,
+            ease: "slideOutEase",
+            delay: 0,
+          }
+        );
+        gsap.fromTo(
+          openSecond,
+          { x: 0 },
+          {
+            x: app.screen.width,
+            duration: 1.0,
+            ease: "slideOutEase",
+            delay: 0.2,
+          }
+        );
+        break;
+      case 1:
+        gsap.fromTo(
+          openAccent,
+          { x: 0 },
+          {
+            x: -app.screen.width,
+            duration: 1.2,
+            ease: "slideOutEase",
+            delay: 0,
+          }
+        );
+        gsap.fromTo(
+          openSecond,
+          { x: 0 },
+          {
+            x: -app.screen.width,
+            duration: 1.0,
+            ease: "slideOutEase",
+            delay: 0.2,
+          }
+        );
+        break;
+      case 2:
+        gsap.fromTo(
+          openAccent,
+          { y: 0 },
+          {
+            y: app.screen.height,
+            duration: 1.2,
+            ease: "slideOutEase",
+            delay: 0,
+          }
+        );
+        gsap.fromTo(
+          openSecond,
+          { y: 0 },
+          {
+            y: app.screen.height,
+            duration: 1.0,
+            ease: "slideOutEase",
+            delay: 0.2,
+          }
+        );
+
+        break;
+      case 3:
+        gsap.fromTo(
+          openAccent,
+          { y: 0 },
+          {
+            y: -app.screen.height,
+            duration: 1.2,
+            ease: "slideOutEase",
+            delay: 0,
+          }
+        );
+        gsap.fromTo(
+          openSecond,
+          { y: 0 },
+          {
+            y: -app.screen.height,
+            duration: 1.0,
+            ease: "slideOutEase",
+            delay: 0.2,
+          }
+        );
+        break;
+    }
+
     setTimeout(() => {
       app.stage.removeChild(openSecond);
       app.stage.removeChild(openAccent);
       resolve();
-    }, 2000);
+    }, 750);
   });
 }

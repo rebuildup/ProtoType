@@ -23,7 +23,7 @@ import {
 
 import { BG_grid } from "./018_grid";
 
-import { GM_start } from "./014_mogura";
+import { closeScene, GM_start, openScene } from "./014_mogura";
 
 import { getRanking_Data } from "./010_APIget";
 
@@ -205,7 +205,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       color: replaceHash(settings.colorTheme.colors.MainColor),
     });
     app.stage.addChild(progressDot);
-
+    await openScene(app, 2);
     if (keybord_flag) {
       Keyboard(app);
     }
@@ -342,7 +342,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     gameData.MaxScore = 0;
     gameData.MaxKPM = 0;
     gameData.missKeys = [];
-
     setTimeout(async () => {
       //await makeIssues(3, 6, gameData.Issues_num);
       await makeIssues(14, 14, gameData.Issues_num);
@@ -385,17 +384,21 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               gameData.CurrentSceneName = "result_scene";
               gameData.EndTime = Date.now();
               currentKeyController?.abort();
+              await closeScene(app, 3);
+
               resolve();
             }
             if (keyCode.code === "ControlLeft" && keyCode.shift == true) {
               gameData.CurrentSceneName = "result_scene";
               gameData.EndTime = Date.now();
               currentKeyController?.abort();
+              await closeScene(app, 3);
               resolve();
             } else if (keyCode.code === "Escape") {
               gameData.CurrentSceneName = "reload_game";
               gameData.EndTime = Date.now();
               currentKeyController?.abort();
+              await closeScene(app, 3);
               resolve();
             }
 
@@ -500,6 +503,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 gameData.CurrentSceneName = "result_scene";
                 gameData.EndTime = Date.now();
                 currentKeyController?.abort();
+                await closeScene(app, 3);
                 resolve();
               }
             }
@@ -569,6 +573,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               gameData.CurrentSceneName = "game_select";
               gameData.EndTime = Date.now();
               currentKeyController?.abort();
+              gameData.gameselect_open = 0;
+              await closeScene(app, 3);
               resolve();
             }
             if (keyCode.code === "Space") {

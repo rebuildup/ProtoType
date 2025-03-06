@@ -12,7 +12,6 @@ export interface GameData {
   MaxScore: number;
   MaxKPM: number;
   score_extra: number;
-
   Miss: number;
   GameMode: string;
   textsData: Issue[][];
@@ -40,6 +39,7 @@ export interface GameData {
   online_player: { name: string; id: number };
   onlineRanking: RankingPlayer[];
   onlinedata: RankingPlayer[];
+  gameselect_open: number;
 }
 
 export const gameData: GameData = {
@@ -77,4 +77,5 @@ export const gameData: GameData = {
   online_player: { name: "", id: -1 },
   onlineRanking: [],
   onlinedata: [],
+  gameselect_open: 0,
 };

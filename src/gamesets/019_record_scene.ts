@@ -12,6 +12,8 @@ import { playMiss } from "./012_soundplay";
 
 import { score_graph } from "./013_graphs";
 
+import { closeScene, openScene } from "./014_mogura";
+
 const Select_dot_x = 1170;
 const opened_record = { play: 0, achieve: 1, ranking: 2, graph: 3 };
 
@@ -161,15 +163,14 @@ export function record_scene(app: PIXI.Application): Promise<void> {
       });
     }
 
-    function get_out() {
+    async function get_out() {
       currentKeyController?.abort();
-      //gsap.to(circle_m.scale, { x: 0, y: 0, ease: "power4.out", duration: 1 });
       gsap.to(exit_btn, { alpha: 0, ease: "power4.out", duration: 1 });
-      setTimeout(() => {
-        app.stage.removeChild(achieve_text);
-        app.stage.removeChild(play_record_text);
-        resolve();
-      }, 1000);
+      gameData.gameselect_open = 2;
+      await closeScene(app, 2);
+      app.stage.removeChild(achieve_text);
+      app.stage.removeChild(play_record_text);
+      resolve();
     }
     function dot_pos_update(select: number) {
       switch (select) {
@@ -221,6 +222,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
         .fill(replaceHash(settings.colorTheme.colors.MainBG));
       container_BG.x = screenCenter.x - container_BG.width / 2;
       container_BG.y = screenCenter.y - container_BG.height / 2;
+      container_BG.alpha = 0;
       record_container.addChild(container_BG);
 
       const title_text = new PIXI.Text({
@@ -479,7 +481,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           max_scroll_y = 4600;
           title_text.text = ranking_text.text;
           title_text.x = screenCenter.x - title_text.width / 2;
-          for (let i = 0; i < 99; i++) {
+          for (let i = 0; i < 100; i++) {
             const rank_index = new PIXI.Text({
               text: padNumber(i + 1),
               style: {
@@ -591,7 +593,6 @@ export function record_scene(app: PIXI.Application): Promise<void> {
         }
       };
 
-      // Ticker を利用した（ドラッグ中でない場合の）慣性スクロールの処理
       app.ticker.add(() => {
         if (!isDragging && Math.abs(velocity) > 0.5) {
           velocity *= 0.95;
@@ -604,6 +605,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
       });
     }
     update_open(isOpened_record);
+    await openScene(app, 3);
     while (gameData.CurrentSceneName === "record_scene") {
       currentKeyController = new AbortController();
       try {
