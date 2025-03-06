@@ -8,10 +8,8 @@ import {
   checkPassword,
 } from "../gamesets/022_Login";
 
-/**
- * Checks whether the user exists by calling the API.
- * Returns true if the username exists, false otherwise.
- */
+// Check whether the user exists by calling the API.
+// Returns true if the username exists, false otherwise.
 async function checkUserExists(username: string): Promise<boolean> {
   try {
     const id = await checkUsername(username);
@@ -28,6 +26,7 @@ const PlayerProfilePanel: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [userExists, setUserExists] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state
   const [, setRefresh] = useState<number>(0);
 
   const togglePanel = () => {
@@ -42,18 +41,23 @@ const PlayerProfilePanel: React.FC = () => {
 
   const handleUsernameNext = async () => {
     if (username.trim() === "") return;
+    setIsLoading(true); // Start loading
     try {
       const exists = await checkUserExists(username);
       setUserExists(exists);
+      setStep(2);
     } catch (error) {
       console.error("Error checking username:", error);
       setUserExists(false);
+      setStep(2);
+    } finally {
+      setIsLoading(false); // End loading
     }
-    setStep(2);
   };
 
   const handleLogin = async () => {
     if (username.trim() === "" || password.trim() === "") return;
+    setIsLoading(true); // Start loading
     try {
       const id = await checkUsername(username);
       if (id === -1) {
@@ -70,6 +74,8 @@ const PlayerProfilePanel: React.FC = () => {
       }
     } catch (error) {
       console.error("Error during login:", error);
+    } finally {
+      setIsLoading(false); // End loading
     }
     setRefresh((prev) => prev + 1);
     setIsPanelVisible(false);
@@ -78,12 +84,15 @@ const PlayerProfilePanel: React.FC = () => {
 
   const handleRegister = async () => {
     if (username.trim() === "" || password.trim() === "") return;
+    setIsLoading(true); // Start loading
     try {
       const newId = await createUser(username, password);
       console.log("New user created with ID:", newId);
       updateSetting("user", { id: newId, name: username, isLoggedin: true });
     } catch (error) {
       console.error("Error during registration:", error);
+    } finally {
+      setIsLoading(false); // End loading
     }
     setRefresh((prev) => prev + 1);
     setIsPanelVisible(false);
@@ -120,7 +129,12 @@ const PlayerProfilePanel: React.FC = () => {
           >
             Close
           </button>
-
+          {/* Loading indicator inserted without altering existing styles */}
+          {isLoading && (
+            <p style={{ position: "absolute", top: "76px", left: "100px" }}>
+              読み込み中...
+            </p>
+          )}
           {settings.user.isLoggedin ? (
             <div>
               <div
@@ -184,6 +198,7 @@ const PlayerProfilePanel: React.FC = () => {
                         top: "90px",
                         left: "46px",
                       }}
+                      disabled={isLoading} // Disable input during loading
                     />
                   </div>
                   <button
@@ -194,6 +209,7 @@ const PlayerProfilePanel: React.FC = () => {
                       left: "98px",
                       fontSize: "16px",
                     }}
+                    disabled={isLoading} // Disable button during loading
                   >
                     次へ
                   </button>
@@ -252,6 +268,7 @@ const PlayerProfilePanel: React.FC = () => {
                         top: "90px",
                         left: "46px",
                       }}
+                      disabled={isLoading} // Disable input during loading
                     />
                   </div>
                   {userExists ? (
@@ -263,6 +280,7 @@ const PlayerProfilePanel: React.FC = () => {
                         left: "82px",
                         fontSize: "16px",
                       }}
+                      disabled={isLoading} // Disable button during loading
                     >
                       ログイン
                     </button>
@@ -275,6 +293,7 @@ const PlayerProfilePanel: React.FC = () => {
                         left: "98px",
                         fontSize: "16px",
                       }}
+                      disabled={isLoading} // Disable button during loading
                     >
                       登録
                     </button>
