@@ -8,6 +8,7 @@ import { replaceHash } from "./001_game_master";
 import { playCollect, playMiss } from "./012_soundplay";
 import { BG_grid } from "./018_grid";
 import { getLatestKey } from "./009_keyinput";
+import { closeScene } from "./014_mogura";
 
 const BUTTON_SPACING = 120;
 const CIRCULAR_BUTTON_CENTER_OFFSET = 200;
@@ -54,11 +55,12 @@ function animateSelectionDot(
 export async function game_select(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
     app.stage.removeChildren();
+
     BG_grid(app);
     const winCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
 
     let selectedIndex = 1;
-
+    /*
     const wakuCircle = new PIXI.Graphics();
     wakuCircle.label = "waku_circle";
     wakuCircle.circle(0, 0, 840);
@@ -105,7 +107,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       ease: "power4.out",
       delay: 0.4,
     });
-
+    */
     const gameSelectBtn = createButton("ゲーム選択");
     gameSelectBtn.position.set(
       winCenter.x - gameSelectBtn.width / 2,
@@ -168,12 +170,13 @@ export async function game_select(app: PIXI.Application): Promise<void> {
     let currentKeyController: AbortController | null = null;
 
     function hideSceneElements() {
+      /*
       gsap.to(wakuCircle.scale, {
         x: 1.2,
         y: 1.2,
         duration: 0.5,
         ease: "power4.out",
-      });
+      });*/
       [
         recordBtn,
         settingSelectBtn,
@@ -184,10 +187,13 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       currentKeyController?.abort();
     }
 
-    function transitionToRecord() {
+    async function transitionToRecord() {
       hideSceneElements();
+
       gameData.CurrentSceneName = "record_scene";
+      /*
       gsap.to(circleMain, { alpha: 0, ease: "power4.out", duration: 0.5 });
+      
       gsap.to(circleAcc, {
         x: winCenter.x,
         y: winCenter.y,
@@ -201,13 +207,14 @@ export async function game_select(app: PIXI.Application): Promise<void> {
         duration: 1,
         delay: 0.5,
       });
-      setTimeout(() => {
-        resolve();
-      }, 1000);
+      */
+      await closeScene(app);
+      resolve();
     }
     function transitionToSetting() {
       hideSceneElements();
       gameData.CurrentSceneName = "setting_scene";
+      /*
       gsap.to(circleAcc, { alpha: 0, ease: "power4.out", duration: 0.5 });
       gsap.to(circleMain, {
         x: winCenter.x,
@@ -222,14 +229,18 @@ export async function game_select(app: PIXI.Application): Promise<void> {
         duration: 1,
         delay: 0.5,
       });
-      setTimeout(() => {
+      */
+      setTimeout(async () => {
+        await closeScene(app);
         resolve();
       }, 1000);
     }
     async function transitionToGameModeSelect() {
       hideSceneElements();
       gameData.CurrentSceneName = "game_mode_select_scene";
+      /*
       gsap.to(circleMain, { alpha: 0, ease: "power4.out", duration: 0.5 });
+    
       gsap.to(circleAcc, {
         x: winCenter.x,
         y: winCenter.y,
@@ -243,6 +254,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
         duration: 1,
         delay: 0.5,
       });
+      */
       setTimeout(async () => {
         await game_mode_select(app);
         resolve();

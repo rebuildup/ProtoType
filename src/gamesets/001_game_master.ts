@@ -125,10 +125,6 @@ export async function initializeGame(app: PIXI.Application) {
     "total_keyhit_GM",
     0
   );
-  gameData.played_cnt = loadFromCache<typeof gameData.played_cnt>(
-    "played_cnt_GM",
-    0
-  );
   gameData.acc_keys = [];
   if (settings.user.isLoggedin) {
     gameData.IsLoggedin = true;

@@ -23,6 +23,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
     let isOpened_record = opened_record.play;
     const screenCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
+    /*
     const circle_m = new PIXI.Graphics();
     circle_m
       .circle(0, 0, 800)
@@ -31,7 +32,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
     app.stage.addChild(circle_m);
     circle_m.scale = 0;
     gsap.to(circle_m.scale, { x: 1, y: 1, ease: "power4.out", duration: 2 });
-
+*/
     const exit_btn = new PIXI.Text({
       text: "↓",
       style: {
@@ -162,7 +163,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
 
     function get_out() {
       currentKeyController?.abort();
-      gsap.to(circle_m.scale, { x: 0, y: 0, ease: "power4.out", duration: 1 });
+      //gsap.to(circle_m.scale, { x: 0, y: 0, ease: "power4.out", duration: 1 });
       gsap.to(exit_btn, { alpha: 0, ease: "power4.out", duration: 1 });
       setTimeout(() => {
         app.stage.removeChild(achieve_text);
@@ -316,7 +317,9 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           record_container.addChild(total_play_title);
 
           const total_play = new PIXI.Text({
-            text: gameData.played_cnt,
+            text: gameData.localRanking
+              .map((player) => player.player_score)
+              .filter((score) => score !== 0).length,
             style: {
               fontFamily: gameData.FontFamily,
               fontSize: 30,

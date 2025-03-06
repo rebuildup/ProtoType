@@ -24,6 +24,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
     let option_select = option_select_values.keylayoutset;
     let current_select = 0;
 
+    /*
     const circle_m = new PIXI.Graphics();
     circle_m
       .circle(0, 0, 800)
@@ -32,6 +33,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
     app.stage.addChild(circle_m);
     circle_m.scale = 0;
     gsap.to(circle_m.scale, { x: 1, y: 1, ease: "power4.out", duration: 2 });
+*/
 
     const exit_btn = new PIXI.Text({
       text: "↑",
@@ -137,7 +139,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
 
     function get_out() {
       currentKeyController?.abort();
-      gsap.to(circle_m.scale, { x: 0, y: 0, ease: "power4.out", duration: 1 });
+      //gsap.to(circle_m.scale, { x: 0, y: 0, ease: "power4.out", duration: 1 });
       gsap.to(exit_btn, { alpha: 0, ease: "power4.out", duration: 1 });
       setTimeout(() => {
         app.stage.removeChild(keylayout_text);

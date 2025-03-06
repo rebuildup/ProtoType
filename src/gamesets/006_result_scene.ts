@@ -77,8 +77,6 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     }
     app.stage.removeChildren();
     BG_grid(app);
-    gameData.played_cnt++;
-    saveToCache("played_cnt_GM", gameData.played_cnt);
     gameData.total_keyhit += gameData.total_hit_cnt;
     saveToCache("total_keyhit_GM", gameData.total_keyhit);
     if (!gameData.IsLoggedin) {

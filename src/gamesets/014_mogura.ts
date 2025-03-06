@@ -76,3 +76,63 @@ export function GM_start(app: PIXI.Application): Promise<void> {
     }, 1000);
   });
 }
+export function closeScene(app: PIXI.Application): Promise<void> {
+  return new Promise(async (resolve) => {
+    const closeSecond = new PIXI.Graphics();
+    closeSecond
+      .rect(0, 0, app.screen.width, app.screen.height)
+      .fill(replaceHash(settings.colorTheme.colors.SecondAccent));
+    closeSecond.position = { x: 0, y: 0 };
+    app.stage.addChild(closeSecond);
+    const closeAccent = new PIXI.Graphics();
+    closeAccent
+      .rect(0, 0, app.screen.width, app.screen.height)
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    app.stage.addChild(closeAccent);
+    gsap.fromTo(
+      closeSecond,
+      { x: -app.screen.width },
+      { x: 0, duration: 1, ease: "power3.inOut", delay: 0 }
+    );
+    gsap.fromTo(
+      closeAccent,
+      { x: -app.screen.width },
+      { x: 0, duration: 1, ease: "power3.inOut", delay: 0.2 }
+    );
+    setTimeout(() => {
+      app.stage.removeChild(closeSecond);
+      app.stage.removeChild(closeAccent);
+      resolve();
+    }, 2000);
+  });
+}
+export function openScene(app: PIXI.Application): Promise<void> {
+  return new Promise(async (resolve) => {
+    const openSecond = new PIXI.Graphics();
+    openSecond
+      .rect(0, 0, app.screen.width, app.screen.height)
+      .fill(replaceHash(settings.colorTheme.colors.SecondAccent));
+    openSecond.position = { x: 0, y: 0 };
+    app.stage.addChild(openSecond);
+    const openAccent = new PIXI.Graphics();
+    openAccent
+      .rect(0, 0, app.screen.width, app.screen.height)
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    app.stage.addChild(openAccent);
+    gsap.fromTo(
+      openSecond,
+      { x: 0 },
+      { x: app.screen.width, duration: 0.5, ease: "power4.Out", delay: 0 }
+    );
+    gsap.fromTo(
+      openAccent,
+      { x: 0 },
+      { x: app.screen.width, duration: 0.5, ease: "power4.Out", delay: 0.1 }
+    );
+    setTimeout(() => {
+      app.stage.removeChild(openSecond);
+      app.stage.removeChild(openAccent);
+      resolve();
+    }, 2000);
+  });
+}

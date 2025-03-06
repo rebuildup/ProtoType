@@ -36,7 +36,6 @@ export interface GameData {
   missKeys: string[];
   current_Player_id: number;
   acc_keys: number[];
-  played_cnt: number;
   total_keyhit: number;
   online_player: { name: string; id: number };
   onlineRanking: RankingPlayer[];
@@ -74,7 +73,6 @@ export const gameData: GameData = {
   missKeys: [],
   current_Player_id: 100000,
   acc_keys: [],
-  played_cnt: 0,
   total_keyhit: 0,
   online_player: { name: "", id: -1 },
   onlineRanking: [],
