@@ -32,7 +32,8 @@ export function score_graph(app: PIXI.Application, container: PIXI.Container) {
     score_point.x =
       (i - data_length / 2) * (800 / data_length) + app.screen.width / 2;
     score_point.y =
-      app.screen.height - sortedStructs[data_length - i - 1].player_score;
+      app.screen.height / 2 -
+      sortedStructs[data_length - i - 1].player_score / 10;
     container.addChild(score_point);
     const acc_point = new PIXI.Graphics();
     acc_point
@@ -40,7 +41,9 @@ export function score_graph(app: PIXI.Application, container: PIXI.Container) {
       .fill(replaceHash(settings.colorTheme.colors.MainColor));
     acc_point.x =
       (i - data_length / 2) * (800 / data_length) + app.screen.width / 2;
-    acc_point.y = 600 + sortedStructs[data_length - i - 1].player_accracy;
+    acc_point.y =
+      app.screen.height / 2 -
+      300 * (sortedStructs[data_length - i - 1].player_accracy / 100 - 0.5);
     container.addChild(acc_point);
   }
 }
