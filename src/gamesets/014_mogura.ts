@@ -8,6 +8,17 @@ import { replaceHash } from "./001_game_master";
 import { settings } from "../SiteInterface";
 export function GM_start(app: PIXI.Application): Promise<void> {
   return new Promise(async (resolve) => {
+    CustomEase.create("slideOutEase", "M0,0 C1.0,0 0.0,1.33 1,1");
+
+    const waku_inst_rect = new PIXI.Graphics();
+    waku_inst_rect.rect(-200, -200, 200, 200).stroke({
+      width: 20,
+      color: replaceHash(settings.colorTheme.colors.MainAccent),
+    });
+    waku_inst_rect.x = app.screen.width / 2;
+    waku_inst_rect.y = app.screen.height / 2;
+    waku_inst_rect.rotation = Math.PI / 4;
+
     const star = new PIXI.Graphics();
     star.x = app.screen.width / 2;
     star.y = app.screen.height / 2;
@@ -68,7 +79,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
         yoyo: true,
         ease: "none",
       });
-    }, 1000);
+    }, 500);
 
     setTimeout(() => {
       app.stage.removeChild(star);
@@ -83,68 +94,69 @@ export function closeScene(
 ): Promise<void> {
   return new Promise(async (resolve) => {
     CustomEase.create("slideOutEase", "M0,0 C1.0,0 0.0,1.33 1,1");
+    const closeFirst = new PIXI.Graphics();
+    closeFirst
+      .rect(0, 0, app.screen.width, app.screen.height)
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    closeFirst.alpha = 0.4;
+    closeFirst.position = { x: 0, y: 0 };
+    app.stage.addChild(closeFirst);
+
     const closeSecond = new PIXI.Graphics();
     closeSecond
       .rect(0, 0, app.screen.width, app.screen.height)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
-    closeSecond.alpha = 0.8;
-    closeSecond.position = { x: 0, y: 0 };
+    closeSecond.alpha = 0.9;
     app.stage.addChild(closeSecond);
-
-    const closeAccent = new PIXI.Graphics();
-    closeAccent
-      .rect(0, 0, app.screen.width, app.screen.height)
-      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
-    app.stage.addChild(closeAccent);
     switch (option) {
       case 0:
         gsap.fromTo(
-          closeSecond,
+          closeFirst,
           { x: -app.screen.width },
           { x: 0, duration: 1.2, ease: "slideOutEase", delay: 0 }
         );
 
         gsap.fromTo(
-          closeAccent,
+          closeSecond,
           { x: -app.screen.width },
           { x: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 }
         );
         break;
       case 1:
         gsap.fromTo(
-          closeSecond,
+          closeFirst,
           { x: app.screen.width },
           { x: 0, duration: 1.2, ease: "slideOutEase", delay: 0 }
         );
 
         gsap.fromTo(
-          closeAccent,
+          closeSecond,
           { x: app.screen.width },
           { x: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 }
         );
         break;
       case 2:
         gsap.fromTo(
-          closeSecond,
+          closeFirst,
           { y: -app.screen.height },
           { y: 0, duration: 1.2, ease: "slideOutEase", delay: 0 }
         );
 
         gsap.fromTo(
-          closeAccent,
+          closeSecond,
           { y: -app.screen.height },
           { y: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 }
         );
         break;
       case 3:
         gsap.fromTo(
-          closeSecond,
+          closeFirst,
           { y: app.screen.height },
           { y: 0, duration: 1.2, ease: "slideOutEase", delay: 0 }
         );
 
         gsap.fromTo(
-          closeAccent,
+          closeSecond,
           { y: app.screen.height },
           { y: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 }
         );
@@ -152,8 +164,8 @@ export function closeScene(
     }
 
     setTimeout(() => {
+      app.stage.removeChild(closeFirst);
       app.stage.removeChild(closeSecond);
-      app.stage.removeChild(closeAccent);
       resolve();
     }, 750);
   });
@@ -164,23 +176,23 @@ export function openScene(
 ): Promise<void> {
   return new Promise(async (resolve) => {
     CustomEase.create("slideOutEase", "M0,0 C1.0,0 0.0,1.33 1,1");
+    const openFirst = new PIXI.Graphics();
+    openFirst
+      .rect(0, 0, app.screen.width, app.screen.height)
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    openFirst.position = { x: 0, y: 0 };
+    openFirst.alpha = 0.4;
+    app.stage.addChild(openFirst);
     const openSecond = new PIXI.Graphics();
     openSecond
       .rect(0, 0, app.screen.width, app.screen.height)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
-    openSecond.position = { x: 0, y: 0 };
-    openSecond.alpha = 0.8;
+    openSecond.alpha = 0.9;
     app.stage.addChild(openSecond);
-    const openAccent = new PIXI.Graphics();
-    openAccent
-      .rect(0, 0, app.screen.width, app.screen.height)
-      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
-
-    app.stage.addChild(openAccent);
     switch (option) {
       case 0:
         gsap.fromTo(
-          openAccent,
+          openSecond,
           { x: 0 },
           {
             x: app.screen.width,
@@ -190,7 +202,7 @@ export function openScene(
           }
         );
         gsap.fromTo(
-          openSecond,
+          openFirst,
           { x: 0 },
           {
             x: app.screen.width,
@@ -202,7 +214,7 @@ export function openScene(
         break;
       case 1:
         gsap.fromTo(
-          openAccent,
+          openSecond,
           { x: 0 },
           {
             x: -app.screen.width,
@@ -212,7 +224,7 @@ export function openScene(
           }
         );
         gsap.fromTo(
-          openSecond,
+          openFirst,
           { x: 0 },
           {
             x: -app.screen.width,
@@ -224,7 +236,7 @@ export function openScene(
         break;
       case 2:
         gsap.fromTo(
-          openAccent,
+          openSecond,
           { y: 0 },
           {
             y: app.screen.height,
@@ -234,7 +246,7 @@ export function openScene(
           }
         );
         gsap.fromTo(
-          openSecond,
+          openFirst,
           { y: 0 },
           {
             y: app.screen.height,
@@ -247,7 +259,7 @@ export function openScene(
         break;
       case 3:
         gsap.fromTo(
-          openAccent,
+          openSecond,
           { y: 0 },
           {
             y: -app.screen.height,
@@ -257,7 +269,7 @@ export function openScene(
           }
         );
         gsap.fromTo(
-          openSecond,
+          openFirst,
           { y: 0 },
           {
             y: -app.screen.height,
@@ -270,8 +282,8 @@ export function openScene(
     }
 
     setTimeout(() => {
+      app.stage.removeChild(openFirst);
       app.stage.removeChild(openSecond);
-      app.stage.removeChild(openAccent);
       resolve();
     }, 750);
   });

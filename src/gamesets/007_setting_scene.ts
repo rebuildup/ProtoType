@@ -27,18 +27,26 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
     let option_select = option_select_values.keylayoutset;
     let current_select = 0;
 
-    const exit_btn = new PIXI.Text({
-      text: "↑",
-      style: {
-        fontFamily: gameData.FontFamily,
-        fontSize: 60,
-        fill: replaceHash(settings.colorTheme.colors.MainColor),
-        align: "center",
-      },
+    const exit_btn = new PIXI.Graphics();
+    exit_btn.circle(0, 0, 60).fill({
+      color: replaceHash(settings.colorTheme.colors.MainColor),
+      alpha: 0,
     });
-    exit_btn.x = screenCenter.x - exit_btn.width / 2;
+    exit_btn
+      .lineTo(16, -16)
+      .lineTo(-16, 16)
+      .lineTo(-16, -16)
+      .lineTo(-16, 16)
+      .lineTo(16, 16)
+      .stroke({
+        width: 4,
+        color: replaceHash(settings.colorTheme.colors.MainColor),
+      });
+    exit_btn.x = screenCenter.x;
     exit_btn.y = 100;
+    exit_btn.rotation = Math.PI / 4 + Math.PI / 2;
     exit_btn.interactive = true;
+
     const delete_cache = new PIXI.Text({
       text: "キャッシュを削除(タイトルに戻ります)",
       style: {
@@ -73,6 +81,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       }
     });
     app.stage.addChild(exit_btn);
+
     const keylayout_text = new PIXI.Text({
       text: "キー配列",
       style: {
@@ -131,7 +140,6 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
 
     async function get_out() {
       currentKeyController?.abort();
-      gsap.to(exit_btn, { alpha: 0, ease: "power4.out", duration: 1 });
       gameData.gameselect_open = 3;
       await closeScene(app, 3);
       app.stage.removeChild(keylayout_text);
@@ -173,9 +181,13 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
 
           const layout_BG = new PIXI.Graphics();
           layout_BG
-            .rect(0, 0, 800, 800)
-            .fill(replaceHash(settings.colorTheme.colors.MainBG));
-          layout_BG.alpha = 1;
+            .rect(0, 0, app.screen.width + 100, 600)
+            .fill(replaceHash(settings.colorTheme.colors.MainBG))
+            .stroke({
+              width: 8,
+              color: replaceHash(settings.colorTheme.colors.MainAccent),
+            });
+          layout_BG.alpha = 0.96;
           layout_BG.x = -layout_BG.width / 2;
           layout_BG.y = -layout_BG.height / 2;
           layout_container.addChild(layout_BG);
@@ -209,9 +221,13 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
 
           const instant_BG = new PIXI.Graphics();
           instant_BG
-            .rect(0, 0, 800, 800)
-            .fill(replaceHash(settings.colorTheme.colors.MainBG));
-          instant_BG.alpha = 1;
+            .rect(0, 0, app.screen.width + 100, 600)
+            .fill(replaceHash(settings.colorTheme.colors.MainBG))
+            .stroke({
+              width: 8,
+              color: replaceHash(settings.colorTheme.colors.MainAccent),
+            });
+          instant_BG.alpha = 0.96;
           instant_BG.x = -instant_BG.width / 2;
           instant_BG.y = -instant_BG.height / 2;
           instant_container.addChild(instant_BG);

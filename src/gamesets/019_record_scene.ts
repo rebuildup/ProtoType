@@ -13,6 +13,7 @@ import { playMiss } from "./012_soundplay";
 import { score_graph } from "./013_graphs";
 
 import { closeScene, openScene } from "./014_mogura";
+import { BG_grid } from "./018_grid";
 
 const Select_dot_x = 1170;
 const opened_record = { play: 0, achieve: 1, ranking: 2, graph: 3 };
@@ -23,28 +24,28 @@ function padNumber(num: number) {
 
 export function record_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
+    app.stage.removeChildren();
+    BG_grid(app);
     let isOpened_record = opened_record.play;
     const screenCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
-    /*
-    const circle_m = new PIXI.Graphics();
-    circle_m
-      .circle(0, 0, 800)
-      .fill(replaceHash(settings.colorTheme.colors.MainBG));
-    circle_m.position = screenCenter;
-    app.stage.addChild(circle_m);
-    circle_m.scale = 0;
-    gsap.to(circle_m.scale, { x: 1, y: 1, ease: "power4.out", duration: 2 });
-*/
-    const exit_btn = new PIXI.Text({
-      text: "↓",
-      style: {
-        fontFamily: gameData.FontFamily,
-        fontSize: 60,
-        fill: replaceHash(settings.colorTheme.colors.MainColor),
-        align: "center",
-      },
+    const exit_btn = new PIXI.Graphics();
+    exit_btn.circle(0, 0, 60).fill({
+      color: replaceHash(settings.colorTheme.colors.MainColor),
+      alpha: 0,
     });
-    exit_btn.x = screenCenter.x - exit_btn.width / 2;
+    exit_btn
+      .lineTo(16, -16)
+      .lineTo(-16, 16)
+      .lineTo(-16, -16)
+      .lineTo(-16, 16)
+      .lineTo(16, 16)
+      .stroke({
+        width: 4,
+        color: replaceHash(settings.colorTheme.colors.MainColor),
+      });
+
+    exit_btn.rotation = Math.PI / 4 - Math.PI / 2;
+    exit_btn.x = screenCenter.x;
     exit_btn.y = app.screen.height - 100;
     exit_btn.interactive = true;
 
@@ -165,7 +166,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
 
     async function get_out() {
       currentKeyController?.abort();
-      gsap.to(exit_btn, { alpha: 0, ease: "power4.out", duration: 1 });
+
       gameData.gameselect_open = 2;
       await closeScene(app, 2);
       app.stage.removeChild(achieve_text);

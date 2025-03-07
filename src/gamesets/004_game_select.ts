@@ -177,13 +177,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
         duration: 0.5,
         ease: "power4.out",
       });*/
-      [
-        recordBtn,
-        settingSelectBtn,
-        gameSelectBtn,
-        selectDotAcc,
-        selectDotMain,
-      ].forEach((el) => gsap.to(el, { alpha: 0, duration: 0.5 }));
+
       currentKeyController?.abort();
     }
 
@@ -215,13 +209,13 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       transitionToRecord();
     });
     settingSelectBtn.on("pointerdown", () => {
-      selectedIndex = 1;
+      selectedIndex = 2;
       updateSelectDots(selectedIndex);
       currentKeyController?.abort();
       transitionToSetting();
     });
     gameSelectBtn.on("pointerdown", () => {
-      selectedIndex = 2;
+      selectedIndex = 1;
       updateSelectDots(selectedIndex);
       currentKeyController?.abort();
       transitionToGameModeSelect();
@@ -277,19 +271,14 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     playCollect();
     const winCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
     const circleRadius = 410;
-    const circleAcc = app.stage.children.find(
-      (child) => child.label === "circle_acc"
-    );
-    if (circleAcc) {
-      gsap.to(circleAcc, {
-        x: winCenter.x - CIRCULAR_BUTTON_CENTER_OFFSET,
-        duration: 1.5,
-        ease: "power4.out",
-      });
-    }
 
+    let selectedModeIndex = 2;
     const mask = new PIXI.Graphics();
-    mask.circle(0, 0, 155).fill(replaceHash(settings.colorTheme.colors.MainBG));
+    mask.circle(0, 0, 155).stroke({
+      width: 4,
+      color: replaceHash(settings.colorTheme.colors.MainAccent),
+      alpha: 1,
+    });
     mask.position.set(winCenter.x, winCenter.y);
     app.stage.addChild(mask);
     gsap.fromTo(
@@ -302,6 +291,29 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       }
     );
     gsap.from(mask.scale, { x: 0, y: 0, duration: 1.5, ease: "power4.out" });
+
+    const exit_btn = new PIXI.Graphics();
+    exit_btn.circle(0, 0, 60).fill({
+      color: replaceHash(settings.colorTheme.colors.MainColor),
+      alpha: 0,
+    });
+    exit_btn
+      .lineTo(16, -16)
+      .lineTo(-16, 16)
+      .lineTo(-16, -16)
+      .lineTo(-16, 16)
+      .lineTo(16, 16)
+      .stroke({
+        width: 4,
+        color: replaceHash(settings.colorTheme.colors.MainColor),
+      });
+    exit_btn.position.set(
+      winCenter.x - CIRCULAR_BUTTON_CENTER_OFFSET - 20,
+      winCenter.y
+    );
+    exit_btn.rotation = Math.PI / 4 + Math.PI;
+    exit_btn.interactive = true;
+    app.stage.addChild(exit_btn);
 
     const selectDotAcc = new PIXI.Graphics();
     selectDotAcc.circle(circleRadius, 0, 8);
@@ -334,6 +346,11 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
         duration: 0.5,
         ease: "power3.out",
       });
+      gsap.to(exit_btn, {
+        rotation: rotations[selected] + Math.PI + Math.PI / 4 || 0,
+        duration: 0.5,
+        ease: "power3.out",
+      });
     };
 
     const modes = [
@@ -354,6 +371,24 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       );
       btn.position.set(pos.x, pos.y);
       btn.on("pointerdown", async () => {
+        switch (item.label) {
+          case "長文モード":
+            selectedModeIndex = 0;
+            break;
+          case "集中モード":
+            selectedModeIndex = 1;
+            break;
+          case "スタンダード":
+            selectedModeIndex = 2;
+            break;
+          case "正確性重視":
+            selectedModeIndex = 3;
+            break;
+          case "数値入力":
+            selectedModeIndex = 4;
+            break;
+        }
+        moveDot(selectedModeIndex);
         currentKeyController?.abort();
         gameData.GameMode = item.mode;
         if (gameData.IsLoggedin) {
@@ -361,13 +396,14 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
         } else {
           gameData.CurrentSceneName = "register_scene";
         }
+        await closeScene(app, 2);
         resolve();
       });
       app.stage.addChild(btn);
     });
 
     let currentKeyController: AbortController | null = null;
-    let selectedModeIndex = 2;
+
     openScene(app, 0);
     while (gameData.CurrentSceneName === "game_mode_select_scene") {
       currentKeyController = new AbortController();
@@ -391,6 +427,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
           await closeScene(app, 1);
           resolve();
         } else if (["Enter", "Space"].includes(keyCode.code)) {
+          moveDot(selectedModeIndex);
           currentKeyController.abort();
           gameData.GameMode = modes[selectedModeIndex].mode;
           if (gameData.IsLoggedin) {
@@ -398,8 +435,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
           } else {
             gameData.CurrentSceneName = "register_scene";
           }
-          gameData.gameselect_open = 1;
-          await closeScene(app, 1);
+          await closeScene(app, 2);
           resolve();
         }
       } catch (error: any) {

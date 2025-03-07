@@ -3,10 +3,11 @@ import { gameData } from "./002_gameConfig";
 import { replaceHash } from "./001_game_master";
 import { settings } from "../SiteInterface";
 
+/*
 import gsap from "gsap";
 import { PixiPlugin } from "gsap/PixiPlugin";
 PixiPlugin.registerPIXI(PIXI);
-
+*/
 import { getLatestKey, isNomalKey, keyCodeToText } from "./009_keyinput";
 import { closeScene, openScene } from "./014_mogura";
 
@@ -35,6 +36,15 @@ export function Player_register(app: PIXI.Application): Promise<void> {
       get_out();
     });
     app.stage.addChild(enter_text);
+    const waku = new PIXI.Graphics();
+    waku.circle(0, 0, 400).stroke({
+      width: 4,
+      color: replaceHash(settings.colorTheme.colors.MainAccent),
+    });
+    waku.x = app.screen.width / 2;
+    waku.y = app.screen.height / 2;
+    app.stage.addChild(waku);
+
     const title_text = new PIXI.Text({
       text: "プレイヤー記録名",
       style: {
@@ -74,7 +84,6 @@ export function Player_register(app: PIXI.Application): Promise<void> {
 
     async function get_out() {
       currentKeyController?.abort();
-      gsap.to(enter_text, { alpha: 0, ease: "power4.out", duration: 1 });
       await closeScene(app, 1);
       resolve();
     }
