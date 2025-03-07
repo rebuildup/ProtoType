@@ -110,6 +110,8 @@ export async function initializeGame(app: PIXI.Application) {
   gameData.textsData = textsData;
 
   gameData.CurrentSceneName = "opening";
+  debug_repeat;
+  //gameData.CurrentSceneName = "debug_repeat";
   gameData.GameMode = "nomal";
   gameData.FontFamily = settings.fontTheme.fontFamily;
   gameData.KeyLayout = loadFromCache<typeof gameData.KeyLayout>(
@@ -175,6 +177,10 @@ export async function initializeGame(app: PIXI.Application) {
         playCollect();
         await Player_register(app);
         break;
+      case "debug_repeat":
+        playCollect();
+        await debug_repeat(app);
+        break;
       default:
         gameData.CurrentSceneName = "exit";
         break;
@@ -188,6 +194,7 @@ export function replaceHash(color: string): string {
   return color.startsWith("#") ? color.replace("#", "0x") : color;
 }
 import { ConversionTendencies } from "./008_generate_pattern";
+import { debug_repeat } from "./023_debug_repeat";
 
 function TendenciesInit() {
   const CONVERSION_TENDENCIES: ConversionTendencies = [

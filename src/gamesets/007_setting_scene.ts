@@ -184,7 +184,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
             .rect(0, 0, app.screen.width + 100, 600)
             .fill(replaceHash(settings.colorTheme.colors.MainBG))
             .stroke({
-              width: 8,
+              width: 4,
               color: replaceHash(settings.colorTheme.colors.MainAccent),
             });
           layout_BG.alpha = 0.96;
@@ -224,7 +224,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
             .rect(0, 0, app.screen.width + 100, 600)
             .fill(replaceHash(settings.colorTheme.colors.MainBG))
             .stroke({
-              width: 8,
+              width: 4,
               color: replaceHash(settings.colorTheme.colors.MainAccent),
             });
           instant_BG.alpha = 0.96;

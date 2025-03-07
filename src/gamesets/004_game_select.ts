@@ -280,17 +280,9 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       alpha: 1,
     });
     mask.position.set(winCenter.x, winCenter.y);
+    mask.y = winCenter.y;
+    mask.x = winCenter.x - CIRCULAR_BUTTON_CENTER_OFFSET - 20;
     app.stage.addChild(mask);
-    gsap.fromTo(
-      mask,
-      { x: winCenter.x },
-      {
-        x: winCenter.x - CIRCULAR_BUTTON_CENTER_OFFSET,
-        duration: 1.5,
-        ease: "power4.out",
-      }
-    );
-    gsap.from(mask.scale, { x: 0, y: 0, duration: 1.5, ease: "power4.out" });
 
     const exit_btn = new PIXI.Graphics();
     exit_btn.circle(0, 0, 60).fill({
@@ -424,6 +416,11 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
           currentKeyController.abort();
           gameData.CurrentSceneName = "game_select";
           gameData.gameselect_open = 1;
+          gsap.to(exit_btn, {
+            rotation: Math.PI / 4,
+            duration: 0.5,
+            ease: "power3.out",
+          });
           await closeScene(app, 1);
           resolve();
         } else if (["Enter", "Space"].includes(keyCode.code)) {
