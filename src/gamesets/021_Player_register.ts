@@ -87,6 +87,29 @@ export function Player_register(app: PIXI.Application): Promise<void> {
       await closeScene(app, 1);
       resolve();
     }
+    const exit_btn = new PIXI.Graphics();
+    exit_btn.circle(0, 0, 60).fill({
+      color: replaceHash(settings.colorTheme.colors.MainColor),
+      alpha: 0,
+    });
+    exit_btn
+      .lineTo(16, -16)
+      .lineTo(-16, 16)
+      .lineTo(-16, -16)
+      .lineTo(-16, 16)
+      .lineTo(16, 16)
+      .stroke({
+        width: 4,
+        color: replaceHash(settings.colorTheme.colors.MainColor),
+      });
+    exit_btn.position.set(80, app.screen.height / 2);
+    exit_btn.rotation = -Math.PI / 4 + Math.PI / 2;
+    exit_btn.interactive = true;
+    app.stage.addChild(exit_btn);
+    exit_btn.on("pointerdown", async () => {
+      gameData.CurrentSceneName = "game_select";
+      get_out();
+    });
     openScene(app, 1);
     while (gameData.CurrentSceneName === "register_scene") {
       currentKeyController = new AbortController();

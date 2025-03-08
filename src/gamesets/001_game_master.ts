@@ -119,7 +119,6 @@ export async function initializeGame(app: PIXI.Application) {
     "keylayout_GM",
     settings.keyLayout
   );
-  //gameData.KeyLayout = settings.keyLayout;
   gameData.instant_key_n = loadFromCache<typeof gameData.instant_key_n>(
     "instant_key_GM",
     20

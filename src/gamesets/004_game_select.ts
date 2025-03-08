@@ -271,6 +271,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     playCollect();
     const winCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
     const circleRadius = 410;
+    let currentKeyController: AbortController | null = null;
 
     let selectedModeIndex = 2;
     const mask = new PIXI.Graphics();
@@ -393,8 +394,21 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       });
       app.stage.addChild(btn);
     });
-
-    let currentKeyController: AbortController | null = null;
+    async function exit() {
+      currentKeyController?.abort();
+      gameData.CurrentSceneName = "game_select";
+      gameData.gameselect_open = 1;
+      gsap.to(exit_btn, {
+        rotation: Math.PI / 4,
+        duration: 0.5,
+        ease: "power3.out",
+      });
+      await closeScene(app, 1);
+      resolve();
+    }
+    exit_btn.on("pointerdown", async () => {
+      exit();
+    });
 
     openScene(app, 0);
     while (gameData.CurrentSceneName === "game_mode_select_scene") {
@@ -413,16 +427,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
             (selectedModeIndex + modes.length - 1) % modes.length;
           moveDot(selectedModeIndex);
         } else if (keyCode.code === "Escape") {
-          currentKeyController.abort();
-          gameData.CurrentSceneName = "game_select";
-          gameData.gameselect_open = 1;
-          gsap.to(exit_btn, {
-            rotation: Math.PI / 4,
-            duration: 0.5,
-            ease: "power3.out",
-          });
-          await closeScene(app, 1);
-          resolve();
+          exit();
         } else if (["Enter", "Space"].includes(keyCode.code)) {
           moveDot(selectedModeIndex);
           currentKeyController.abort();
