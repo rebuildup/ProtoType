@@ -83,25 +83,30 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       gameData.current_Player_id++;
     }
 
+    const accuracy =
+      gameData.total_hit_cnt > 0
+        ? (1 - gameData.Miss / gameData.total_hit_cnt) * 100
+        : 0;
+
+    const avgKpm =
+      gameData.EndTime > gameData.StartTime && gameData.total_hit_cnt > 0
+        ? ((gameData.total_hit_cnt - gameData.Miss) /
+            ((gameData.EndTime - gameData.StartTime) / 1000)) *
+          60
+        : 0;
+
+    const score =
+      avgKpm * Math.pow(1 - gameData.Miss / gameData.total_hit_cnt, 3) * 100 +
+      gameData.score_extra;
+
     const newPlayer: RankingPlayer = {
       player_id: gameData.current_Player_id,
-      player_name: gameData.current_Player_name,
-      player_score:
-        ((gameData.total_hit_cnt - gameData.Miss) /
-          ((gameData.EndTime - gameData.StartTime) / 1000)) *
-          60 *
-          (1 - gameData.Miss / gameData.total_hit_cnt) *
-          (1 - gameData.Miss / gameData.total_hit_cnt) *
-          (1 - gameData.Miss / gameData.total_hit_cnt) *
-          100 +
-        gameData.score_extra,
-      player_accracy: (1 - gameData.Miss / gameData.total_hit_cnt) * 100,
-      player_avg_kpm:
-        ((gameData.total_hit_cnt - gameData.Miss) /
-          ((gameData.EndTime - gameData.StartTime) / 1000)) *
-        60,
-      player_max_kpm: gameData.MaxKPM,
-      player_play_date: gameData.EndTime,
+      player_name: gameData.current_Player_name || "Player", // デフォルト値を設定
+      player_score: isNaN(score) ? 0 : score, // NaNチェック
+      player_accracy: isNaN(accuracy) ? 0 : accuracy, // NaNチェック
+      player_avg_kpm: isNaN(avgKpm) ? 0 : avgKpm, // NaNチェック
+      player_max_kpm: isNaN(gameData.MaxKPM) ? 0 : gameData.MaxKPM, // NaNチェック
+      player_play_date: gameData.EndTime || Date.now(), // EndTimeが未設定の場合に備える
     };
     let ur_rank_ind = insertLocalRanking(newPlayer);
     if (gameData.IsLoggedin) {

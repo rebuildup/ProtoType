@@ -327,6 +327,41 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
       return 1000 / avgDelta;
     }
+    function transitionToResultScene() {
+      if (currentKeyController) {
+        currentKeyController.abort();
+        currentKeyController = null; // 確実にnullに設定
+      }
+
+      // EndTimeが未設定の場合に備えて設定する
+      if (!gameData.EndTime) {
+        gameData.EndTime = Date.now();
+      }
+
+      // スコア関連データを確実に設定
+      if (gameData.total_hit_cnt > 0) {
+        let tmp_kpm =
+          ((gameData.total_hit_cnt - gameData.Miss) /
+            ((gameData.EndTime - gameData.StartTime) / 1000)) *
+          60;
+
+        gameData.Score =
+          tmp_kpm *
+            Math.pow(1 - gameData.Miss / gameData.total_hit_cnt, 3) *
+            100 +
+          gameData.score_extra;
+
+        if (gameData.Score > gameData.MaxScore) {
+          gameData.MaxScore = gameData.Score;
+        }
+
+        if (tmp_kpm > gameData.MaxKPM) {
+          gameData.MaxKPM = tmp_kpm;
+        }
+      }
+
+      gameData.CurrentSceneName = "result_scene";
+    }
 
     gameData.IsStarted = false;
     load_text.x = win_pos.x - load_text.width / 2;
@@ -403,17 +438,13 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
             const keyCode = await getLatestKey(currentKeyController.signal);
             if (keyCode.code === "Escape" && keyCode.shift == true) {
-              gameData.CurrentSceneName = "result_scene";
-              gameData.EndTime = Date.now();
-              currentKeyController?.abort();
+              transitionToResultScene();
               await closeScene(app, 3);
 
               resolve();
             }
             if (keyCode.code === "ControlLeft" && keyCode.shift == true) {
-              gameData.CurrentSceneName = "result_scene";
-              gameData.EndTime = Date.now();
-              currentKeyController?.abort();
+              transitionToResultScene();
               await closeScene(app, 3);
               resolve();
             } else if (keyCode.code === "Escape") {
@@ -522,22 +553,46 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               gameData.current_Issue++;
               gameData.current_inputed = "";
 
+              // 問題数の上限チェック
               if (gameData.current_Issue >= gameData.Issues_num) {
                 gameData.CurrentSceneName = "result_scene";
                 gameData.EndTime = Date.now();
                 currentKeyController?.abort();
                 await closeScene(app, 3);
                 resolve();
+                return; // ここで処理を終了するように追加
               }
             }
-            if (gameData.current_Issue + 1 >= gameData.Issues_num) {
+
+            // 次のテキスト表示部分も安全にチェック
+            if (
+              gameData.current_Issue >= gameData.Issues.length ||
+              gameData.current_Issue + 1 >= gameData.Issues.length
+            ) {
+              // 範囲外アクセスを防止
+              gameData.CurrentSceneName = "result_scene";
+              gameData.EndTime = Date.now();
+              currentKeyController?.abort();
+              await closeScene(app, 3);
+              resolve();
+              return;
+            }
+
+            // 安全な範囲チェックをしたうえでテキスト表示
+            if (
+              gameData.current_Issue + 1 >= gameData.Issues_num ||
+              gameData.current_Issue + 1 >= gameData.Issues.length
+            ) {
               next_text.text = "";
             } else {
               next_text.text = gameData.Issues[gameData.current_Issue + 1].text;
             }
-            sentetce_text.text = gameData.Issues[gameData.current_Issue].text;
-            sentetce_text.x = win_pos.x - sentetce_text.width / 2;
 
+            // 現在の問題テキストも安全にチェック
+            if (gameData.current_Issue < gameData.Issues.length) {
+              sentetce_text.text = gameData.Issues[gameData.current_Issue].text;
+              sentetce_text.x = win_pos.x - sentetce_text.width / 2;
+            }
             alphabet_text.text = getRomanizedTextFromTendency(
               gameData.Conversion,
               gameData.Issues[gameData.current_Issue].romaji,
@@ -659,6 +714,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             }
           }
         } catch (error) {
+          console.log(error);
           gameData.CurrentSceneName = "error_scene";
           gameData.EndTime = Date.now();
           currentKeyController?.abort();
