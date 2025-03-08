@@ -9,8 +9,225 @@ import { settings } from "../SiteInterface";
 export function GM_start(app: PIXI.Application): Promise<void> {
   return new Promise(async (resolve) => {
     const GM_start_container = new PIXI.Container();
+    const tl = gsap.timeline();
     CustomEase.create("slideOutEase", "M0,0 C1.0,0 0.0,1 1,1");
 
+    {
+      const inner_circle = new PIXI.Graphics();
+      inner_circle.circle(0, 0, 633).stroke({
+        width: 123,
+        color: replaceHash(settings.colorTheme.colors.MainColor),
+      });
+      inner_circle.x = app.screen.width / 2;
+      inner_circle.y = app.screen.height / 2;
+      inner_circle.alpha = 0;
+      tl.to(inner_circle, { alpha: 0.37, duration: 0 }, 0.7);
+      tl.to(
+        inner_circle.scale,
+        {
+          x: 0,
+          y: 0,
+          duration: 0.73,
+          ease: CustomEase.create("custom", "M0,0 C0,1 1,0 1,1"),
+        },
+        0.53
+      );
+      GM_start_container.addChild(inner_circle);
+    }
+    {
+      const outer_circle = new PIXI.Graphics();
+      outer_circle.circle(0, 0, 630).stroke({
+        width: 123,
+        color: replaceHash(settings.colorTheme.colors.MainColor),
+      });
+      outer_circle.x = app.screen.width / 2;
+      outer_circle.y = app.screen.height / 2;
+      outer_circle.alpha = 0;
+      GM_start_container.addChild(outer_circle);
+      tl.to(outer_circle, { alpha: 1, duration: 0 }, 0.4).to(
+        outer_circle,
+        { alpha: 0, duration: 0 },
+        0.6
+      );
+    }
+
+    {
+      const line_circle = new PIXI.Graphics();
+      line_circle.circle(0, 0, 455).stroke({
+        width: 12,
+        color: replaceHash(settings.colorTheme.colors.MainAccent),
+      });
+      line_circle.x = app.screen.width / 2;
+      line_circle.y = app.screen.height / 2;
+      line_circle.alpha = 1;
+      tl.to(
+        line_circle.scale,
+        {
+          x: 0.84,
+          y: 0.84,
+          duration: 1.3,
+          ease: CustomEase.create("custom", "M0,0 C0,0.2 0.3,1 1,1"),
+        },
+        -0.27
+      ).to(
+        line_circle.scale,
+        {
+          x: 0,
+          y: 0,
+          duration: 0.33,
+          ease: CustomEase.create("custom", "M0,0 C1,0.06 0.9,0.7 1,1"),
+        },
+        1.03
+      );
+      GM_start_container.addChild(line_circle);
+    }
+
+    {
+      const inner_rect_inst = new PIXI.Graphics();
+      inner_rect_inst.rect(-365, -365, 730, 730).stroke({
+        width: 120,
+        color: replaceHash(settings.colorTheme.colors.MainAccent),
+      });
+      inner_rect_inst.x = app.screen.width / 2;
+      inner_rect_inst.y = app.screen.height / 2;
+      inner_rect_inst.rotation = Math.PI / 4;
+      inner_rect_inst.alpha = 0;
+      tl.fromTo(
+        inner_rect_inst,
+        { alpha: 0 },
+        { alpha: 0.8, duration: 0 },
+        0.07
+      ).to(inner_rect_inst, { alpha: 0, duration: 0 }, 0.37);
+      GM_start_container.addChild(inner_rect_inst);
+    }
+
+    {
+      const inner_rect = new PIXI.Graphics();
+      inner_rect.rect(-365, -365, 730, 730).stroke({
+        width: 120,
+        color: replaceHash(settings.colorTheme.colors.MainAccent),
+      });
+      inner_rect.x = app.screen.width / 2;
+      inner_rect.y = app.screen.height / 2;
+      inner_rect.rotation = Math.PI / 4;
+      inner_rect.alpha = 0;
+      GM_start_container.addChild(inner_rect);
+      tl.fromTo(inner_rect, { alpha: 0 }, { alpha: 0.8, duration: 0 }, 0.37);
+      tl.fromTo(
+        inner_rect.scale,
+        { x: 1, y: 1 },
+        {
+          x: 0,
+          y: 0,
+          duration: 0.73,
+          ease: CustomEase.create("custom", "M0,0 C0,1 1,0 1,1"),
+        },
+        0.37
+      );
+    }
+
+    {
+      const outer_rect = new PIXI.Graphics();
+      outer_rect.rect(-510, -510, 1020, 1020).stroke({
+        width: 123,
+        color: replaceHash(settings.colorTheme.colors.MainAccent),
+      });
+      outer_rect.rotation = Math.PI / 4;
+      outer_rect.x = app.screen.width / 2;
+      outer_rect.y = app.screen.height / 2;
+      outer_rect.alpha = 0;
+      GM_start_container.addChild(outer_rect);
+      tl.to(outer_rect, { alpha: 1, duration: 0 }, 0.4);
+      tl.to(
+        outer_rect.scale,
+        {
+          x: 1.36,
+          y: 1.36,
+          duration: 0.7,
+          ease: CustomEase.create("custom", "M0,0 C0,0.7 0.1,1 1,1"),
+        },
+        0.4
+      ).to(
+        outer_rect.scale,
+        {
+          x: 2.17,
+          y: 2.17,
+          duration: 0.3,
+          ease: CustomEase.create("custom", "M0,0 C0,0.7 0.1,1 1,1"),
+        },
+        1.03
+      );
+    }
+    {
+      const star_inst = new PIXI.Graphics();
+      star_inst.x = app.screen.width / 2;
+      star_inst.y = app.screen.height / 2;
+
+      star_inst.moveTo(0, -600);
+      star_inst
+        .quadraticCurveTo(0, 0, 600, 0)
+        .quadraticCurveTo(0, 0, 0, 600)
+        .quadraticCurveTo(0, 0, -600, 0)
+        .quadraticCurveTo(0, 0, 0, -600)
+        .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+
+      star_inst.scale = 3;
+      GM_start_container.addChild(star_inst);
+      setTimeout(() => {
+        GM_start_container.removeChild(star_inst);
+      }, 167);
+    }
+    {
+      setTimeout(() => {
+        const star = new PIXI.Graphics();
+        star.x = app.screen.width / 2;
+        star.y = app.screen.height / 2;
+        star.moveTo(0, -600);
+        star
+          .quadraticCurveTo(0, 0, 600, 0)
+          .quadraticCurveTo(0, 0, 0, 600)
+          .quadraticCurveTo(0, 0, -600, 0)
+          .quadraticCurveTo(0, 0, 0, -600)
+          .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+        GM_start_container.addChild(star);
+        star.alpha = 1;
+
+        const starTl = gsap.timeline();
+        starTl
+          .to(
+            star.scale,
+            {
+              x: 0.6,
+              y: 0.6,
+              duration: 0.1,
+              ease: CustomEase.create("custom", "M0,0 C0,1 0.1,1 1,1"),
+            },
+            0
+          )
+          .to(
+            star.scale,
+            {
+              x: 0.1,
+              y: 0.1,
+              duration: 0.47,
+              ease: CustomEase.create("custom", "M0,0 C0,1 0.1,1 1,1"),
+            },
+            0.1
+          )
+          .to(
+            star.scale,
+            {
+              x: 0,
+              y: 0,
+              duration: 0.27,
+              ease: CustomEase.create("custom", "M0,0 C0,1 0.1,1 1,1"),
+            },
+            0.63
+          );
+      }, 433);
+    }
+
+    /*
     const waku_inst_rect = new PIXI.Graphics();
     waku_inst_rect.rect(-200, -200, 400, 400).stroke({
       width: 80,
@@ -116,12 +333,10 @@ export function GM_start(app: PIXI.Application): Promise<void> {
       .lineTo(-200, 0)
       .lineTo(-58, -58)
       .lineTo(0, -200)
-      .stroke({
-        width: 8,
-        color: replaceHash(settings.colorTheme.colors.MainAccent),
-      });
+      .fill(replaceHash(settings.colorTheme.colors.MainColor));
     star_three.alpha = 0.8;
     GM_start_container.addChild(star_three);
+    
     const scc = new PIXI.Container();
     for (let i = 0; i < 30; i++) {
       const star_four = new PIXI.Graphics();
@@ -147,27 +362,23 @@ export function GM_start(app: PIXI.Application): Promise<void> {
       scc.addChild(star_four);
     }
     GM_start_container.addChild(scc);
-    gsap.fromTo(
-      star,
-      { rotation: -3.14 / 4 },
-      {
-        rotation: 0,
-        duration: 1,
-        ease: "power4.out",
-      }
-    );
-    gsap.to(star, {
-      alpha: 0,
-      duration: 0.05,
-      repeat: 3,
-      yoyo: true,
-      ease: "none",
+     
+   const graphics = new PIXI.Graphics();
+
+    // Set line style: thickness, color and alpha
+    graphics.stroke({
+      width: 8,
+      color: replaceHash(settings.colorTheme.colors.MainAccent),
     });
+
+    // Add the graphics object to the stage
+    GM_start_container.addChild(graphics);
+    */
     app.stage.addChild(GM_start_container);
     setTimeout(() => {
       app.stage.removeChild(GM_start_container);
       resolve();
-    }, 1000);
+    }, 1300);
   });
 }
 export function closeScene(

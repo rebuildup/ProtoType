@@ -453,6 +453,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                     keyCodeToText(keyCode.code, keyCode.shift)
                   );
                 }
+                if (gameData.GameMode == "exact") gameData.current_inputed = "";
               } else {
                 playCollect();
                 if (gameData.GameMode != "focus") {
@@ -504,6 +505,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 gameData.EndTime = Date.now();
                 currentKeyController?.abort();
                 await closeScene(app, 3);
+                //await GM_start(app);
                 resolve();
               }
             }

@@ -40,6 +40,8 @@ export async function initializeGame(app: PIXI.Application) {
       align: "center",
     },
   });
+  console.log(app.screen.width);
+  console.log(app.screen.height);
   loading_text.position = {
     x: app.screen.width / 2 - loading_text.width / 2,
     y: app.screen.height / 2 - loading_text.height / 2,
@@ -110,7 +112,6 @@ export async function initializeGame(app: PIXI.Application) {
   gameData.textsData = textsData;
 
   gameData.CurrentSceneName = "opening";
-  debug_repeat;
   //gameData.CurrentSceneName = "debug_repeat";
   gameData.GameMode = "nomal";
   gameData.FontFamily = settings.fontTheme.fontFamily;
