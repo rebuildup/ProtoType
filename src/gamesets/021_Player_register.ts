@@ -92,7 +92,6 @@ export function Player_register(app: PIXI.Application): Promise<void> {
       currentKeyController = new AbortController();
       try {
         const keyCode = await getLatestKey(currentKeyController.signal);
-        console.log(keyCode);
         if (keyCode.code === "Escape") {
           gameData.CurrentSceneName = "game_select";
           get_out();

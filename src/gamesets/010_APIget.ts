@@ -10,7 +10,7 @@ export async function fetchTexts(): Promise<any> {
   if (data_Cache[0] == "no_text") {
     const response = await fetch(
       WEB_APP_URL +
-        "?sheetName=texts&startRow=1&startCol=1&endRow=250&endCol=50"
+        "?sheetName=texts&startRow=1&startCol=1&endRow=250&endCol=60"
     );
     if (!response.ok) {
       throw new Error("Network response was not ok");

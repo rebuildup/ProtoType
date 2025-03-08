@@ -40,8 +40,7 @@ export async function initializeGame(app: PIXI.Application) {
       align: "center",
     },
   });
-  console.log(app.screen.width);
-  console.log(app.screen.height);
+
   loading_text.position = {
     x: app.screen.width / 2 - loading_text.width / 2,
     y: app.screen.height / 2 - loading_text.height / 2,
@@ -98,8 +97,8 @@ export async function initializeGame(app: PIXI.Application) {
     for (let j = 0; j < fetchtext[i].length; j += 3) {
       if (fetchtext[i][j] !== "") {
         let tmp_Issue: Issue = {
-          text: fetchtext[i][j],
-          romaji: fetchtext[i][j + 1],
+          text: fetchtext[i][j] as string,
+          romaji: fetchtext[i][j + 1] as string,
         };
         let groupIndex = j / 3;
         if (!textsData[groupIndex]) {
@@ -110,6 +109,7 @@ export async function initializeGame(app: PIXI.Application) {
     }
   }
   gameData.textsData = textsData;
+  //console.log(textsData);
 
   gameData.CurrentSceneName = "opening";
   //gameData.CurrentSceneName = "debug_repeat";

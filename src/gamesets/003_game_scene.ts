@@ -344,7 +344,29 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     gameData.missKeys = [];
     setTimeout(async () => {
       //await makeIssues(3, 6, gameData.Issues_num);
-      await makeIssues(14, 14, gameData.Issues_num);
+      let issueIndexs = [14, 14];
+      switch (gameData.GameMode) {
+        case "nomal":
+          issueIndexs = [14, 14];
+          break;
+        case "focus":
+          issueIndexs = [14, 14];
+          break;
+        case "exact":
+          issueIndexs = [14, 14];
+          break;
+        case "long":
+          issueIndexs = [14, 14];
+          break;
+        case "number":
+          issueIndexs = [16, 16];
+          break;
+        default:
+          issueIndexs = [14, 14];
+          resolve();
+          break;
+      }
+      await makeIssues(issueIndexs[0], issueIndexs[1], gameData.Issues_num);
       if (gameData.IsLoggedin) {
         const onlineRanking = await getRanking_Data(0);
         gameData.onlineRanking = [];
@@ -669,9 +691,13 @@ async function makeIssues(
 ): Promise<void> {
   return new Promise<void>(async (resolve) => {
     let Issues: Issue[] = [];
-    for (let i = 0; i < N + 1; i++) {
-      const groupIndex =
+    const maxIndex = gameData.textsData.length - 1;
+
+    for (let i = 0; i < N; i++) {
+      let groupIndex =
         FromLen - 1 + Math.floor(Math.random() * (ToLen - FromLen + 1));
+      groupIndex = Math.max(0, Math.min(groupIndex, maxIndex));
+
       const groupArray = gameData.textsData[groupIndex];
       const issueIndex = Math.floor(Math.random() * groupArray.length);
       const new_Issue: Issue = groupArray[issueIndex];
