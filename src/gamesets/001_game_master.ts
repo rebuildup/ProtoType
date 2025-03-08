@@ -97,8 +97,8 @@ export async function initializeGame(app: PIXI.Application) {
     for (let j = 0; j < fetchtext[i].length; j += 3) {
       if (fetchtext[i][j] !== "") {
         let tmp_Issue: Issue = {
-          text: fetchtext[i][j] as string,
-          romaji: fetchtext[i][j + 1] as string,
+          text: String(fetchtext[i][j]),
+          romaji: String(fetchtext[i][j + 1]),
         };
         let groupIndex = j / 3;
         if (!textsData[groupIndex]) {

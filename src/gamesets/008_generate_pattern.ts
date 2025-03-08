@@ -40,7 +40,6 @@ export function getNextKeysOptimized(
     const currentChar = readingText[index];
 
     if (!isHiragana(currentChar)) {
-      // Non-hiragana characters are handled directly.
       const candidate = currentChar;
       const remainingInput = currentInput.substring(matched);
       if (remainingInput.startsWith(candidate)) {
@@ -63,14 +62,12 @@ export function getNextKeysOptimized(
     }
 
     if (currentChar === "っ") {
-      // Handling for small tsu.
       const tsuConfig = KEY_CONFIGS.find((config) => config.key === "っ");
       if (tsuConfig) {
         const currentInputRemaining = currentInput.substring(matched);
         const possibleNextLetters = new Set<string>();
         let hasExactMatch = false;
 
-        // Check each origin for an exact or partial match for small tsu.
         for (const origin of tsuConfig.origins) {
           if (currentInputRemaining === origin) {
             const rec = nextLetters(index + 1, matched + origin.length);
@@ -83,7 +80,6 @@ export function getNextKeysOptimized(
         }
 
         if (!hasExactMatch) {
-          // Handle doubling candidates.
           const doublingCandidates = getDoublingCandidates(index + 1);
           if (currentInputRemaining === "") {
             doublingCandidates.forEach((c) => possibleNextLetters.add(c));
@@ -94,7 +90,6 @@ export function getNextKeysOptimized(
               results.push(...rec);
             }
           }
-          // --- NEW FIX: Handle fixed alternative candidates for small tsu ---
           const fixedAlternatives = ["ltu", "xtu", "ltsu", "xtsu"];
           const rawFixedCandidates = Array.from(
             new Set(fixedAlternatives.map((s) => s.charAt(0)))
@@ -104,11 +99,9 @@ export function getNextKeysOptimized(
             if (rawFixedCandidates.includes(firstChar)) {
               for (const alt of fixedAlternatives) {
                 if (currentInputRemaining.startsWith(alt)) {
-                  // If the fixed alternative is fully matched, consume it.
                   const rec = nextLetters(index + 1, matched + alt.length);
                   results.push(...rec);
                 } else if (alt.startsWith(currentInputRemaining)) {
-                  // Suggest the next character for the fixed alternative.
                   const nextChar = alt.charAt(currentInputRemaining.length);
                   possibleNextLetters.add(nextChar);
                 }
@@ -117,7 +110,6 @@ export function getNextKeysOptimized(
           }
         }
 
-        // Add all possible next letter suggestions.
         Array.from(possibleNextLetters).forEach((letter) => {
           results.push({
             letter,
@@ -134,7 +126,6 @@ export function getNextKeysOptimized(
     }
 
     if (currentChar === "ん") {
-      // Handling for 'ん'.
       const remainingInput = currentInput.substring(matched);
       if (index === readingText.length - 1) {
         if (remainingInput.startsWith("nn")) {
@@ -170,7 +161,6 @@ export function getNextKeysOptimized(
       }
     }
 
-    // Normal conversion for other hiragana via KEY_CONFIGS.
     for (const config of KEY_CONFIGS) {
       if (readingText.startsWith(config.key, index)) {
         const newIndex = index + config.key.length;
@@ -211,8 +201,8 @@ export function getNextKeysOptimized(
 }
 
 export interface ConversionTendency {
-  key: string; // 変換対象のひらがな（例："ち"）
-  tendency: string; // デフォルトとして使用するローマ字（例："ti"）
+  key: string;
+  tendency: string;
 }
 export type ConversionTendencies = ConversionTendency[];
 export type ConversionFlag = {
@@ -231,18 +221,15 @@ export function getRomanizedTextFromTendency(
   readingText: string,
   currentInput: string
 ): string {
-  // Check if a character is hiragana
   function isHiragana(char: string): boolean {
     const code = char.charCodeAt(0);
     return code >= 0x3041 && code <= 0x3096;
   }
-  // Check if the next character is in the Na-row
   function isNextNaRow(text: string, i: number): boolean {
     if (i + 1 >= text.length) return false;
     const next = text[i + 1];
     return ["な", "に", "ぬ", "ね", "の"].includes(next);
   }
-  // Ensure the current output is a prefix of the user input
   function prefixMatches(out: string): boolean {
     if (out.length > currentInput.length) {
       return currentInput === out.slice(0, currentInput.length);
@@ -250,23 +237,14 @@ export function getRomanizedTextFromTendency(
       return out === currentInput.slice(0, out.length);
     }
   }
-  // Determine if a character is a consonant (excluding vowels and 'y')
   function isConsonant(char: string): boolean {
     return !"aiueoy".includes(char.toLowerCase());
   }
 
-  // Candidate type with a penalty count (nonPreferred)
   type Candidate = { out: string; nonPreferred: number };
 
   const results: Candidate[] = [];
 
-  /**
-   * DFS to explore conversion candidates.
-   * @param i Current index in readingText.
-   * @param dup Flag for pending doubling from small tsu.
-   * @param out Current conversion result.
-   * @param nonPreferred Penalty count when not using stored tendency.
-   */
   function dfs(
     i: number,
     dup: boolean,
@@ -280,13 +258,11 @@ export function getRomanizedTextFromTendency(
     }
     const ch = readingText[i];
 
-    // Non-hiragana: output directly.
     if (!isHiragana(ch)) {
       dfs(i + 1, false, out + ch, nonPreferred);
       return;
     }
 
-    // Handling for small tsu "っ"
     if (ch === "っ") {
       const nextIndex = i + 1;
       const doublingCandidates = (function () {
@@ -328,7 +304,6 @@ export function getRomanizedTextFromTendency(
       return;
     }
 
-    // Handling for "ん"
     if (ch === "ん") {
       let candidates: string[];
       if (i === readingText.length - 1 || isNextNaRow(readingText, i)) {
@@ -342,14 +317,11 @@ export function getRomanizedTextFromTendency(
       return;
     }
 
-    // Normal hiragana conversion: use KEY_CONFIGS.
     for (const config of KEY_CONFIGS) {
       if (readingText.startsWith(config.key, i)) {
-        // Find stored tendency for this key if any.
         const tendencyEntry = tendencies.find((t) => t.key === config.key);
         let candidateOrigins: string[];
         if (tendencyEntry) {
-          // 優先候補として保存された変換を先頭に
           candidateOrigins = [tendencyEntry.tendency];
           for (const origin of config.origins) {
             if (origin !== tendencyEntry.tendency) {
@@ -360,7 +332,6 @@ export function getRomanizedTextFromTendency(
           candidateOrigins = config.origins;
         }
         for (const origin of candidateOrigins) {
-          // もし保存された変換と異なる場合、重み（ペナルティ）を加算
           const additionalPenalty =
             tendencyEntry && origin === tendencyEntry.tendency ? 0 : 1;
           let conv = origin;
@@ -380,7 +351,6 @@ export function getRomanizedTextFromTendency(
 
   dfs(0, false, "", 0);
 
-  // ソート時に、非好ましい枝の重みを大きく評価するため、重み*10000 を加算
   results.sort((a, b) => {
     const scoreA =
       a.nonPreferred * 10000 + (a.out.length - currentInput.length);
@@ -391,14 +361,13 @@ export function getRomanizedTextFromTendency(
   return results[0] ? results[0].out : "";
 }
 
-// 補助: 子音かどうか (母音 "a","i","u","e","o" および "y" は除く)
 function isConsonant(char: string): boolean {
   return !"aiueoy".includes(char.toLowerCase());
 }
 
 export interface ConversionTendency {
-  key: string; // 変換対象のひらがな（例："ち"）
-  tendency: string; // デフォルトとして使用するローマ字（例："ti"）
+  key: string;
+  tendency: string;
 }
 
 export async function TextToRomaji(input: string): Promise<string[]> {
