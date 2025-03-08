@@ -527,7 +527,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 gameData.EndTime = Date.now();
                 currentKeyController?.abort();
                 await closeScene(app, 3);
-                //await GM_start(app);
                 resolve();
               }
             }
