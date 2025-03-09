@@ -1,7 +1,8 @@
 import * as PIXI from "pixi.js";
 import gsap from "gsap";
 import { PixiPlugin } from "gsap/PixiPlugin";
-PixiPlugin.registerPIXI(PIXI);
+import { CustomEase } from "gsap/all";
+gsap.registerPlugin(PixiPlugin, CustomEase);
 import { replaceHash } from "./001_game_master";
 import { gameData } from "./002_gameConfig";
 import { Keyboard, keybord_size, scale } from "./011_keybord";
@@ -114,6 +115,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     alphabet_current_text.x = win_pos.x - alphabet_current_text.width / 2;
     alphabet_current_text.y = win_pos.y - alphabet_current_text.height / 2 + 40;
     app.stage.addChild(alphabet_current_text);
+
     const next_text = new PIXI.Text({
       text: "",
       style: {
@@ -140,6 +142,20 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     score_text.x = win_pos.x - score_text.width / 2;
     score_text.y = win_pos.y - score_text.height / 2 - 200;
     app.stage.addChild(score_text);
+
+    const extra_text = new PIXI.Text({
+      text: "+",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 20,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    extra_text.x = win_pos.x - score_text.width / 2 + 40;
+    extra_text.y = win_pos.y - score_text.height / 2 - 198;
+    extra_text.alpha = 0;
+    app.stage.addChild(extra_text);
 
     const combo_text = new PIXI.Text({
       text: "",
@@ -367,6 +383,26 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       gameData.CurrentSceneName = "result_scene";
     }
 
+    function extra_anim(n: number) {
+      extra_text.text = "+" + String(n);
+      gsap.fromTo(
+        extra_text,
+        { alpha: 0, y: win_pos.y - score_text.height / 2 - 194 },
+        {
+          alpha: 1,
+          y: win_pos.y - score_text.height / 2 - 198,
+          duration: 0.1,
+          ease: CustomEase.create("custom", "M0,0 C0,1 1,0 1,1"),
+        }
+      );
+      gsap.to(extra_text, {
+        alpha: 0,
+        duration: 0.2,
+        delay: 0.5,
+        ease: CustomEase.create("custom", "M0,0 C1,0 0,1 1,1"),
+      });
+    }
+
     gameData.IsStarted = false;
     load_text.x = win_pos.x - load_text.width / 2;
     load_text.y = win_pos.y - load_text.height / 2 - 300;
@@ -535,6 +571,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                   gameData.combo_cnt > 20
                 ) {
                   gameData.score_extra += gameData.combo_cnt * 10;
+                  extra_anim(gameData.combo_cnt * 10);
                 }
                 let tmp_kpm =
                   ((gameData.total_hit_cnt - gameData.Miss) /

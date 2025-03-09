@@ -15,7 +15,6 @@ import {
   openScene,
   reaction,
   reaction_jump,
-  reaction_wig,
 } from "./014_mogura";
 
 const BUTTON_SPACING = 120;

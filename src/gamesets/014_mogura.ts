@@ -718,17 +718,3 @@ export function reaction_jump(
     }
   );
 }
-export function reaction_wig(
-  obj: PIXI.Graphics | PIXI.Text,
-  absolute_x: number
-) {
-  gsap.fromTo(
-    obj,
-    { x: absolute_x + 4 },
-    {
-      x: absolute_x,
-      duration: 1,
-      ease: CustomEase.create("custom", "M0,0 C0.2,1 0.3,1 1,1"),
-    }
-  );
-}
