@@ -4,15 +4,12 @@ import { gameData } from "./002_gameConfig";
 import { light_key, update_Acc_key } from "./011_keybord";
 import * as PIXI from "pixi.js";
 
-// Define the KeyboardLayout interface
 interface KeyboardLayout {
   name: string;
   layout: string[][];
 }
 
-// Map of key codes to their corresponding characters
 const KEY_CODE_MAP = {
-  // Digits
   Digit1: "1",
   Digit2: "2",
   Digit3: "3",
@@ -23,7 +20,6 @@ const KEY_CODE_MAP = {
   Digit8: "8",
   Digit9: "9",
   Digit0: "0",
-  // Letters
   KeyA: "a",
   KeyB: "b",
   KeyC: "c",
@@ -50,7 +46,6 @@ const KEY_CODE_MAP = {
   KeyX: "x",
   KeyY: "y",
   KeyZ: "z",
-  // Symbols
   Comma: ",",
   Period: ".",
   Semicolon: ";",
@@ -64,9 +59,7 @@ const KEY_CODE_MAP = {
   Equal: "^",
   IntlYen: "\\",
   IntlRo: "\\",
-  // Special
   Space: " ",
-  // Numpad
   Numpad0: "0",
   Numpad1: "1",
   Numpad2: "2",
@@ -84,7 +77,6 @@ const KEY_CODE_MAP = {
   NumpadAdd: "+",
 };
 
-// Map of characters to their keyboard indices
 const CHAR_TO_INDEX_MAP = {
   "1": 1,
   "2": 2,
@@ -137,7 +129,6 @@ const CHAR_TO_INDEX_MAP = {
   " ": 60,
 };
 
-// Shift key mapping
 const SHIFT_MAP: { [key: string]: string } = {
   "1": "!",
   "2": '"',
@@ -188,15 +179,13 @@ const SHIFT_MAP: { [key: string]: string } = {
   "\\": "_",
 };
 
-// Get the lowercase or uppercase version of a character based on shift state
 function shift_get(input_char: string, backs: boolean = true): string {
   if (input_char === "\\" && !backs) {
     return "|";
   }
-  return SHIFT_MAP[input_char] || "";
+  return SHIFT_MAP[input_char] || input_char;
 }
 
-// Map a key from one keyboard layout to another
 function mapKey(
   source: KeyboardLayout,
   target: KeyboardLayout,
@@ -222,8 +211,6 @@ function mapKey(
   }
   return undefined;
 }
-
-// Get the latest keypress and return its code and shift state
 export function getLatestKey(
   signal: AbortSignal
 ): Promise<{ code: string; shift: boolean }> {
@@ -249,8 +236,6 @@ export function getLatestKey(
     signal.addEventListener("abort", abortHandler);
   });
 }
-
-// Convert a key code to its corresponding text representation
 export function keyCodeToText(code: string, shift: boolean): string {
   const root_layout = keyLayouts.find(
     (layout) => layout.name === settings.keyLayout
@@ -271,7 +256,6 @@ export function keyCodeToText(code: string, shift: boolean): string {
   return shift ? shift_get(mapped, code !== "IntlRo") : mapped;
 }
 
-// Light up a key on the keyboard based on its code
 export function light_key_from_code(app: PIXI.Application, code: string) {
   const root_layout = keyLayouts.find(
     (layout) => layout.name === settings.keyLayout
@@ -280,31 +264,24 @@ export function light_key_from_code(app: PIXI.Application, code: string) {
     (layout) => layout.name === "QWERTY"
   ) as KeyboardLayout;
 
-  // Get the base character for the key code
   const baseChar = KEY_CODE_MAP[code as keyof typeof KEY_CODE_MAP];
   if (!baseChar) return;
 
-  // Map the character to the target layout
   const mapped = mapKey(root_layout, play_layout, baseChar);
   if (!mapped) return;
 
-  // Get the index for the character
   let index =
     CHAR_TO_INDEX_MAP[mapped.toLowerCase() as keyof typeof CHAR_TO_INDEX_MAP] ||
     28;
 
-  // Special case for backslash key
   if (mapped === "\\" && code === "IntlYen") {
     index = 13;
   } else if (mapped === "\\" && code === "IntlRo") {
     index = 54;
   }
 
-  // Light up the key
   light_key(app, index);
 }
-
-// Update the active keys based on a text character
 export function acc_key_from_code(
   app: PIXI.Application,
   code: string,
@@ -317,10 +294,15 @@ export function acc_key_from_code(
     (layout) => layout.name === "QWERTY"
   ) as KeyboardLayout;
 
-  // Get the base character (normalize uppercase to lowercase)
+  // Check if this is a shifted character
+  let isShiftRequired = false;
   let baseChar = code.toLowerCase();
-  if (SHIFT_MAP[baseChar]) {
-    // If it's a character that can be produced with shift, find the base character
+
+  // If the character is uppercase or is a shifted symbol
+  if (code !== baseChar || Object.values(SHIFT_MAP).includes(code)) {
+    isShiftRequired = true;
+
+    // Find the base character for shifted symbols
     for (const [key, value] of Object.entries(SHIFT_MAP)) {
       if (value === code) {
         baseChar = key;
@@ -338,29 +320,43 @@ export function acc_key_from_code(
     CHAR_TO_INDEX_MAP[mapped.toLowerCase() as keyof typeof CHAR_TO_INDEX_MAP] ||
     28;
 
-  // Special case for backslash key with IntlYen/IntlRo
   if (mapped === "\\" && code === "IntlYen") {
     index = 13;
   } else if (mapped === "\\" && code === "IntlRo") {
     index = 54;
   }
 
-  // Update the active keys
   if (set) {
     if (!gameData.acc_keys.includes(index)) {
       gameData.acc_keys.push(index);
     }
+
+    if (isShiftRequired && !gameData.acc_keys.includes(43)) {
+      gameData.acc_keys.push(43);
+    }
   } else {
     if (gameData.acc_keys.includes(index)) {
       gameData.acc_keys = gameData.acc_keys.filter((key) => key !== index);
+    }
+
+    if (isShiftRequired) {
+      // Check if there are any other shifted characters still active
+      const stillHasShiftedChars = gameData.acc_keys.some((keyIndex) => {
+        const char = Object.entries(CHAR_TO_INDEX_MAP).find(
+          ([i]) => String(i) === String(keyIndex)
+        )?.[0];
+        return char && Object.keys(SHIFT_MAP).includes(char);
+      });
+
+      if (!stillHasShiftedChars) {
+        gameData.acc_keys = gameData.acc_keys.filter((key) => key !== 43);
+      }
     }
   }
 
   // Update the keyboard display
   update_Acc_key(app);
 }
-
-// Check if a key code is a normal key (not a modifier or special key)
 export function isNomalKey(code: string) {
   return Object.keys(KEY_CODE_MAP).includes(code);
 }

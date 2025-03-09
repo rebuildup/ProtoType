@@ -118,7 +118,9 @@ const PlayerProfilePanel: React.FC = () => {
         onClick={togglePanel}
         style={{ zIndex: 2 }}
       >
-        {settings.user.isLoggedin ? "you : " + settings.user.name : "ログイン"}
+        {settings.user.isLoggedin
+          ? "you : " + settings.user.name
+          : "ログイン/登録"}
       </button>
       {isPanelVisible && (
         <div className="player-panel" style={{ zIndex: 4 }}>

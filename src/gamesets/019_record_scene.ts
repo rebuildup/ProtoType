@@ -305,6 +305,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           max_score.x = play_rec_x - max_score.width;
           max_score.y = play_rec_pad * 5 - max_score.height / 2;
           record_container.addChild(max_score);
+          flashObj(app, max_score);
           const avg_score_title = new PIXI.Text({
             text: "平均スコア",
             style: {
@@ -340,6 +341,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           avg_score.x = play_rec_x - avg_score.width;
           avg_score.y = play_rec_pad * 6 - avg_score.height / 2;
           record_container.addChild(avg_score);
+          flashObj(app, avg_score);
           const total_play_title = new PIXI.Text({
             text: "総プレイ数",
             style: {
@@ -367,6 +369,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           total_play.x = play_rec_x - total_play.width;
           total_play.y = play_rec_pad * 7 - total_play.height / 2;
           record_container.addChild(total_play);
+          flashObj(app, total_play);
 
           const total_type_title = new PIXI.Text({
             text: "総タイプ数",
@@ -392,6 +395,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           total_type.x = play_rec_x - total_type.width;
           total_type.y = play_rec_pad * 8 - total_type.height / 2;
           record_container.addChild(total_type);
+          flashObj(app, total_type);
           const max_kpm_title = new PIXI.Text({
             text: "最大kpm",
             style: {
@@ -421,6 +425,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           max_kpm.x = play_rec_x - max_kpm.width;
           max_kpm.y = play_rec_pad * 9 - max_kpm.height / 2;
           record_container.addChild(max_kpm);
+          flashObj(app, max_kpm);
           const avg_kpm_title = new PIXI.Text({
             text: "平均kpm",
             style: {
@@ -456,6 +461,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           avg_kpm.x = play_rec_x - avg_kpm.width;
           avg_kpm.y = play_rec_pad * 10 - avg_kpm.height / 2;
           record_container.addChild(avg_kpm);
+          flashObj(app, avg_kpm);
           const avg_accracy_title = new PIXI.Text({
             text: "平均正確率",
             style: {
@@ -494,6 +500,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           avg_accracy.x = play_rec_x - avg_accracy.width;
           avg_accracy.y = play_rec_pad * 11 - avg_kpm.height / 2;
           record_container.addChild(avg_accracy);
+          flashObj(app, avg_accracy);
           break;
         case opened_record.achieve:
           max_scroll_y = 10;
@@ -511,6 +518,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           tmp_achieve.x = app.screen.width / 2 - tmp_achieve.width / 2;
           tmp_achieve.y = app.screen.height / 2 - tmp_achieve.height / 2;
           record_container.addChild(tmp_achieve);
+          flashObj(app, tmp_achieve);
           break;
         case opened_record.ranking:
           max_scroll_y = 4600;
@@ -538,9 +546,10 @@ export function record_scene(app: PIXI.Application): Promise<void> {
                 align: "center",
               },
             });
-            rank_player.x = screenCenter.x - 120;
+            rank_player.x = screenCenter.x - 140;
             rank_player.y = 300 + 50 * i - rank_player.height / 2;
             record_container.addChild(rank_player);
+
             const rank_score = new PIXI.Text({
               text: gameData.localRanking[i].player_score.toFixed(0),
               style: {
@@ -550,7 +559,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
                 align: "center",
               },
             });
-            rank_score.x = screenCenter.x + 200 - rank_score.width;
+            rank_score.x = screenCenter.x + 220 - rank_score.width;
             rank_score.y = 300 + 50 * i - rank_score.height / 2;
             record_container.addChild(rank_score);
           }

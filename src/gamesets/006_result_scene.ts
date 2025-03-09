@@ -16,6 +16,7 @@ import { getLatestKey } from "./009_keyinput";
 import { playMiss } from "./012_soundplay";
 import { saveToCache } from "./020_cacheControl";
 import { postPlayData } from "./010_APIget";
+import { closeScene, flashObj, openScene, reaction_jump } from "./014_mogura";
 
 function createText(
   app: PIXI.Application,
@@ -82,7 +83,12 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     if (!gameData.IsLoggedin) {
       gameData.current_Player_id++;
     }
-
+    const Ranking_pos = app.screen.width / 4;
+    const ranking_pad_x = 240;
+    const Play_pos = (app.screen.width / 4) * 3;
+    const play_pad_x = 240;
+    const table_top_y = 240;
+    const table_pad_y = 72;
     const accuracy =
       gameData.total_hit_cnt > 0
         ? (1 - gameData.Miss / gameData.total_hit_cnt) * 100
@@ -101,12 +107,12 @@ export function result_scene(app: PIXI.Application): Promise<void> {
 
     const newPlayer: RankingPlayer = {
       player_id: gameData.current_Player_id,
-      player_name: gameData.current_Player_name || "Player", // デフォルト値を設定
-      player_score: isNaN(score) ? 0 : score, // NaNチェック
-      player_accracy: isNaN(accuracy) ? 0 : accuracy, // NaNチェック
-      player_avg_kpm: isNaN(avgKpm) ? 0 : avgKpm, // NaNチェック
-      player_max_kpm: isNaN(gameData.MaxKPM) ? 0 : gameData.MaxKPM, // NaNチェック
-      player_play_date: gameData.EndTime || Date.now(), // EndTimeが未設定の場合に備える
+      player_name: gameData.current_Player_name || "Player",
+      player_score: isNaN(score) ? 0 : score,
+      player_accracy: isNaN(accuracy) ? 0 : accuracy,
+      player_avg_kpm: isNaN(avgKpm) ? 0 : avgKpm,
+      player_max_kpm: isNaN(gameData.MaxKPM) ? 0 : gameData.MaxKPM,
+      player_play_date: gameData.EndTime || Date.now(),
     };
     let ur_rank_ind = insertLocalRanking(newPlayer);
     if (gameData.IsLoggedin) {
@@ -135,11 +141,11 @@ export function result_scene(app: PIXI.Application): Promise<void> {
 
     const align_opt = { center: 0, left: 1, right: 2 };
 
-    createText(
+    const ranking_title = createText(
       app,
       gameData.IsLoggedin ? "オンラインランキング" : "ローカルランキング",
-      410,
-      100,
+      Ranking_pos,
+      table_top_y - table_pad_y,
       38,
       align_opt.center
     );
@@ -149,8 +155,8 @@ export function result_scene(app: PIXI.Application): Promise<void> {
         gameData.IsLoggedin
           ? padNumber(i + 1) + "   " + gameData.onlineRanking[i].player_name
           : padNumber(i + 1) + "   " + gameData.localRanking[i].player_name,
-        150,
-        70 * i + 200,
+        Ranking_pos - ranking_pad_x,
+        table_pad_y * i + table_top_y,
         35,
         align_opt.left
       );
@@ -159,33 +165,33 @@ export function result_scene(app: PIXI.Application): Promise<void> {
         gameData.IsLoggedin
           ? String(gameData.onlineRanking[i].player_score.toFixed(0))
           : String(gameData.localRanking[i].player_score.toFixed(0)),
-        620,
-        70 * i + 200,
+        Ranking_pos + ranking_pad_x,
+        table_pad_y * i + table_top_y,
         35,
         align_opt.right
       );
     }
     const Ur_rank_line = new PIXI.Graphics();
-    Ur_rank_line.lineTo(500, -50).stroke({
+    Ur_rank_line.lineTo(ranking_pad_x * 2, -ranking_title.height).stroke({
       width: 2,
       color: replaceHash(settings.colorTheme.colors.MainColor),
     });
-    Ur_rank_line.x = 150;
-    Ur_rank_line.y = 930;
+    Ur_rank_line.x = Ranking_pos - ranking_pad_x;
+    Ur_rank_line.y = table_pad_y * 10 + table_top_y + ranking_title.height / 2;
     app.stage.addChild(Ur_rank_line);
     createText(
       app,
       "Your Rank",
-      150,
-      app.screen.height - 200,
+      Ranking_pos - ranking_pad_x,
+      table_pad_y * 11 + table_top_y,
       38,
       align_opt.left
     );
     createText(
       app,
       ur_rank_ind == -1 ? "ランク外" : padNumber(ur_rank_ind + 1),
-      620,
-      app.screen.height - 200,
+      Ranking_pos + ranking_pad_x,
+      table_pad_y * 11 + table_top_y,
       38,
       align_opt.right
     );
@@ -193,23 +199,19 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     createText(
       app,
       "プレイ結果",
-      app.screen.width - 380,
-      100,
+      Play_pos,
+      table_top_y - table_pad_y,
       38,
       align_opt.center
     );
 
-    const result_margin = 70;
     const result_t_f_s = 32;
     const result_n_f_s = 30;
-    const result_t_p_x = app.screen.width - 650;
-    const result_n_p_x = app.screen.width - 120;
-    const result_t_p_y = 200;
     createText(
       app,
       "スコア",
-      result_t_p_x,
-      result_t_p_y,
+      Play_pos - play_pad_x,
+      table_top_y,
       result_t_f_s,
       align_opt.left
     );
@@ -227,32 +229,32 @@ export function result_scene(app: PIXI.Application): Promise<void> {
           gameData.score_extra
         ).toFixed(0)
       ),
-      result_n_p_x,
-      result_t_p_y,
+      Play_pos + play_pad_x,
+      table_top_y,
       result_n_f_s,
       align_opt.right
     );
     createText(
       app,
       "総タイプ",
-      result_t_p_x,
-      result_t_p_y + result_margin,
+      Play_pos - play_pad_x,
+      table_top_y + table_pad_y,
       result_t_f_s,
       align_opt.left
     );
     createText(
       app,
       String(gameData.total_hit_cnt.toFixed(0)),
-      result_n_p_x,
-      result_t_p_y + result_margin,
+      Play_pos + play_pad_x,
+      table_top_y + table_pad_y,
       result_n_f_s,
       align_opt.right
     );
     createText(
       app,
       "正確性(%)",
-      result_t_p_x,
-      result_t_p_y + result_margin * 2,
+      Play_pos - play_pad_x,
+      table_top_y + table_pad_y * 2,
       result_t_f_s,
       align_opt.left
     );
@@ -260,48 +262,48 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       app,
       String(((1 - gameData.Miss / gameData.total_hit_cnt) * 100).toFixed(1)) +
         "%",
-      result_n_p_x,
-      result_t_p_y + result_margin * 2,
+      Play_pos + play_pad_x,
+      table_top_y + table_pad_y * 2,
       result_n_f_s,
       align_opt.right
     );
     createText(
       app,
       "ミス入力数",
-      result_t_p_x,
-      result_t_p_y + result_margin * 3,
+      Play_pos - play_pad_x,
+      table_top_y + table_pad_y * 3,
       result_t_f_s,
       align_opt.left
     );
     createText(
       app,
       String(gameData.Miss),
-      result_n_p_x,
-      result_t_p_y + result_margin * 3,
+      Play_pos + play_pad_x,
+      table_top_y + table_pad_y * 3,
       result_n_f_s,
       align_opt.right
     );
     createText(
       app,
       "最大コンボ",
-      result_t_p_x,
-      result_t_p_y + result_margin * 4,
+      Play_pos - play_pad_x,
+      table_top_y + table_pad_y * 4,
       result_t_f_s,
       align_opt.left
     );
     createText(
       app,
       String(gameData.max_combo),
-      result_n_p_x,
-      result_t_p_y + result_margin * 4,
+      Play_pos + play_pad_x,
+      table_top_y + table_pad_y * 4,
       result_n_f_s,
       align_opt.right
     );
     createText(
       app,
       "入力時間",
-      result_t_p_x,
-      result_t_p_y + result_margin * 5,
+      Play_pos - play_pad_x,
+      table_top_y + table_pad_y * 5,
       result_t_f_s,
       align_opt.left
     );
@@ -320,16 +322,16 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     createText(
       app,
       time_text_t,
-      result_n_p_x,
-      result_t_p_y + result_margin * 5,
+      Play_pos + play_pad_x,
+      table_top_y + table_pad_y * 5,
       result_n_f_s,
       align_opt.right
     );
     createText(
       app,
       "平均kpm",
-      result_t_p_x,
-      result_t_p_y + result_margin * 6,
+      Play_pos - play_pad_x,
+      table_top_y + table_pad_y * 6,
       result_t_f_s,
       align_opt.left
     );
@@ -342,32 +344,32 @@ export function result_scene(app: PIXI.Application): Promise<void> {
           60
         ).toFixed(0)
       ),
-      result_n_p_x,
-      result_t_p_y + result_margin * 6,
+      Play_pos + play_pad_x,
+      table_top_y + table_pad_y * 6,
       result_n_f_s,
       align_opt.right
     );
     createText(
       app,
       "最大kpm",
-      result_t_p_x,
-      result_t_p_y + result_margin * 7,
+      Play_pos - play_pad_x,
+      table_top_y + table_pad_y * 7,
       result_t_f_s,
       align_opt.left
     );
     createText(
       app,
       String(gameData.MaxKPM.toFixed(0)),
-      result_n_p_x,
-      result_t_p_y + result_margin * 7,
+      Play_pos + play_pad_x,
+      table_top_y + table_pad_y * 7,
       result_n_f_s,
       align_opt.right
     );
     createText(
       app,
       "ミスキー",
-      result_t_p_x,
-      result_t_p_y + result_margin * 8,
+      Play_pos - play_pad_x,
+      table_top_y + table_pad_y * 8,
       result_t_f_s,
       align_opt.left
     );
@@ -387,8 +389,8 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     createText(
       app,
       misskey_text_out,
-      result_n_p_x,
-      result_t_p_y + result_margin * 8,
+      Play_pos + play_pad_x,
+      table_top_y + table_pad_y * 8,
       result_n_f_s,
       align_opt.right
     );
@@ -402,12 +404,14 @@ export function result_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
-    select_replay.x = app.screen.width - select_replay.width - 130;
-    select_replay.y = app.screen.height - select_replay.height / 2 - 190;
+    select_replay.x = Play_pos + play_pad_x - select_replay.width;
+    select_replay.y = table_top_y + table_pad_y * 10 - select_replay.height / 2;
     select_replay.interactive = true;
     select_replay.on("pointerdown", async () => {
+      dot_anim(table_top_y + table_pad_y * 10);
       retry();
     });
+    select_replay.alpha = 1;
     app.stage.addChild(select_replay);
 
     const select_select = new PIXI.Text({
@@ -419,32 +423,35 @@ export function result_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
-    select_select.x = app.screen.width - select_select.width - 130;
-    select_select.y = app.screen.height - select_select.height / 2 - 120;
+    select_select.x = Play_pos + play_pad_x - select_select.width;
+    select_select.y = table_top_y + table_pad_y * 11 - select_select.height / 2;
     select_select.interactive = true;
     select_select.on("pointerdown", async () => {
+      dot_anim(table_top_y + table_pad_y * 11);
       over();
     });
-    function retry() {
+    select_select.alpha = 0.5;
+    async function retry() {
       currentKeyController?.abort();
       if (gameData.IsLoggedin) {
         gameData.CurrentSceneName = "game_scene";
       } else {
         gameData.CurrentSceneName = "register_scene";
       }
-
+      await closeScene(app, 3);
       resolve();
     }
-    function over() {
+    async function over() {
       currentKeyController?.abort();
       gameData.CurrentSceneName = "game_select";
+      await closeScene(app, 3);
       resolve();
     }
     app.stage.addChild(select_select);
     const selectDotAcc = new PIXI.Graphics();
     selectDotAcc.circle(0, 0, 8);
     selectDotAcc.x = app.screen.width - 110;
-    selectDotAcc.y = app.screen.height - 190;
+    selectDotAcc.y = table_top_y + table_pad_y * 10;
     selectDotAcc.fill(replaceHash(settings.colorTheme.colors.MainAccent));
     selectDotAcc.stroke({
       width: 4,
@@ -465,6 +472,9 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     }
     let currentKeyController: AbortController | null = null;
     let select = 0;
+    flashObj(app, select_replay);
+    flashObj(app, select_select);
+    openScene(app, 1);
     while (gameData.CurrentSceneName === "result_scene") {
       currentKeyController = new AbortController();
       try {
@@ -481,15 +491,24 @@ export function result_scene(app: PIXI.Application): Promise<void> {
         ) {
           playMiss(0.3);
           select = select == 0 ? 1 : 0;
+          select_replay.alpha = 0.5;
+          select_select.alpha = 0.5;
           switch (select) {
             case 0:
-              dot_anim(app.screen.height - 190);
+              dot_anim(table_top_y + table_pad_y * 10);
+              reaction_jump(
+                select_replay,
+                table_top_y + table_pad_y * 10 - select_replay.height / 2
+              );
+              select_replay.alpha = 1;
               break;
             case 1:
-              dot_anim(app.screen.height - 120);
-              break;
-            default:
-              dot_anim(app.screen.height - 190);
+              dot_anim(table_top_y + table_pad_y * 11);
+              select_select.alpha = 1;
+              reaction_jump(
+                select_select,
+                table_top_y + table_pad_y * 11 - select_select.height / 2
+              );
               break;
           }
         } else if (["Escape"].includes(keyCode.code)) {
@@ -500,9 +519,6 @@ export function result_scene(app: PIXI.Application): Promise<void> {
               retry();
               break;
             case 1:
-              over();
-              break;
-            default:
               over();
               break;
           }

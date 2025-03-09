@@ -106,7 +106,7 @@ export function score_graph(app: Application, container: Container) {
     }),
   });
   scoreAxisLabel.anchor.set(1, 0.5);
-  scoreAxisLabel.position.set(marginLeft - 20, marginTop / 2);
+  scoreAxisLabel.position.set(marginLeft - 2, marginTop / 2 - 10);
   graphContainer.addChild(scoreAxisLabel);
 
   const accAxisLabel = new Text({
@@ -118,7 +118,7 @@ export function score_graph(app: Application, container: Container) {
     }),
   });
   accAxisLabel.anchor.set(0, 0.5);
-  accAxisLabel.position.set(graphWidth - marginRight + 20, marginTop / 2);
+  accAxisLabel.position.set(graphWidth - marginRight + 4, marginTop / 2 - 10);
   graphContainer.addChild(accAxisLabel);
 
   const axes = new Graphics();

@@ -15,6 +15,7 @@ import {
   openScene,
   reaction,
   reaction_jump,
+  reaction_wig,
 } from "./014_mogura";
 
 const BUTTON_SPACING = 120;
@@ -478,8 +479,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       reaction(mask);
 
       // 選択されたボタンにreactionを適用
-      reaction(modeButtons[selected]);
-
+      reaction(modeButtons[selected], 1.05);
       // 選択されたボタンの色を変更するなど視覚的な区別をつける
       modeButtons.forEach((btn, index) => {
         if (index === selected) {

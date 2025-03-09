@@ -88,9 +88,8 @@ export function Keyboard(app: PIXI.Application) {
 
   const offsetY = 100;
 
-  // アニメーションの遅延計算用パラメータ
-  const baseDelay = 0.001; // 最初のキーの基本遅延
-  const maxDelay = 0.01; // 最後のキーの最大遅延
+  const baseDelay = 0.001;
+  const maxDelay = 0.01;
   const totalKeys = keybords.length;
 
   for (let i = 0; i < keybords.length; i++) {
@@ -99,21 +98,19 @@ export function Keyboard(app: PIXI.Application) {
     const keyContainer = new PIXI.Container();
     keyContainer.alpha = 0;
 
-    // メインキーとアクセントキーを別々に作成
     const mainKey = new PIXI.Graphics();
     mainKey
       .rect(0, 0, w * scale, h * scale)
       .fill(replaceHash(settings.colorTheme.colors.MainColor));
     mainKey.zIndex = 50;
-    mainKey.alpha = 0; // 最初は非表示
+    mainKey.alpha = 0;
     keyContainer.addChild(mainKey);
 
-    // アクセント色のキー
     const accentKey = new PIXI.Graphics();
     accentKey
       .rect(0, 0, w * scale, h * scale)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
-    accentKey.zIndex = 49; // メインキーの下に表示
+    accentKey.zIndex = 49;
     accentKey.alpha = 1;
     keyContainer.addChild(accentKey);
 
@@ -137,19 +134,13 @@ export function Keyboard(app: PIXI.Application) {
     container.zIndex = 50;
     container.addChild(keyContainer);
 
-    // 非線形な遅延を計算
-    // 指数関数を使用して、インデックスが増えるにつれて遅延が徐々に増加
-    const progress = i / totalKeys; // 0～1の進行度
+    const progress = i / totalKeys;
 
-    // より単純で効率的な計算方法
-    // 累積遅延を直接計算（二次曲線の効果を維持）
     const cumulativeDelay =
       baseDelay * i + (maxDelay - baseDelay) * (progress * progress) * i;
 
-    // gsapのタイムラインを作成
     const tl = gsap.timeline({ delay: cumulativeDelay });
 
-    // キー自体を表示
     tl.to(keyContainer, {
       duration: 0.5,
       y: finalY,
@@ -157,7 +148,6 @@ export function Keyboard(app: PIXI.Application) {
       ease: "power2.out",
     });
 
-    // 100ms後にアクセント色を消して通常の色を表示
     tl.to(
       accentKey,
       {
@@ -166,7 +156,7 @@ export function Keyboard(app: PIXI.Application) {
         ease: "power1.out",
       },
       "+=0.01"
-    ); // 100ms待ってから
+    );
 
     tl.to(
       mainKey,
@@ -176,7 +166,7 @@ export function Keyboard(app: PIXI.Application) {
         ease: "power1.out",
       },
       "<"
-    ); // 同時に通常キーを表示
+    );
   }
 }
 
@@ -223,26 +213,20 @@ export function light_key(app: PIXI.Application, index: number) {
 }
 const Acc_Key_Container = new PIXI.Container();
 export function update_Acc_key(app: PIXI.Application) {
-  // Remove the previous highlight container from the stage
   if (app.stage.children.includes(Acc_Key_Container)) {
     app.stage.removeChild(Acc_Key_Container);
   }
-  // Clear all children from the global container
   Acc_Key_Container.removeChildren();
 
-  // Iterate over each key index in gameData.acc_keys
   for (let i = 0; i < gameData.acc_keys.length; i++) {
     const keyData = keybords[gameData.acc_keys[i]];
     if (!keyData) {
-      // Skip if the key data is not available
       continue;
     }
     const [w, h, keyX, keyY] = keyData;
 
-    // Create a new container for each highlighted key
     const keyContainer = new PIXI.Container();
 
-    // Calculate the key position relative to the stage
     const keybord_pos = {
       x: app.screen.width / 2,
       y: app.screen.height - 320,
@@ -253,18 +237,14 @@ export function update_Acc_key(app: PIXI.Application) {
       keyY * scale - (keybord_size.height * scale) / 2 + keybord_pos.y;
     keyContainer.alpha = 1;
 
-    // Create the highlighted key graphic
     const lightKey = new PIXI.Graphics();
     lightKey
       .rect(0, 0, w * scale, h * scale)
       .fill(replaceHash(settings.colorTheme.colors.MainAccent));
 
-    // Add the graphic to the key container
     keyContainer.addChild(lightKey);
 
-    // Add the key container to the global highlight container
     Acc_Key_Container.addChild(keyContainer);
   }
-  // Add the global highlight container to the stage
   app.stage.addChild(Acc_Key_Container);
 }

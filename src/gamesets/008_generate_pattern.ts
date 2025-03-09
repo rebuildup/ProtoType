@@ -232,7 +232,7 @@ export function getRomanizedTextFromTendency(
   }
   function prefixMatches(out: string): boolean {
     if (out.length > currentInput.length) {
-      return currentInput === out.slice(0, currentInput.length);
+      return true;
     } else {
       return out === currentInput.slice(0, out.length);
     }

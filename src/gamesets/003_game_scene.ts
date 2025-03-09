@@ -114,15 +114,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     alphabet_current_text.x = win_pos.x - alphabet_current_text.width / 2;
     alphabet_current_text.y = win_pos.y - alphabet_current_text.height / 2 + 40;
     app.stage.addChild(alphabet_current_text);
-    /*
-    const text_mask = new PIXI.Graphics();
-    text_mask
-      .rect(0, 0, 860, 180)
-      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
-    text_mask.x = win_pos.x - text_mask.width / 2;
-    text_mask.y = win_pos.y - text_mask.height / 2;
-    app.stage.addChild(text_mask);
-*/
     const next_text = new PIXI.Text({
       text: "",
       style: {
@@ -216,10 +207,11 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       color: replaceHash(settings.colorTheme.colors.MainColor),
     });
     app.stage.addChild(progressDot);
-    await openScene(app, 2);
+
     if (keybord_flag) {
       Keyboard(app);
     }
+    await openScene(app, 2);
     const load_text = new PIXI.Text({
       text: "問題を取得中",
       style: {
@@ -346,12 +338,11 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       next_text.text = "";
       if (currentKeyController) {
         currentKeyController.abort();
-        currentKeyController = null; // 確実にnullに設定
+        currentKeyController = null;
       }
 
       gameData.EndTime = Date.now();
 
-      // スコア関連データを確実に設定
       if (gameData.total_hit_cnt > 0) {
         let tmp_kpm =
           ((gameData.total_hit_cnt - gameData.Miss) /
@@ -451,12 +442,14 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             const keyCode = await getLatestKey(currentKeyController.signal);
             if (keyCode.code === "Escape" && keyCode.shift == true) {
               transitionToResultScene();
+              flashObj(app, sentence_text);
               await closeScene(app, 3);
 
               resolve();
             }
             if (keyCode.code === "ControlLeft" && keyCode.shift == true) {
               transitionToResultScene();
+              flashObj(app, sentence_text);
               await closeScene(app, 3);
               resolve();
             } else if (keyCode.code === "Escape") {
@@ -517,6 +510,12 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                   );
                 }
                 if (gameData.GameMode == "exact") gameData.current_inputed = "";
+                alphabet_text.text = getRomanizedTextFromTendency(
+                  gameData.Conversion,
+                  gameData.Issues[gameData.current_Issue].romaji,
+                  gameData.current_inputed
+                );
+                alphabet_text.x = win_pos.x - alphabet_text.width / 2;
               } else {
                 playCollect();
                 if (gameData.GameMode != "focus") {
@@ -565,6 +564,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
               if (gameData.current_Issue >= gameData.Issues_num) {
                 transitionToResultScene();
+                flashObj(app, sentence_text);
                 await closeScene(app, 3);
                 resolve();
                 return;
@@ -576,6 +576,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               gameData.current_Issue + 1 >= gameData.Issues.length
             ) {
               transitionToResultScene();
+              flashObj(app, sentence_text);
               await closeScene(app, 3);
               resolve();
               return;
