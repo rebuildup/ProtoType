@@ -689,3 +689,32 @@ export function flashObj(app: PIXI.Application, Obj: PIXI.Text) {
     app.stage.removeChild(FlashMask);
   }, 100);
 }
+export function reaction(
+  obj: PIXI.Graphics | PIXI.Text,
+  ins_scale: number = 1.05
+) {
+  gsap.fromTo(
+    obj.scale,
+    { x: ins_scale, y: ins_scale },
+    {
+      x: 1,
+      y: 1,
+      duration: 1,
+      ease: CustomEase.create("custom", "M0,0 C0.2,1 0.3,1 1,1"),
+    }
+  );
+}
+export function reaction_jump(
+  obj: PIXI.Graphics | PIXI.Text,
+  absolute_y: number
+) {
+  gsap.fromTo(
+    obj,
+    { y: absolute_y - 4 },
+    {
+      y: absolute_y,
+      duration: 1,
+      ease: CustomEase.create("custom", "M0,0 C0.2,1 0.3,1 1,1"),
+    }
+  );
+}

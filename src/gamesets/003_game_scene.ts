@@ -57,14 +57,17 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       case "exact":
         keybord_flag = true;
         win_pos.y = app.screen.height / 2 - 210;
+        gameData.Issues_num = 15;
         break;
       case "long":
         keybord_flag = true;
         win_pos.y = app.screen.height / 2 - 210;
+        gameData.Issues_num = 30;
         break;
       case "number":
         keybord_flag = true;
         win_pos.y = app.screen.height / 2 - 210;
+        gameData.Issues_num = 15;
         break;
       default:
         console.log("gamemode nothing");
@@ -346,10 +349,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         currentKeyController = null; // 確実にnullに設定
       }
 
-      // EndTimeが未設定の場合に備えて設定する
-      if (!gameData.EndTime) {
-        gameData.EndTime = Date.now();
-      }
+      gameData.EndTime = Date.now();
 
       // スコア関連データを確実に設定
       if (gameData.total_hit_cnt > 0) {
@@ -582,8 +582,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             }
 
             if (
-              gameData.current_Issue + 1 >= gameData.Issues_num ||
-              gameData.current_Issue + 1 >= gameData.Issues.length
+              gameData.current_Issue + 2 >= gameData.Issues_num ||
+              gameData.current_Issue + 2 >= gameData.Issues.length
             ) {
               next_text.text = "";
             } else {

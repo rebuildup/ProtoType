@@ -9,7 +9,7 @@ import { replaceHash } from "./001_game_master";
 import { playCollect, playMiss } from "./012_soundplay";
 import { BG_grid } from "./018_grid";
 import { getLatestKey } from "./009_keyinput";
-import { closeScene, openScene } from "./014_mogura";
+import { closeScene, openScene, reaction, reaction_jump } from "./014_mogura";
 
 const BUTTON_SPACING = 120;
 const CIRCULAR_BUTTON_CENTER_OFFSET = 200;
@@ -207,18 +207,27 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       selectedIndex = 0;
       updateSelectDots(selectedIndex);
       currentKeyController?.abort();
+      reaction_jump(
+        recordBtn,
+        winCenter.y - recordBtn.height / 2 - BUTTON_SPACING
+      );
       transitionToRecord();
     });
     settingSelectBtn.on("pointerdown", () => {
       selectedIndex = 2;
       updateSelectDots(selectedIndex);
       currentKeyController?.abort();
+      reaction_jump(
+        settingSelectBtn,
+        winCenter.y - settingSelectBtn.height / 2 + BUTTON_SPACING
+      );
       transitionToSetting();
     });
     gameSelectBtn.on("pointerdown", () => {
       selectedIndex = 1;
       updateSelectDots(selectedIndex);
       currentKeyController?.abort();
+      reaction_jump(gameSelectBtn, winCenter.y - gameSelectBtn.height / 2);
       transitionToGameModeSelect();
     });
 
@@ -226,6 +235,17 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       const targetY = winCenter.y + (index - 1) * BUTTON_SPACING;
       animateSelectionDot(selectDotAcc, targetY, isDown ? 0 : 0.03, isDown);
       animateSelectionDot(selectDotMain, targetY, isDown ? 0.03 : 0, isDown);
+      switch (index) {
+        case 0:
+          reaction_jump(recordBtn);
+          break;
+        case 1:
+          reaction_jump(gameSelectBtn);
+          break;
+        case 2:
+          reaction_jump(settingSelectBtn);
+          break;
+      }
     };
 
     openScene(app, gameData.gameselect_open);
@@ -245,6 +265,17 @@ export async function game_select(app: PIXI.Application): Promise<void> {
           selectedIndex = (selectedIndex + 2) % 3;
           updateSelectDots(selectedIndex, false);
         } else if (["Enter", "Space"].includes(keyCode.code)) {
+          switch (selectedIndex) {
+            case 0:
+              reaction_jump(recordBtn);
+              break;
+            case 1:
+              reaction_jump(gameSelectBtn);
+              break;
+            case 2:
+              reaction_jump(settingSelectBtn);
+              break;
+          }
           currentKeyController.abort();
           if (selectedIndex === 0) {
             transitionToRecord();
@@ -264,7 +295,6 @@ export async function game_select(app: PIXI.Application): Promise<void> {
     }
   });
 }
-
 function game_mode_select(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
     app.stage.removeChildren();
@@ -337,26 +367,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       { alpha: 1, duration: 2, ease: "power3.out" }
     );
 
-    const moveDot = (selected: number) => {
-      const rotations = [
-        -Math.PI / 5,
-        -Math.PI / 10,
-        0,
-        Math.PI / 10,
-        Math.PI / 5,
-      ];
-      gsap.to(selectDotAcc, {
-        rotation: rotations[selected] || 0,
-        duration: 0.5,
-        ease: "power3.out",
-      });
-      gsap.to(exit_btn, {
-        rotation: rotations[selected] + Math.PI + Math.PI / 4 || 0,
-        duration: 0.5,
-        ease: "power3.out",
-      });
-      reaction(mask);
-    };
+    const modeButtons: PIXI.Text[] = [];
 
     const modes = [
       { label: "長文モード", mode: "long", angle: -Math.PI / 5 },
@@ -405,21 +416,56 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
         resolve();
       });
       app.stage.addChild(btn);
+
+      // ボタンを配列に追加
+      modeButtons.push(btn);
     });
 
-    function reaction(obj: PIXI.Graphics | PIXI.Text) {
-      gsap.fromTo(
-        obj.scale,
-        { x: 1.05, y: 1.05 },
-        {
-          x: 1,
-          y: 1,
-          duration: 1,
-          ease: CustomEase.create("custom", "M0,0 C0.2,1 0.3,1 1,1"),
+    const moveDot = (selected: number) => {
+      const rotations = [
+        -Math.PI / 5,
+        -Math.PI / 10,
+        0,
+        Math.PI / 10,
+        Math.PI / 5,
+      ];
+      gsap.to(selectDotAcc, {
+        rotation: rotations[selected] || 0,
+        duration: 0.5,
+        ease: "power3.out",
+      });
+      gsap.to(exit_btn, {
+        rotation: rotations[selected] + Math.PI + Math.PI / 4 || 0,
+        duration: 0.5,
+        ease: "power3.out",
+      });
+
+      // マスクのリアクション
+      reaction(mask);
+
+      // 選択されたボタンにreactionを適用
+      reaction(modeButtons[selected]);
+
+      // 選択されたボタンの色を変更するなど視覚的な区別をつける
+      modeButtons.forEach((btn, index) => {
+        if (index === selected) {
+          gsap.to(btn, {
+            alpha: 1,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        } else {
+          gsap.to(btn, {
+            alpha: 0.7,
+            duration: 0.3,
+            ease: "power2.out",
+          });
         }
-      );
-    }
+      });
+    };
+
     async function exit() {
+      reaction(mask);
       currentKeyController?.abort();
       gameData.CurrentSceneName = "game_select";
       gameData.gameselect_open = 1;
@@ -431,11 +477,16 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       await closeScene(app, 1);
       resolve();
     }
+
     exit_btn.on("pointerdown", async () => {
       exit();
     });
 
     openScene(app, 0);
+
+    // 初期選択状態を設定
+    moveDot(selectedModeIndex);
+
     while (gameData.CurrentSceneName === "game_mode_select_scene") {
       currentKeyController = new AbortController();
       try {

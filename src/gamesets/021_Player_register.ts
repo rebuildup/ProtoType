@@ -1,4 +1,8 @@
 import * as PIXI from "pixi.js";
+import gsap from "gsap";
+import { PixiPlugin } from "gsap/PixiPlugin";
+import { CustomEase } from "gsap/all";
+gsap.registerPlugin(PixiPlugin, CustomEase);
 import { gameData } from "./002_gameConfig";
 import { replaceHash } from "./001_game_master";
 import { settings } from "../SiteInterface";
@@ -9,7 +13,7 @@ import { PixiPlugin } from "gsap/PixiPlugin";
 PixiPlugin.registerPIXI(PIXI);
 */
 import { getLatestKey, isNomalKey, keyCodeToText } from "./009_keyinput";
-import { closeScene, openScene } from "./014_mogura";
+import { closeScene, openScene, reaction, reaction_jump } from "./014_mogura";
 
 export function Player_register(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
@@ -44,6 +48,16 @@ export function Player_register(app: PIXI.Application): Promise<void> {
     waku.x = app.screen.width / 2;
     waku.y = app.screen.height / 2;
     app.stage.addChild(waku);
+    gsap.fromTo(
+      waku.scale,
+      { x: 1.2, y: 1.2 },
+      {
+        x: 1,
+        y: 1,
+        duration: 1,
+        ease: CustomEase.create("custom", "M0,0 C0,0.2 0.3,1 1,1"),
+      }
+    );
 
     const title_text = new PIXI.Text({
       text: "プレイヤー記録名",
@@ -115,6 +129,8 @@ export function Player_register(app: PIXI.Application): Promise<void> {
       currentKeyController = new AbortController();
       try {
         const keyCode = await getLatestKey(currentKeyController.signal);
+        reaction(waku, 1.03);
+        reaction_jump(input_waku);
         if (keyCode.code === "Escape") {
           gameData.CurrentSceneName = "game_select";
           get_out();

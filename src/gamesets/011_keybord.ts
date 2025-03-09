@@ -87,7 +87,11 @@ export function Keyboard(app: PIXI.Application) {
   app.stage.addChild(container);
 
   const offsetY = 100;
-  const delayIncrement = 0.015;
+
+  // アニメーションの遅延計算用パラメータ
+  const baseDelay = 0.001; // 最初のキーの基本遅延
+  const maxDelay = 0.01; // 最後のキーの最大遅延
+  const totalKeys = keybords.length;
 
   for (let i = 0; i < keybords.length; i++) {
     const [w, h, keyX, keyY] = keybords[i];
@@ -95,21 +99,32 @@ export function Keyboard(app: PIXI.Application) {
     const keyContainer = new PIXI.Container();
     keyContainer.alpha = 0;
 
-    const baseKey = new PIXI.Graphics();
-    baseKey
+    // メインキーとアクセントキーを別々に作成
+    const mainKey = new PIXI.Graphics();
+    mainKey
       .rect(0, 0, w * scale, h * scale)
       .fill(replaceHash(settings.colorTheme.colors.MainColor));
-    baseKey.zIndex = 50;
-    keyContainer.addChild(baseKey);
+    mainKey.zIndex = 50;
+    mainKey.alpha = 0; // 最初は非表示
+    keyContainer.addChild(mainKey);
+
+    // アクセント色のキー
+    const accentKey = new PIXI.Graphics();
+    accentKey
+      .rect(0, 0, w * scale, h * scale)
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    accentKey.zIndex = 49; // メインキーの下に表示
+    accentKey.alpha = 1;
+    keyContainer.addChild(accentKey);
 
     if (i === 33 || i === 36) {
-      const accentKey = new PIXI.Graphics();
-      accentKey
+      const specialAccentKey = new PIXI.Graphics();
+      specialAccentKey
         .rect(1, 1, w * scale, h * scale)
         .fill(replaceHash(settings.colorTheme.colors.MainAccent));
-      accentKey.zIndex = 50;
-      accentKey.alpha = 0.5;
-      keyContainer.addChild(accentKey);
+      specialAccentKey.zIndex = 51;
+      specialAccentKey.alpha = 0.5;
+      keyContainer.addChild(specialAccentKey);
     }
 
     const finalX =
@@ -122,15 +137,49 @@ export function Keyboard(app: PIXI.Application) {
     container.zIndex = 50;
     container.addChild(keyContainer);
 
-    gsap.to(keyContainer, {
+    // 非線形な遅延を計算
+    // 指数関数を使用して、インデックスが増えるにつれて遅延が徐々に増加
+    const progress = i / totalKeys; // 0～1の進行度
+
+    // より単純で効率的な計算方法
+    // 累積遅延を直接計算（二次曲線の効果を維持）
+    const cumulativeDelay =
+      baseDelay * i + (maxDelay - baseDelay) * (progress * progress) * i;
+
+    // gsapのタイムラインを作成
+    const tl = gsap.timeline({ delay: cumulativeDelay });
+
+    // キー自体を表示
+    tl.to(keyContainer, {
       duration: 0.5,
       y: finalY,
       alpha: 1,
       ease: "power2.out",
-      delay: i * delayIncrement,
     });
+
+    // 100ms後にアクセント色を消して通常の色を表示
+    tl.to(
+      accentKey,
+      {
+        duration: 0.1,
+        alpha: 0,
+        ease: "power1.out",
+      },
+      "+=0.01"
+    ); // 100ms待ってから
+
+    tl.to(
+      mainKey,
+      {
+        duration: 0.2,
+        alpha: 1,
+        ease: "power1.out",
+      },
+      "<"
+    ); // 同時に通常キーを表示
   }
 }
+
 export function light_key(app: PIXI.Application, index: number) {
   const keyData = keybords[index];
   if (!keyData) {
