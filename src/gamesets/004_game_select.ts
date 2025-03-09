@@ -1,7 +1,8 @@
 import * as PIXI from "pixi.js";
 import gsap from "gsap";
 import { PixiPlugin } from "gsap/PixiPlugin";
-PixiPlugin.registerPIXI(PIXI);
+import { CustomEase } from "gsap/all";
+gsap.registerPlugin(PixiPlugin, CustomEase);
 import { gameData } from "./002_gameConfig";
 import { settings } from "../SiteInterface";
 import { replaceHash } from "./001_game_master";
@@ -284,6 +285,16 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     mask.y = winCenter.y;
     mask.x = winCenter.x - CIRCULAR_BUTTON_CENTER_OFFSET - 20;
     app.stage.addChild(mask);
+    gsap.fromTo(
+      mask.scale,
+      { x: 1.2, y: 1.2 },
+      {
+        x: 1,
+        y: 1,
+        duration: 1.2,
+        ease: CustomEase.create("custom", "M0,0 C0,0.2 0.3,1 1,1"),
+      }
+    );
 
     const exit_btn = new PIXI.Graphics();
     exit_btn.circle(0, 0, 60).fill({
@@ -344,6 +355,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
         duration: 0.5,
         ease: "power3.out",
       });
+      reaction(mask);
     };
 
     const modes = [
@@ -394,6 +406,19 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       });
       app.stage.addChild(btn);
     });
+
+    function reaction(obj: PIXI.Graphics | PIXI.Text) {
+      gsap.fromTo(
+        obj.scale,
+        { x: 1.05, y: 1.05 },
+        {
+          x: 1,
+          y: 1,
+          duration: 1,
+          ease: CustomEase.create("custom", "M0,0 C0.2,1 0.3,1 1,1"),
+        }
+      );
+    }
     async function exit() {
       currentKeyController?.abort();
       gameData.CurrentSceneName = "game_select";

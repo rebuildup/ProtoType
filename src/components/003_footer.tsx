@@ -1,4 +1,5 @@
 import React from "react";
+import "../styles/012_footer.css";
 const Footer: React.FC = () => {
   return (
     <div style={{ zIndex: 2 }}>
@@ -11,7 +12,7 @@ const Footer: React.FC = () => {
         yusuke-kim.com
       </a>
       <a
-        className="GithubLink"
+        className="GithubLink rotating-element"
         href="https://github.com/rebuildup"
         target="_blank"
         rel="noopener noreferrer"
@@ -44,7 +45,7 @@ const Footer: React.FC = () => {
         </svg>
       </a>
       <a
-        className="XLink"
+        className="XLink rotating-element"
         href="https://x.com/361do_sleep"
         target="_blank"
         rel="noopener noreferrer"

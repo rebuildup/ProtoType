@@ -23,7 +23,7 @@ import {
 
 import { BG_grid } from "./018_grid";
 
-import { closeScene, GM_start, openScene } from "./014_mogura";
+import { closeScene, flashObj, GM_start, openScene } from "./014_mogura";
 
 import { getRanking_Data } from "./010_APIget";
 
@@ -72,7 +72,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         break;
     }
 
-    const sentetce_text = new PIXI.Text({
+    const sentence_text = new PIXI.Text({
       text: "スペースキーでスタート",
       style: {
         fontFamily: gameData.FontFamily,
@@ -82,9 +82,9 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       },
     });
 
-    sentetce_text.x = win_pos.x - sentetce_text.width / 2;
-    sentetce_text.y = win_pos.y - sentetce_text.height / 2 - 2;
-    app.stage.addChild(sentetce_text);
+    sentence_text.x = win_pos.x - sentence_text.width / 2;
+    sentence_text.y = win_pos.y - sentence_text.height / 2 - 2;
+    app.stage.addChild(sentence_text);
     const alphabet_text = new PIXI.Text({
       text: "space to start",
       style: {
@@ -111,7 +111,15 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     alphabet_current_text.x = win_pos.x - alphabet_current_text.width / 2;
     alphabet_current_text.y = win_pos.y - alphabet_current_text.height / 2 + 40;
     app.stage.addChild(alphabet_current_text);
-
+    /*
+    const text_mask = new PIXI.Graphics();
+    text_mask
+      .rect(0, 0, 860, 180)
+      .fill(replaceHash(settings.colorTheme.colors.MainAccent));
+    text_mask.x = win_pos.x - text_mask.width / 2;
+    text_mask.y = win_pos.y - text_mask.height / 2;
+    app.stage.addChild(text_mask);
+*/
     const next_text = new PIXI.Text({
       text: "",
       style: {
@@ -195,8 +203,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       alpha: 1,
     });
     app.stage.addChild(progressLine);
-    const progressDot = new PIXI.Graphics();
 
+    const progressDot = new PIXI.Graphics();
     progressDot.circle(0, win_pos.y + 250, 8);
     progressDot.x = win_pos.x - (keybord_size.width * scale) / 2;
     progressDot.fill(replaceHash(settings.colorTheme.colors.MainBG));
@@ -328,6 +336,11 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       return 1000 / avgDelta;
     }
     function transitionToResultScene() {
+      sentence_text.text = "ゲームセット！";
+      sentence_text.x = win_pos.x - sentence_text.width / 2;
+      alphabet_current_text.text = "";
+      alphabet_text.text = "";
+      next_text.text = "";
       if (currentKeyController) {
         currentKeyController.abort();
         currentKeyController = null; // 確実にnullに設定
@@ -378,7 +391,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     gameData.MaxKPM = 0;
     gameData.missKeys = [];
     setTimeout(async () => {
-      //await makeIssues(3, 6, gameData.Issues_num);
       let issueIndexs = [14, 14];
       switch (gameData.GameMode) {
         case "nomal":
@@ -488,8 +500,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                   light_key_from_code(app, keyCode.code);
                 }
 
-                //console.log(keyCode);
-                //console.log(collectkeys);
                 gameData.Miss++;
                 gameData.combo_cnt = 0;
                 gameData.total_hit_cnt++;
@@ -553,32 +563,24 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               gameData.current_Issue++;
               gameData.current_inputed = "";
 
-              // 問題数の上限チェック
               if (gameData.current_Issue >= gameData.Issues_num) {
-                gameData.CurrentSceneName = "result_scene";
-                gameData.EndTime = Date.now();
-                currentKeyController?.abort();
+                transitionToResultScene();
                 await closeScene(app, 3);
                 resolve();
-                return; // ここで処理を終了するように追加
+                return;
               }
             }
 
-            // 次のテキスト表示部分も安全にチェック
             if (
               gameData.current_Issue >= gameData.Issues.length ||
               gameData.current_Issue + 1 >= gameData.Issues.length
             ) {
-              // 範囲外アクセスを防止
-              gameData.CurrentSceneName = "result_scene";
-              gameData.EndTime = Date.now();
-              currentKeyController?.abort();
+              transitionToResultScene();
               await closeScene(app, 3);
               resolve();
               return;
             }
 
-            // 安全な範囲チェックをしたうえでテキスト表示
             if (
               gameData.current_Issue + 1 >= gameData.Issues_num ||
               gameData.current_Issue + 1 >= gameData.Issues.length
@@ -588,10 +590,13 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               next_text.text = gameData.Issues[gameData.current_Issue + 1].text;
             }
 
-            // 現在の問題テキストも安全にチェック
             if (gameData.current_Issue < gameData.Issues.length) {
-              sentetce_text.text = gameData.Issues[gameData.current_Issue].text;
-              sentetce_text.x = win_pos.x - sentetce_text.width / 2;
+              sentence_text.text = gameData.Issues[gameData.current_Issue].text;
+              sentence_text.x = win_pos.x - sentence_text.width / 2;
+              if (gameData.current_inputed.length == 0) {
+                flashObj(app, sentence_text);
+                flashObj(app, alphabet_text);
+              }
             }
             alphabet_text.text = getRomanizedTextFromTendency(
               gameData.Conversion,
@@ -599,6 +604,10 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               gameData.current_inputed
             );
             alphabet_text.x = win_pos.x - alphabet_text.width / 2;
+            if (gameData.current_inputed.length == 0) {
+              flashObj(app, sentence_text);
+              flashObj(app, alphabet_text);
+            }
             alphabet_current_text.text = gameData.current_inputed;
             alphabet_current_text.x = win_pos.x - alphabet_text.width / 2;
             next_text.x = win_pos.x - next_text.width / 2;
@@ -656,6 +665,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               resolve();
             }
             if (keyCode.code === "Space") {
+              sentence_text.text = "";
+              alphabet_text.text = "";
               await GM_start(app);
               gameData.IsStarted = true;
               gameData.StartTime = Date.now();
@@ -670,8 +681,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 next_text.text =
                   gameData.Issues[gameData.current_Issue + 1].text;
               }
-              sentetce_text.text = gameData.Issues[gameData.current_Issue].text;
-              sentetce_text.x = win_pos.x - sentetce_text.width / 2;
+              sentence_text.text = gameData.Issues[gameData.current_Issue].text;
+              sentence_text.x = win_pos.x - sentence_text.width / 2;
 
               alphabet_text.text = getRomanizedTextFromTendency(
                 gameData.Conversion,
@@ -710,6 +721,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               score_text.text = "";
               score_text.x = win_pos.x - score_text.width / 2;
               frame_anim(9);
+              flashObj(app, sentence_text);
+              flashObj(app, alphabet_text);
               grid_anim(grid);
             }
           }

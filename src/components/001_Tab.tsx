@@ -7,18 +7,30 @@ interface TabProps {
 const Tab: React.FC<TabProps> = ({ onTabChange }) => {
   return (
     <div className="tab" style={{ zIndex: 2 }}>
-      <button style={{ zIndex: 1 }} onClick={() => onTabChange("Game")}>
+      <button
+        className="tab-Btn"
+        style={{ zIndex: 1 }}
+        onClick={() => onTabChange("Game")}
+      >
         ゲーム
       </button>
       {/*
       <br />
       <button onClick={() => onTabChange("PlayRecord")}>プレイ記録</button>*/}
       <br />
-      <button style={{ zIndex: 1 }} onClick={() => onTabChange("Ranking")}>
+      <button
+        className="tab-Btn"
+        style={{ zIndex: 1 }}
+        onClick={() => onTabChange("Ranking")}
+      >
         ランキング
       </button>
       <br />
-      <button style={{ zIndex: 1 }} onClick={() => onTabChange("Setting")}>
+      <button
+        className="tab-Btn"
+        style={{ zIndex: 1 }}
+        onClick={() => onTabChange("Setting")}
+      >
         サイト設定
       </button>
     </div>
