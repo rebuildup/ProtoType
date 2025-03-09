@@ -12,7 +12,13 @@ import { playMiss } from "./012_soundplay";
 
 import { score_graph } from "./013_graphs";
 
-import { closeScene, openScene } from "./014_mogura";
+import {
+  closeScene,
+  flashObj,
+  openScene,
+  reaction,
+  reaction_jump,
+} from "./014_mogura";
 import { BG_grid } from "./018_grid";
 
 const Select_dot_x = 1170;
@@ -52,6 +58,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
     let currentKeyController: AbortController | null = null;
 
     exit_btn.on("pointerdown", async () => {
+      reaction(exit_btn, 1.1);
       gameData.CurrentSceneName = "game_select";
       get_out();
     });
@@ -89,6 +96,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
     achieve_text.x = Select_dot_x + 20;
     achieve_text.y = screenCenter.y - achieve_text.height / 2 - 40;
     achieve_text.interactive = true;
+    achieve_text.alpha = 0.5;
     achieve_text.on("pointerdown", async () => {
       playMiss(0.3);
       isOpened_record = opened_record.achieve;
@@ -109,6 +117,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
     ranking_text.x = Select_dot_x + 20;
     ranking_text.y = screenCenter.y - ranking_text.height / 2 + 40;
     ranking_text.interactive = true;
+    ranking_text.alpha = 0.5;
     ranking_text.on("pointerdown", async () => {
       playMiss(0.3);
       isOpened_record = opened_record.ranking;
@@ -129,6 +138,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
     graph_text.x = Select_dot_x + 20;
     graph_text.y = screenCenter.y - graph_text.height / 2 + 120;
     graph_text.interactive = true;
+    graph_text.alpha = 0.5;
     graph_text.on("pointerdown", async () => {
       playMiss(0.3);
       isOpened_record = opened_record.graph;
@@ -174,21 +184,45 @@ export function record_scene(app: PIXI.Application): Promise<void> {
       resolve();
     }
     function dot_pos_update(select: number) {
+      play_record_text.alpha = 0.5;
+      achieve_text.alpha = 0.5;
+      ranking_text.alpha = 0.5;
+      graph_text.alpha = 0.5;
       switch (select) {
         case opened_record.play:
           dot_to(
             Select_dot_x,
             play_record_text.y + play_record_text.height / 2
           );
+          play_record_text.alpha = 1;
+          reaction_jump(
+            play_record_text,
+            screenCenter.y - play_record_text.height / 2 - 120
+          );
           break;
         case opened_record.achieve:
           dot_to(Select_dot_x, achieve_text.y + achieve_text.height / 2);
+          achieve_text.alpha = 1;
+          reaction_jump(
+            achieve_text,
+            screenCenter.y - achieve_text.height / 2 - 40
+          );
           break;
         case opened_record.ranking:
           dot_to(Select_dot_x, ranking_text.y + ranking_text.height / 2);
+          ranking_text.alpha = 1;
+          reaction_jump(
+            ranking_text,
+            screenCenter.y - ranking_text.height / 2 + 40
+          );
           break;
         case opened_record.graph:
           dot_to(Select_dot_x, graph_text.y + graph_text.height / 2);
+          graph_text.alpha = 1;
+          reaction_jump(
+            graph_text,
+            screenCenter.y - graph_text.height / 2 + 120
+          );
           break;
       }
     }
@@ -604,14 +638,21 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           updateScrollPosition();
         }
       });
+      flashObj(app, title_text);
     }
     update_open(isOpened_record);
-    await openScene(app, 3);
+    flashObj(app, play_record_text);
+    flashObj(app, achieve_text);
+    flashObj(app, ranking_text);
+    flashObj(app, graph_text);
+    openScene(app, 3);
     while (gameData.CurrentSceneName === "record_scene") {
       currentKeyController = new AbortController();
       try {
         const keyCode = await getLatestKey(currentKeyController.signal);
+
         if (keyCode.code === "Escape") {
+          reaction(exit_btn, 1.1);
           gameData.CurrentSceneName = "game_select";
           get_out();
         } else if (

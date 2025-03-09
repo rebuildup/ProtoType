@@ -13,15 +13,18 @@ import { keyLayouts } from "../components/012_KeyLayout";
 import { playMiss, playCollect } from "./012_soundplay";
 
 import { saveToCache, deleteCache } from "./020_cacheControl";
-import { closeScene, openScene } from "./014_mogura";
+import { closeScene, flashObj, openScene } from "./014_mogura";
 import { BG_grid } from "./018_grid";
-const Select_dot_x = 880;
+const Select_dot_x = 680;
 const option_select_values = { keylayoutset: 0, instantkey_n: 1 };
 const opened_options = { menu: -1, keylayout: 0, instantkey: 1 };
 
 export function setting_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
     app.stage.removeChildren();
+
+    const setting_title_x = app.screen.width / 2 - 300;
+    const setting_value_x = app.screen.width / 2 + 300;
     const screenCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
     BG_grid(app);
     let option_select = option_select_values.keylayoutset;
@@ -91,11 +94,25 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
-    keylayout_text.x = screenCenter.x - keylayout_text.width / 2;
+    keylayout_text.x = setting_title_x;
     keylayout_text.y = screenCenter.y - keylayout_text.height / 2 - 80;
     keylayout_text.interactive = true;
-
     app.stage.addChild(keylayout_text);
+
+    const keylayout_value = new PIXI.Text({
+      text: gameData.KeyLayout,
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 40,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    keylayout_value.x = setting_value_x - keylayout_value.width;
+    keylayout_value.y = screenCenter.y - keylayout_value.height / 2 - 80;
+    keylayout_value.interactive = true;
+    app.stage.addChild(keylayout_value);
+
     const instantkey_n_text = new PIXI.Text({
       text: "瞬間キー数",
       style: {
@@ -105,11 +122,24 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
         align: "center",
       },
     });
-    instantkey_n_text.x = screenCenter.x - instantkey_n_text.width / 2;
+    instantkey_n_text.x = setting_title_x;
     instantkey_n_text.y = screenCenter.y - instantkey_n_text.height / 2 + 80;
     instantkey_n_text.interactive = true;
-
     app.stage.addChild(instantkey_n_text);
+
+    const instantkey_n_value = new PIXI.Text({
+      text: gameData.instant_key_n,
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 40,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    instantkey_n_value.x = setting_value_x - instantkey_n_value.width;
+    instantkey_n_value.y = screenCenter.y - instantkey_n_value.height / 2 + 80;
+    instantkey_n_value.interactive = true;
+    app.stage.addChild(instantkey_n_value);
 
     const selectDotAcc = new PIXI.Graphics();
     selectDotAcc.circle(0, 0, 8);
@@ -208,6 +238,8 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
             layout_selection.on("pointerdown", async () => {
               playMiss(0.3);
               gameData.KeyLayout = keyLayouts[i].name;
+              keylayout_value.text = gameData.KeyLayout;
+              keylayout_value.x = setting_value_x - keylayout_value.width;
               isOpened_option = opened_options.menu;
               update_open(isOpened_option);
             });
@@ -247,6 +279,8 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
           instant_selection.on("pointerdown", async () => {
             playCollect();
             gameData.instant_key_n = current_select;
+            instantkey_n_value.text = gameData.instant_key_n;
+            instantkey_n_value.x = setting_value_x - instantkey_n_value.width;
             isOpened_option = opened_options.menu;
             update_open(isOpened_option);
           });
@@ -311,6 +345,15 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       dot_pos_update(option_select);
       update_open(isOpened_option, current_select);
     });
+    keylayout_value.on("pointerdown", async () => {
+      playMiss(0.3);
+      isOpened_option = opened_options.keylayout;
+      current_select = keyLayouts.findIndex(
+        (layout) => layout.name === gameData.KeyLayout
+      );
+      dot_pos_update(option_select);
+      update_open(isOpened_option, current_select);
+    });
     instantkey_n_text.on("pointerdown", async () => {
       playMiss(0.3);
       isOpened_option = opened_options.instantkey;
@@ -318,6 +361,17 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       dot_pos_update(option_select);
       update_open(isOpened_option, current_select);
     });
+    instantkey_n_value.on("pointerdown", async () => {
+      playMiss(0.3);
+      isOpened_option = opened_options.instantkey;
+      current_select = gameData.instant_key_n;
+      dot_pos_update(option_select);
+      update_open(isOpened_option, current_select);
+    });
+    flashObj(app, keylayout_text);
+    flashObj(app, keylayout_value);
+    flashObj(app, instantkey_n_text);
+    flashObj(app, instantkey_n_value);
     openScene(app, 2);
     while (gameData.CurrentSceneName === "setting_scene") {
       currentKeyController = new AbortController();
@@ -353,10 +407,10 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
               update_open(isOpened_option, current_select);
               break;
             case opened_options.instantkey:
-              if (current_select >= 100) {
-                current_select = 2;
+              if (current_select <= 10) {
+                current_select = 100;
               } else {
-                current_select++;
+                current_select--;
               }
               update_open(isOpened_option, current_select);
               break;
@@ -383,10 +437,10 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
               update_open(isOpened_option, current_select);
               break;
             case opened_options.instantkey:
-              if (current_select <= 2) {
-                current_select = 100;
+              if (current_select >= 100) {
+                current_select = 10;
               } else {
-                current_select--;
+                current_select++;
               }
               update_open(isOpened_option, current_select);
               break;
@@ -409,11 +463,15 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
             update_open(isOpened_option, current_select);
           } else if (isOpened_option == opened_options.keylayout) {
             gameData.KeyLayout = keyLayouts[current_select].name;
+            keylayout_value.text = gameData.KeyLayout;
+            keylayout_value.x = setting_value_x - keylayout_value.width;
             saveToCache("keylayout_GM", gameData.KeyLayout);
             isOpened_option = opened_options.menu;
             update_open(isOpened_option);
           } else if (isOpened_option == opened_options.instantkey) {
             gameData.instant_key_n = current_select;
+            instantkey_n_value.text = String(gameData.instant_key_n);
+            instantkey_n_value.x = setting_value_x - instantkey_n_value.width;
             saveToCache("instant_key_GM", gameData.instant_key_n);
             isOpened_option = opened_options.menu;
             update_open(isOpened_option);

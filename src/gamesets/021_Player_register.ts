@@ -13,7 +13,13 @@ import { PixiPlugin } from "gsap/PixiPlugin";
 PixiPlugin.registerPIXI(PIXI);
 */
 import { getLatestKey, isNomalKey, keyCodeToText } from "./009_keyinput";
-import { closeScene, openScene, reaction, reaction_jump } from "./014_mogura";
+import {
+  closeScene,
+  flashObj,
+  openScene,
+  reaction,
+  reaction_jump,
+} from "./014_mogura";
 
 export function Player_register(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
@@ -36,12 +42,13 @@ export function Player_register(app: PIXI.Application): Promise<void> {
     let currentKeyController: AbortController | null = null;
 
     enter_text.on("pointerdown", async () => {
+      reaction_jump(enter_text, screenCenter.y - enter_text.height / 2 + 100);
       gameData.CurrentSceneName = "game_scene";
       get_out();
     });
     app.stage.addChild(enter_text);
     const waku = new PIXI.Graphics();
-    waku.circle(0, 0, 400).stroke({
+    waku.circle(0, 0, 480).stroke({
       width: 4,
       color: replaceHash(settings.colorTheme.colors.MainAccent),
     });
@@ -74,12 +81,12 @@ export function Player_register(app: PIXI.Application): Promise<void> {
     app.stage.addChild(title_text);
 
     const input_waku = new PIXI.Graphics();
-    input_waku.roundRect(0, 0, 480, 80, 50).stroke({
+    input_waku.roundRect(-240, -40, 480, 80, 50).stroke({
       width: 4,
       color: replaceHash(settings.colorTheme.colors.MainAccent),
     });
-    input_waku.x = screenCenter.x - input_waku.width / 2;
-    input_waku.y = screenCenter.y - input_waku.height / 2;
+    input_waku.x = screenCenter.x;
+    input_waku.y = screenCenter.y;
     app.stage.addChild(input_waku);
 
     const player_name_text = new PIXI.Text({
@@ -121,21 +128,24 @@ export function Player_register(app: PIXI.Application): Promise<void> {
     exit_btn.interactive = true;
     app.stage.addChild(exit_btn);
     exit_btn.on("pointerdown", async () => {
+      reaction(exit_btn);
       gameData.CurrentSceneName = "game_select";
       get_out();
     });
+    flashObj(app, title_text);
+    flashObj(app, enter_text);
     openScene(app, 1);
     while (gameData.CurrentSceneName === "register_scene") {
       currentKeyController = new AbortController();
       try {
         const keyCode = await getLatestKey(currentKeyController.signal);
         reaction(waku, 1.03);
-        reaction_jump(input_waku);
+        reaction(input_waku, 1.01);
         if (keyCode.code === "Escape") {
+          reaction(exit_btn);
           gameData.CurrentSceneName = "game_select";
           get_out();
         } else if (keyCode.code === "Backspace") {
-          console.log("baa");
           if (player_name.length > 0) player_name = player_name.slice(0, -1);
           if (player_name.length == 0) {
             player_name_text.text = gameData.current_Player_name;
@@ -151,6 +161,10 @@ export function Player_register(app: PIXI.Application): Promise<void> {
             player_name_text.x = screenCenter.x - player_name_text.width / 2;
           }
         } else if (keyCode.code === "Enter") {
+          reaction_jump(
+            enter_text,
+            screenCenter.y - enter_text.height / 2 + 100
+          );
           gameData.CurrentSceneName = "game_scene";
           if (player_name.length != 0) {
             gameData.current_Player_name = player_name;

@@ -9,7 +9,13 @@ import { replaceHash } from "./001_game_master";
 import { playCollect, playMiss } from "./012_soundplay";
 import { BG_grid } from "./018_grid";
 import { getLatestKey } from "./009_keyinput";
-import { closeScene, openScene, reaction, reaction_jump } from "./014_mogura";
+import {
+  closeScene,
+  flashObj,
+  openScene,
+  reaction,
+  reaction_jump,
+} from "./014_mogura";
 
 const BUTTON_SPACING = 120;
 const CIRCULAR_BUTTON_CENTER_OFFSET = 200;
@@ -115,6 +121,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       winCenter.y - gameSelectBtn.height / 2
     );
     app.stage.addChild(gameSelectBtn);
+    gameSelectBtn.alpha = 1;
 
     const settingSelectBtn = createButton("ゲーム設定");
     settingSelectBtn.position.set(
@@ -122,6 +129,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       winCenter.y - settingSelectBtn.height / 2 + BUTTON_SPACING
     );
     app.stage.addChild(settingSelectBtn);
+    settingSelectBtn.alpha = 0.6;
 
     const recordBtn = createButton("プレイ記録");
     recordBtn.position.set(
@@ -129,6 +137,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       winCenter.y - recordBtn.height / 2 - BUTTON_SPACING
     );
     app.stage.addChild(recordBtn);
+    recordBtn.alpha = 0.6;
 
     const selectDotAcc = new PIXI.Graphics();
     selectDotAcc.circle(0, 0, 8);
@@ -235,19 +244,34 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       const targetY = winCenter.y + (index - 1) * BUTTON_SPACING;
       animateSelectionDot(selectDotAcc, targetY, isDown ? 0 : 0.03, isDown);
       animateSelectionDot(selectDotMain, targetY, isDown ? 0.03 : 0, isDown);
+      recordBtn.alpha = 0.6;
+      gameSelectBtn.alpha = 0.6;
+      settingSelectBtn.alpha = 0.6;
       switch (index) {
         case 0:
-          reaction_jump(recordBtn);
+          recordBtn.alpha = 1;
+          reaction_jump(
+            recordBtn,
+            winCenter.y - recordBtn.height / 2 - BUTTON_SPACING
+          );
+
           break;
         case 1:
-          reaction_jump(gameSelectBtn);
+          gameSelectBtn.alpha = 1;
+          reaction_jump(gameSelectBtn, winCenter.y - gameSelectBtn.height / 2);
           break;
         case 2:
-          reaction_jump(settingSelectBtn);
+          settingSelectBtn.alpha = 1;
+          reaction_jump(
+            settingSelectBtn,
+            winCenter.y - settingSelectBtn.height / 2 + BUTTON_SPACING
+          );
           break;
       }
     };
-
+    flashObj(app, recordBtn);
+    flashObj(app, gameSelectBtn);
+    flashObj(app, settingSelectBtn);
     openScene(app, gameData.gameselect_open);
 
     while (gameData.CurrentSceneName === "game_select") {
@@ -267,13 +291,22 @@ export async function game_select(app: PIXI.Application): Promise<void> {
         } else if (["Enter", "Space"].includes(keyCode.code)) {
           switch (selectedIndex) {
             case 0:
-              reaction_jump(recordBtn);
+              reaction_jump(
+                recordBtn,
+                winCenter.y - recordBtn.height / 2 - BUTTON_SPACING
+              );
               break;
             case 1:
-              reaction_jump(gameSelectBtn);
+              reaction_jump(
+                gameSelectBtn,
+                winCenter.y - gameSelectBtn.height / 2
+              );
               break;
             case 2:
-              reaction_jump(settingSelectBtn);
+              reaction_jump(
+                settingSelectBtn,
+                winCenter.y - settingSelectBtn.height / 2 + BUTTON_SPACING
+              );
               break;
           }
           currentKeyController.abort();
@@ -386,6 +419,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
         item.angle
       );
       btn.position.set(pos.x, pos.y);
+      flashObj(app, btn);
       btn.on("pointerdown", async () => {
         switch (item.label) {
           case "長文モード":
