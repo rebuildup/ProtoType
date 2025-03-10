@@ -1,21 +1,59 @@
+export interface ConversionTendency {
+  key: string;
+  tendency: string;
+}
+
+export type ConversionTendencies = ConversionTendency[];
+
+export type ConversionFlag = {
+  type: "direct" | "keyConfig";
+  configKey?: string;
+  origin?: string;
+  consumed?: number;
+};
+
+export type NextKeyInfo = {
+  letter: string;
+  flag: ConversionFlag;
+};
+
+export interface KeyConfig {
+  key: string;
+  origins: string[];
+}
+
+export type KeyConfigs = Array<KeyConfig>;
+
+// ヘルパー関数
+function isHiragana(char: string): boolean {
+  const code = char.charCodeAt(0);
+  return code >= 0x3041 && code <= 0x3096;
+}
+
+function isConsonant(char: string): boolean {
+  return !"aiueoy".includes(char.toLowerCase());
+}
+
+// 入力予測エンジン
 export function getNextKeysOptimized(
   readingText: string,
   currentInput: string
 ): NextKeyInfo[] {
+  // If the conversion is complete, return an empty array
+  if (currentInput === readingTextToFullRomaji(readingText)) {
+    return [];
+  }
+
   const cache = new Map<string, NextKeyInfo[]>();
+  // Sort KEY_CONFIGS by key length descending to prioritize longer matches
+  const sortedKeyConfigs = KEY_CONFIGS.slice().sort(
+    (a, b) => b.key.length - a.key.length
+  );
 
-  function isHiragana(char: string): boolean {
-    const code = char.charCodeAt(0);
-    return code >= 0x3041 && code <= 0x3096;
-  }
-
-  function isConsonant(char: string): boolean {
-    return !"aiueo".includes(char.toLowerCase());
-  }
-
+  // Helper: Get possible doubling candidates for small "っ"
   function getDoublingCandidates(syllableIndex: number): string[] {
     const letters = new Set<string>();
-    for (const config of KEY_CONFIGS) {
+    for (const config of sortedKeyConfigs) {
       if (readingText.startsWith(config.key, syllableIndex)) {
         for (const origin of config.origins) {
           if (origin.length > 0 && isConsonant(origin.charAt(0))) {
@@ -32,6 +70,7 @@ export function getNextKeysOptimized(
     if (cache.has(cacheKey)) return cache.get(cacheKey)!;
     let results: NextKeyInfo[] = [];
 
+    // Base-case: if we've processed the entire readingText, return empty result.
     if (index >= readingText.length) {
       cache.set(cacheKey, results);
       return results;
@@ -39,92 +78,74 @@ export function getNextKeysOptimized(
 
     const currentChar = readingText[index];
 
+    // For non-hiragana characters, try direct matching
     if (!isHiragana(currentChar)) {
-      const candidate = currentChar;
       const remainingInput = currentInput.substring(matched);
-      if (remainingInput.startsWith(candidate)) {
-        const rec = nextLetters(
-          index + candidate.length,
-          matched + candidate.length
+      if (remainingInput.startsWith(currentChar)) {
+        results.push(
+          ...nextLetters(
+            index + currentChar.length,
+            matched + currentChar.length
+          )
         );
-        results.push(...rec);
       } else {
         results.push({
-          letter: candidate,
+          letter: currentChar,
           flag: {
             type: "direct",
-            consumed: candidate.length,
-          } as ConversionFlag,
+            consumed: currentChar.length,
+          },
         });
       }
       cache.set(cacheKey, results);
       return results;
     }
 
+    // Handle small "っ" (sokuon) for doubling consonants
     if (currentChar === "っ") {
-      const tsuConfig = KEY_CONFIGS.find((config) => config.key === "っ");
-      if (tsuConfig) {
-        const currentInputRemaining = currentInput.substring(matched);
-        const possibleNextLetters = new Set<string>();
-        let hasExactMatch = false;
-
-        for (const origin of tsuConfig.origins) {
-          if (currentInputRemaining === origin) {
-            const rec = nextLetters(index + 1, matched + origin.length);
-            results.push(...rec);
-            hasExactMatch = true;
-          } else if (origin.startsWith(currentInputRemaining)) {
-            const nextChar = origin.charAt(currentInputRemaining.length);
-            possibleNextLetters.add(nextChar);
-          }
-        }
-
-        if (!hasExactMatch) {
-          const doublingCandidates = getDoublingCandidates(index + 1);
-          if (currentInputRemaining === "") {
-            doublingCandidates.forEach((c) => possibleNextLetters.add(c));
-          } else {
-            const firstChar = currentInputRemaining[0];
-            if (doublingCandidates.includes(firstChar)) {
-              const rec = nextLetters(index + 1, matched + 1);
-              results.push(...rec);
-            }
-          }
-          const fixedAlternatives = ["ltu", "xtu", "ltsu", "xtsu"];
-          const rawFixedCandidates = Array.from(
-            new Set(fixedAlternatives.map((s) => s.charAt(0)))
-          );
-          if (currentInputRemaining) {
-            const firstChar = currentInputRemaining[0];
-            if (rawFixedCandidates.includes(firstChar)) {
-              for (const alt of fixedAlternatives) {
-                if (currentInputRemaining.startsWith(alt)) {
-                  const rec = nextLetters(index + 1, matched + alt.length);
-                  results.push(...rec);
-                } else if (alt.startsWith(currentInputRemaining)) {
-                  const nextChar = alt.charAt(currentInputRemaining.length);
-                  possibleNextLetters.add(nextChar);
-                }
-              }
-            }
-          }
-        }
-
-        Array.from(possibleNextLetters).forEach((letter) => {
-          results.push({
-            letter,
-            flag: {
-              type: "direct",
-              consumed: currentInput.substring(matched).length + 1,
-            } as ConversionFlag,
-          });
-        });
+      const tsuConfig = sortedKeyConfigs.find((config) => config.key === "っ");
+      if (!tsuConfig) {
+        cache.set(cacheKey, results);
+        return results;
       }
+      const currentInputRemaining = currentInput.substring(matched);
+      const fixedAlternatives = ["ltu", "xtu", "ltsu", "xtsu"];
+      let possibleResults: NextKeyInfo[] = [];
+      const doublingCandidates = getDoublingCandidates(index + 1);
 
-      cache.set(cacheKey, results);
-      return results;
+      if (currentInputRemaining) {
+        const firstChar = currentInputRemaining.charAt(0);
+        // If the input starts with one of the doubling candidates, try consuming one letter
+        if (doublingCandidates.includes(firstChar)) {
+          possibleResults.push(...nextLetters(index + 1, matched + 1));
+        }
+        // Also check if input matches any fixed alternative
+        for (const alt of fixedAlternatives) {
+          if (currentInputRemaining.startsWith(alt)) {
+            possibleResults.push(
+              ...nextLetters(index + 1, matched + alt.length)
+            );
+          }
+        }
+      } else {
+        // No input remaining: try both possibilities
+        possibleResults.push(...nextLetters(index + 1, matched));
+        for (const alt of fixedAlternatives) {
+          possibleResults.push(...nextLetters(index + 1, matched + alt.length));
+        }
+      }
+      // If no branch produced a result, instead of returning candidate hints, propagate completion
+      if (possibleResults.length === 0) {
+        cache.set(cacheKey, []);
+        return [];
+      } else {
+        results.push(...possibleResults);
+        cache.set(cacheKey, results);
+        return results;
+      }
     }
 
+    // Handle "ん" (n) with context-dependent conversion
     if (currentChar === "ん") {
       const remainingInput = currentInput.substring(matched);
       if (index === readingText.length - 1) {
@@ -135,58 +156,55 @@ export function getNextKeysOptimized(
           const consumed = remainingInput.startsWith("n") ? 1 : 0;
           results.push({
             letter: "n",
-            flag: { type: "direct", consumed } as ConversionFlag,
+            flag: { type: "direct", consumed },
           });
           cache.set(cacheKey, results);
           return results;
         }
       } else {
         if (remainingInput.startsWith("nn")) {
-          return nextLetters(index + 1, matched + 2);
+          const rec = nextLetters(index + 1, matched + 2);
+          cache.set(cacheKey, rec);
+          return rec;
         } else {
-          const branchWithNConsumed = nextLetters(index + 1, matched + 1);
-          if (branchWithNConsumed.length === 0) {
-            cache.set(cacheKey, []);
-            return [];
+          const branch = nextLetters(index + 1, matched + 1);
+          if (branch.length > 0) {
+            results.push({
+              letter: "n",
+              flag: { type: "direct", consumed: 1 },
+            });
+            results.push(...branch);
           }
-          let candidates: NextKeyInfo[] = [];
-          candidates.push({
-            letter: "n",
-            flag: { type: "direct", consumed: 1 } as ConversionFlag,
-          });
-          candidates.push(...branchWithNConsumed);
-          cache.set(cacheKey, candidates);
-          return candidates;
+          cache.set(cacheKey, results);
+          return results;
         }
       }
     }
 
-    for (const config of KEY_CONFIGS) {
+    // Process other hiragana characters using sorted KEY_CONFIGS in order
+    for (const config of sortedKeyConfigs) {
       if (readingText.startsWith(config.key, index)) {
         const newIndex = index + config.key.length;
         for (const origin of config.origins) {
           const remaining = currentInput.substring(matched);
           if (remaining.length > origin.length) {
-            if (origin === remaining.substring(0, origin.length)) {
-              const rec = nextLetters(newIndex, matched + origin.length);
-              results.push(...rec);
+            if (remaining.startsWith(origin)) {
+              results.push(...nextLetters(newIndex, matched + origin.length));
             }
           } else {
             if (origin.startsWith(remaining)) {
               if (origin.length > remaining.length) {
-                const nextChar = origin.charAt(remaining.length);
                 results.push({
-                  letter: nextChar,
+                  letter: origin.charAt(remaining.length),
                   flag: {
                     type: "keyConfig",
                     configKey: config.key,
                     origin: origin,
                     consumed: remaining.length + 1,
-                  } as ConversionFlag,
+                  },
                 });
               } else {
-                const rec = nextLetters(newIndex, matched + origin.length);
-                results.push(...rec);
+                results.push(...nextLetters(newIndex, matched + origin.length));
               }
             }
           }
@@ -200,51 +218,24 @@ export function getNextKeysOptimized(
   return nextLetters(0, 0);
 }
 
-export interface ConversionTendency {
-  key: string;
-  tendency: string;
-}
-export type ConversionTendencies = ConversionTendency[];
-export type ConversionFlag = {
-  type: "direct" | "keyConfig";
-  configKey?: string;
-  origin?: string;
-  consumed?: number;
-};
-export type NextKeyInfo = {
-  letter: string;
-  flag: ConversionFlag;
-};
-
 export function getRomanizedTextFromTendency(
   tendencies: ConversionTendencies,
   readingText: string,
   currentInput: string
 ): string {
-  function isHiragana(char: string): boolean {
-    const code = char.charCodeAt(0);
-    return code >= 0x3041 && code <= 0x3096;
-  }
-  function isNextNaRow(text: string, i: number): boolean {
-    if (i + 1 >= text.length) return false;
-    const next = text[i + 1];
-    return ["な", "に", "ぬ", "ね", "の"].includes(next);
-  }
+  // Check if the candidate output is consistent with the current input
   function prefixMatches(out: string): boolean {
-    if (out.length > currentInput.length) {
-      return true;
+    if (out.length <= currentInput.length) {
+      return currentInput.slice(0, out.length) === out;
     } else {
-      return out === currentInput.slice(0, out.length);
+      return out.slice(0, currentInput.length) === currentInput;
     }
-  }
-  function isConsonant(char: string): boolean {
-    return !"aiueoy".includes(char.toLowerCase());
   }
 
   type Candidate = { out: string; nonPreferred: number };
-
   const results: Candidate[] = [];
 
+  // Depth-first search to build candidate conversion string
   function dfs(
     i: number,
     dup: boolean,
@@ -258,16 +249,22 @@ export function getRomanizedTextFromTendency(
     }
     const ch = readingText[i];
 
+    // Directly append non-hiragana characters
     if (!isHiragana(ch)) {
       dfs(i + 1, false, out + ch, nonPreferred);
       return;
     }
 
+    // Handle small "っ" (sokuon)
     if (ch === "っ") {
       const nextIndex = i + 1;
-      const doublingCandidates = (function () {
+      // Get doubling candidates from next syllable using sorted KEY_CONFIGS
+      const doublingCandidates = (() => {
         const letters = new Set<string>();
-        for (const config of KEY_CONFIGS) {
+        const sortedKeyConfigs = KEY_CONFIGS.slice().sort(
+          (a, b) => b.key.length - a.key.length
+        );
+        for (const config of sortedKeyConfigs) {
           if (readingText.startsWith(config.key, nextIndex)) {
             for (const origin of config.origins) {
               if (origin.length > 0 && isConsonant(origin.charAt(0))) {
@@ -279,23 +276,18 @@ export function getRomanizedTextFromTendency(
         return Array.from(letters);
       })();
       const fixedAlternatives = ["ltu", "xtu", "ltsu", "xtsu"];
-      const rawFixedCandidates = Array.from(
-        new Set(fixedAlternatives.map((s) => s.charAt(0)))
-      );
-      const userCandidate = currentInput.charAt(out.length) || "";
-      if (userCandidate) {
-        if (doublingCandidates.includes(userCandidate)) {
+      const currentCharInput = currentInput.charAt(out.length) || "";
+      if (currentCharInput) {
+        if (doublingCandidates.includes(currentCharInput)) {
           dfs(nextIndex, true, out, nonPreferred);
-        } else if (rawFixedCandidates.includes(userCandidate)) {
-          for (const alt of fixedAlternatives) {
-            if (alt.charAt(0) === userCandidate) {
-              dfs(nextIndex, false, out + alt, nonPreferred);
-            }
+        }
+        for (const alt of fixedAlternatives) {
+          if (currentInput.slice(out.length).startsWith(alt)) {
+            dfs(nextIndex, false, out + alt, nonPreferred);
           }
-        } else {
-          return;
         }
       } else {
+        // When there's no user input yet, try both possibilities
         dfs(nextIndex, true, out, nonPreferred);
         for (const alt of fixedAlternatives) {
           dfs(nextIndex, false, out + alt, nonPreferred);
@@ -304,33 +296,35 @@ export function getRomanizedTextFromTendency(
       return;
     }
 
+    // Handle "ん" (n)
     if (ch === "ん") {
-      let candidates: string[];
-      if (i === readingText.length - 1 || isNextNaRow(readingText, i)) {
-        candidates = ["nn"];
-      } else {
-        candidates = ["n", "nn"];
-      }
+      const candidates =
+        i === readingText.length - 1 ||
+        ["な", "に", "ぬ", "ね", "の"].includes(readingText[i + 1])
+          ? ["nn"]
+          : ["n", "nn"];
       for (const cand of candidates) {
         dfs(i + 1, false, out + cand, nonPreferred);
       }
       return;
     }
 
-    for (const config of KEY_CONFIGS) {
+    // Process other hiragana characters using sorted KEY_CONFIGS
+    const sortedKeyConfigs = KEY_CONFIGS.slice().sort(
+      (a, b) => b.key.length - a.key.length
+    );
+    for (const config of sortedKeyConfigs) {
       if (readingText.startsWith(config.key, i)) {
+        const newIndex = i + config.key.length;
         const tendencyEntry = tendencies.find((t) => t.key === config.key);
-        let candidateOrigins: string[];
-        if (tendencyEntry) {
-          candidateOrigins = [tendencyEntry.tendency];
-          for (const origin of config.origins) {
-            if (origin !== tendencyEntry.tendency) {
-              candidateOrigins.push(origin);
-            }
-          }
-        } else {
-          candidateOrigins = config.origins;
-        }
+        const candidateOrigins = tendencyEntry
+          ? [
+              tendencyEntry.tendency,
+              ...config.origins.filter(
+                (origin) => origin !== tendencyEntry.tendency
+              ),
+            ]
+          : config.origins;
         for (const origin of candidateOrigins) {
           const additionalPenalty =
             tendencyEntry && origin === tendencyEntry.tendency ? 0 : 1;
@@ -338,12 +332,7 @@ export function getRomanizedTextFromTendency(
           if (dup && conv.length > 0) {
             conv = conv.charAt(0) + conv;
           }
-          dfs(
-            i + config.key.length,
-            false,
-            out + conv,
-            nonPreferred + additionalPenalty
-          );
+          dfs(newIndex, false, out + conv, nonPreferred + additionalPenalty);
         }
       }
     }
@@ -361,192 +350,86 @@ export function getRomanizedTextFromTendency(
     });
     return results[0].out;
   } else {
-    // 結果がない場合はKEY_CONFIGSを使って基本的なローマ字表現を生成
     return readingTextToBasicRomaji(readingText);
   }
 }
+
 function readingTextToBasicRomaji(readingText: string): string {
   let result = "";
   let i = 0;
+  // Use sorted KEY_CONFIGS by key length descending for proper matching
+  const sortedKeyConfigs = KEY_CONFIGS.slice().sort(
+    (a, b) => b.key.length - a.key.length
+  );
 
   while (i < readingText.length) {
     let found = false;
-
-    // 2文字以上の組み合わせを先にチェック
-    for (let len = 3; len > 0; len--) {
-      if (i + len <= readingText.length) {
-        const key = readingText.substring(i, i + len);
-        const config = KEY_CONFIGS.find((c) => c.key === key);
-
-        if (config) {
-          // 見つかった場合は最初のorigin（ローマ字表現）を使用
-          result += config.origins[0];
-          i += len;
-          found = true;
-          break;
-        }
+    // Try matching up to 3 characters (adjust as needed)
+    for (let len = Math.min(3, readingText.length - i); len > 0; len--) {
+      const key = readingText.substring(i, i + len);
+      const config = sortedKeyConfigs.find((c) => c.key === key);
+      if (config) {
+        result += config.origins[0];
+        i += len;
+        found = true;
+        break;
       }
     }
-
-    // 見つからなかった場合は1文字進める
     if (!found) {
       result += readingText[i];
       i++;
     }
   }
+  return result;
+}
+// Helper: Convert readingText to full romaji (with proper doubling for "っ")
+function readingTextToFullRomaji(readingText: string): string {
+  let result = "";
+  let i = 0;
+  // Sort key configs descending by key length
+  const sortedKeyConfigs = KEY_CONFIGS.slice().sort(
+    (a, b) => b.key.length - a.key.length
+  );
 
+  while (i < readingText.length) {
+    // Handle small "っ" (sokuon) separately:
+    if (readingText[i] === "っ") {
+      // Look ahead to next character to determine doubling candidate
+      if (i + 1 < readingText.length) {
+        // Find the next matching key from sorted configs
+        const nextKey = sortedKeyConfigs.find((config) =>
+          readingText.startsWith(config.key, i + 1)
+        );
+        if (nextKey) {
+          // Double the first letter of the first origin
+          const origin = nextKey.origins[0];
+          result += origin.charAt(0);
+        }
+      }
+      i++;
+      continue;
+    }
+    let found = false;
+    // Try to match up to 3 characters (prioritizing longer keys)
+    for (let len = Math.min(3, readingText.length - i); len > 0; len--) {
+      const key = readingText.substring(i, i + len);
+      const config = sortedKeyConfigs.find((c) => c.key === key);
+      if (config) {
+        result += config.origins[0];
+        i += len;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      result += readingText[i];
+      i++;
+    }
+  }
   return result;
 }
 
-function isConsonant(char: string): boolean {
-  return !"aiueoy".includes(char.toLowerCase());
-}
-
-export interface ConversionTendency {
-  key: string;
-  tendency: string;
-}
-
-export async function TextToRomaji(input: string): Promise<string[]> {
-  const roman = await hiraganaToRomans(input);
-  return extractAllPatterns(roman);
-}
-
-export const hiraganaToRomans = async (hiraganas: string): Promise<Roman> => {
-  const startRoman = new Roman("");
-  await addNextChild(hiraganas, startRoman);
-  return startRoman;
-};
-
-const addNextChild = async (
-  remainingHiraganas: string,
-  parentRoman: Roman,
-  duplicateFirstLetter?: true
-): Promise<void> => {
-  if (!remainingHiraganas) {
-    return;
-  }
-  const firstChar = remainingHiraganas[0];
-
-  if (!isHiragana(firstChar)) {
-    const nextRoman = new Roman(firstChar);
-    parentRoman.addChild(nextRoman);
-    const nextHiraganas = remainingHiraganas.slice(1);
-    await addNextChild(nextHiraganas, nextRoman);
-    return;
-  }
-
-  if (isAllowDuplicateFirstLetter(remainingHiraganas)) {
-    const nextHiraganas = remainingHiraganas.slice(1);
-    await addNextChild(nextHiraganas, parentRoman, true);
-  }
-
-  if (isAllowOneNInput(remainingHiraganas)) {
-    const nextRoman = new Roman("n");
-    parentRoman.addChild(nextRoman);
-    const nextHiraganas = remainingHiraganas.slice(1);
-    await addNextChild(nextHiraganas, nextRoman);
-  }
-
-  const matchKeyConfigs = KEY_CONFIGS.filter((keyConfig) =>
-    remainingHiraganas.startsWith(keyConfig.key)
-  );
-
-  await Promise.all(
-    matchKeyConfigs.map(async (matchKeyConfig) => {
-      await Promise.all(
-        matchKeyConfig.origins.map(async (origin) => {
-          const nextRoman = duplicateFirstLetter
-            ? new Roman(origin[0] + origin)
-            : new Roman(origin);
-          parentRoman.addChild(nextRoman);
-          const nextHiraganas = remainingHiraganas.slice(
-            matchKeyConfig.key.length
-          );
-          await addNextChild(nextHiraganas, nextRoman);
-        })
-      );
-    })
-  );
-};
-
-const isAllowDuplicateFirstLetter = (remainingHiraganas: string): boolean => {
-  return (
-    remainingHiraganas.startsWith("っ") &&
-    !isNextStartWithN(remainingHiraganas) &&
-    hasNextHiraganas(remainingHiraganas) &&
-    !isNextStartWithConsonant(remainingHiraganas)
-  );
-};
-
-const isAllowOneNInput = (remainingHiraganas: string): boolean => {
-  if (!remainingHiraganas.startsWith("ん")) {
-    return false;
-  }
-
-  return (
-    remainingHiraganas.startsWith("ん") &&
-    !isNextStartWithN(remainingHiraganas) &&
-    hasNextHiraganas(remainingHiraganas) &&
-    !isNextStartWithConsonant(remainingHiraganas)
-  );
-};
-
-const hasNextHiraganas = (remainingHiraganas: string): boolean => {
-  const nextHiraganas = remainingHiraganas.slice(1);
-  return !!nextHiraganas;
-};
-
-const isNextStartWithN = (remainingHiraganas: string): boolean => {
-  const nextHiraganas = remainingHiraganas.slice(1);
-  if (!nextHiraganas) return false;
-
-  const matchKeyConfigs = KEY_CONFIGS.filter((keyConfig) =>
-    nextHiraganas.startsWith(keyConfig.key)
-  );
-  return matchKeyConfigs.some((matchKeyConfig) =>
-    matchKeyConfig.origins.some((origin) => origin.startsWith("n"))
-  );
-};
-
-const isNextStartWithConsonant = (remainingHiraganas: string): boolean => {
-  const nextHiraganas = remainingHiraganas.slice(1);
-  if (!nextHiraganas) return false;
-  const matchKeyConfigs = KEY_CONFIGS.filter((keyConfig) =>
-    nextHiraganas.startsWith(keyConfig.key)
-  );
-  return matchKeyConfigs.some((matchKeyConfig) =>
-    matchKeyConfig.origins.some((origin) => isConsonant(origin[0]))
-  );
-};
-
-const isHiragana = (char: string): boolean => {
-  const charCode = char.charCodeAt(0);
-  return charCode >= 0x3041 && charCode <= 0x3096;
-};
-
-export class Roman {
-  roma: string;
-  children: Roman[] = [];
-  parent: Roman | undefined;
-
-  constructor(roma: string) {
-    this.roma = roma;
-  }
-
-  addChild(roman: Roman): void {
-    this.children.push(roman);
-    roman.parent = this;
-  }
-}
-
-export const findConfig = (
-  configs: KeyConfigs,
-  key: string
-): KeyConfig | undefined => {
-  return configs.find((config) => config.key === key);
-};
-
+// ローマ字変換用のキー設定
 export const KEY_CONFIGS: KeyConfigs = [
   {
     key: "あ",
@@ -884,7 +767,6 @@ export const KEY_CONFIGS: KeyConfigs = [
     key: "ゔ",
     origins: ["vu"],
   },
-
   {
     key: "ゐ",
     origins: ["wyi", "wi"],
@@ -1386,25 +1268,3 @@ export const KEY_CONFIGS: KeyConfigs = [
     origins: ["dwo"],
   },
 ];
-export type KeyConfigs = Array<KeyConfig>;
-
-export interface KeyConfig {
-  key: string;
-  origins: string[];
-}
-
-export const extractAllPatterns = (root: Roman): string[] => {
-  const results: string[] = [];
-
-  const traverse = (node: Roman, current: string) => {
-    const updated = current + node.roma;
-    if (node.children.length === 0) {
-      results.push(updated);
-      return;
-    }
-    node.children.forEach((child) => traverse(child, updated));
-  };
-
-  root.children.forEach((child) => traverse(child, ""));
-  return results;
-};
