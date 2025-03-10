@@ -676,7 +676,10 @@ export function openScene(
     }, 1200);
   });
 }
-export function flashObj(app: PIXI.Application, Obj: PIXI.Text) {
+export function flashObj(
+  app: PIXI.Application,
+  Obj: PIXI.Text | PIXI.Graphics
+) {
   const FlashMask = new PIXI.Graphics();
   FlashMask.rect(0, 0, Obj.width, Obj.height).fill(
     replaceHash(settings.colorTheme.colors.MainAccent)

@@ -51,7 +51,7 @@ function transposeData(data: any) {
   output.push(head);
   for (let i = 0; i < 100; i++) {
     const row: string[] = [
-      i,
+      i + 1,
       data[i][1],
       data[i][2].toFixed(0),
       data[i][3].toFixed(2) + "%",
