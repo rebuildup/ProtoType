@@ -204,7 +204,7 @@ class SquareEffectManager {
             height: `${maxSize}px`,
             opacity: 0,
             duration: 1.2,
-            ease: "power2.out",
+            ease: "power4.out",
             delay: 0.1,
             onStart: () => {
               if (this.debugMode)
@@ -230,7 +230,7 @@ class SquareEffectManager {
             height: `${maxSize}px`,
             opacity: 0,
             duration: 1,
-            ease: "power2.out",
+            ease: "power4.out",
             onStart: () => {
               if (this.debugMode)
                 console.log("SquareEffect: 前景アニメーション開始");

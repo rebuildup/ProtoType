@@ -104,7 +104,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     alphabet_text.x = win_pos.x - alphabet_text.width / 2;
     alphabet_text.y = win_pos.y - alphabet_text.height / 2 + 40;
     alphabet_text.alpha = 0.6;
-
     app.stage.addChild(alphabet_text);
     const alphabet_current_text = new PIXI.Text({
       text: "",
@@ -133,6 +132,32 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     next_text.y = win_pos.y - next_text.height / 2 + 150;
     app.stage.addChild(next_text);
 
+    const rank_text = new PIXI.Text({
+      text: "Rank",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 22,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    rank_text.x = win_pos.x - (keybord_size.width * scale) / 2;
+    rank_text.y = win_pos.y - rank_text.height / 2 - 200;
+    rank_text.alpha = 0;
+    app.stage.addChild(rank_text);
+    const rank_value_text = new PIXI.Text({
+      text: "20",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 25,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    rank_value_text.x = rank_text.x + rank_text.width + 20;
+    rank_value_text.y = win_pos.y - rank_value_text.height / 2 - 200;
+    rank_value_text.alpha = 0;
+    app.stage.addChild(rank_value_text);
     const score_text = new PIXI.Text({
       text: "",
       style: {
@@ -500,6 +525,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             const keyCode = await getLatestKey(currentKeyController.signal);
 
             if (keyCode.code === "Escape" && keyCode.shift == true) {
+              playCollect();
               transitionToResultScene();
               flashObj(app, sentence_text);
               await closeScene(app, 3);
@@ -507,11 +533,13 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               resolve();
             }
             if (keyCode.code === "ControlLeft" && keyCode.shift == true) {
+              playCollect();
               transitionToResultScene();
               flashObj(app, sentence_text);
               await closeScene(app, 3);
               resolve();
             } else if (keyCode.code === "Escape") {
+              playCollect();
               gameData.CurrentSceneName = "reload_game";
               gameData.EndTime = Date.now();
               currentKeyController?.abort();
@@ -747,9 +775,56 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
             kpm_text.x =
               win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
+            if (rank_text.alpha == 0) {
+              gsap.fromTo(
+                rank_text,
+                { y: win_pos.y - rank_text.height / 2 - 200, alpha: 0 },
+                {
+                  y: win_pos.y - rank_text.height / 2 - 210,
+                  alpha: 1,
+                  duration: 1,
+                  ease: CustomEase.create("custom", "M0,0 C0,1 0.1,1 1,1"),
+                }
+              );
+              rank_value_text.text = String(Rank_get(gameData.Score));
+              gsap.fromTo(
+                rank_value_text,
+                { y: win_pos.y - rank_text.height / 2 - 200, alpha: 0 },
+                {
+                  y: win_pos.y - rank_text.height / 2 - 210,
+                  alpha: 1,
+                  duration: 1,
+                  ease: CustomEase.create("custom", "M0,0 C0,1 0.1,1 1,1"),
+                }
+              );
+              flashObj(app, rank_text);
+              flashObj(app, rank_value_text);
+            } else if (
+              String(Rank_get(gameData.Score)) !=
+              (rank_value_text.text != "ランク外"
+                ? String(rank_value_text.text)
+                : "-1")
+            ) {
+              rank_value_text.text = String(
+                Rank_get(gameData.Score) != -1
+                  ? Rank_get(gameData.Score)
+                  : "ランク外"
+              );
+              gsap.fromTo(
+                rank_value_text,
+                { alpha: 0, y: win_pos.y - rank_text.height / 2 - 200 },
+                {
+                  alpha: 1,
+                  y: win_pos.y - rank_text.height / 2 - 210,
+                  duration: 1,
+                  ease: CustomEase.create("custom", "M0,0 C0,1 0.1,1 1,1"),
+                }
+              );
+            }
           } else {
             const keyCode = await getLatestKey(currentKeyController.signal);
             if (keyCode.code === "Escape") {
+              playCollect();
               gameData.CurrentSceneName = "game_select";
               gameData.EndTime = Date.now();
               currentKeyController?.abort();
@@ -886,4 +961,16 @@ function filterflash(app: PIXI.Application) {
   setTimeout(() => {
     app.stage.filters = [];
   }, 200);
+}
+
+function Rank_get(score: number) {
+  const ranking = gameData.IsLoggedin
+    ? gameData.onlineRanking
+    : gameData.localRanking;
+  for (let i = 0; i < ranking.length; i++) {
+    if (score > ranking[i].player_score) {
+      return i + 1;
+    }
+  }
+  return -1;
 }

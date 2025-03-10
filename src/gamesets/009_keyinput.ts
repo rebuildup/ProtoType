@@ -354,7 +354,6 @@ export function acc_key_from_code(
     }
   }
 
-  // Update the keyboard display
   update_Acc_key(app);
 }
 export function isNomalKey(code: string) {
