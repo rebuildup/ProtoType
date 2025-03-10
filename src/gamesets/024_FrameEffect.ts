@@ -1,4 +1,4 @@
-// FrameEffect.ts (クリーンバージョン)
+// FrameEffect.ts (テーマ変更対応版)
 import gsap from "gsap";
 import { CustomEase } from "gsap/all";
 import { settings } from "../SiteInterface";
@@ -6,7 +6,9 @@ import { settings } from "../SiteInterface";
 // gsapプラグインの登録
 gsap.registerPlugin(CustomEase);
 
-// フレームエフェクトのクラス
+/**
+ * カラーテーマ変更に対応したフレームエフェクトマネージャー
+ */
 class FrameEffectManager {
   private frameElements: {
     top: HTMLDivElement;
@@ -24,9 +26,51 @@ class FrameEffectManager {
       bottom: document.createElement("div"),
       left: document.createElement("div"),
     };
+
+    // テーマ変更を監視するMutationObserverを設定
+    this.setupThemeObserver();
   }
 
-  // フレームエフェクトの初期化
+  /**
+   * テーマ変更を監視してエフェクト色を更新
+   */
+  private setupThemeObserver() {
+    // ルート要素のスタイル変更を監視
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "style" &&
+          this.isInitialized
+        ) {
+          this.updateColors();
+        }
+      });
+    });
+
+    // 監視開始
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+  }
+
+  /**
+   * エフェクト要素の色を更新
+   */
+  private updateColors() {
+    if (!this.isInitialized) return;
+
+    const accentColor = settings.colorTheme.colors.MainAccent;
+
+    Object.values(this.frameElements).forEach((el) => {
+      el.style.backgroundColor = accentColor;
+    });
+  }
+
+  /**
+   * フレームエフェクトの初期化
+   */
   initialize(): boolean {
     if (this.isInitialized) {
       return true;
@@ -90,11 +134,14 @@ class FrameEffectManager {
       this.isInitialized = true;
       return true;
     } catch (error) {
+      console.error("FrameEffect初期化エラー:", error);
       return false;
     }
   }
 
-  // フレームエフェクトの実行
+  /**
+   * フレームエフェクトの実行
+   */
   triggerEffect(): void {
     if (!this.isInitialized) {
       const success = this.initialize();
@@ -102,6 +149,9 @@ class FrameEffectManager {
         return;
       }
     }
+
+    // トリガー時に最新の色を取得して更新
+    this.updateColors();
 
     // 共通のアニメーション設定
     const maxExpansion = 100;
@@ -178,7 +228,7 @@ class FrameEffectManager {
         }
       );
     } catch (error) {
-      // エラー処理（サイレント）
+      console.error("フレームアニメーションエラー:", error);
     }
   }
 }
@@ -186,12 +236,12 @@ class FrameEffectManager {
 // シングルトンインスタンス
 const frameEffectManager = new FrameEffectManager();
 
-// ゲームから呼び出せる簡単な関数
+// ゲームから呼び出せる関数
 export function triggerFrameEffect(): void {
   frameEffectManager.triggerEffect();
 }
 
-// 初期化のヘルプ関数
+// 初期化関数
 export function initializeFrameEffect(): boolean {
   return frameEffectManager.initialize();
 }

@@ -8,6 +8,7 @@ import { gameData } from "./002_gameConfig";
 import { Keyboard, keybord_size, scale } from "./011_keybord";
 
 import { triggerFrameEffect } from "./024_FrameEffect";
+import { triggerSquareEffect } from "./025_SquareEffect";
 
 import { settings } from "../SiteInterface";
 
@@ -405,6 +406,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
     function extra_anim(n: number) {
       extra_text.text = "+" + String(n);
+      flashObj(app, extra_text);
       gsap.fromTo(
         extra_text,
         { alpha: 0, y: win_pos.y - score_text.height / 2 - 194 },
@@ -496,7 +498,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             }
 
             const keyCode = await getLatestKey(currentKeyController.signal);
-            triggerFrameEffect();
+
             if (keyCode.code === "Escape" && keyCode.shift == true) {
               transitionToResultScene();
               flashObj(app, sentence_text);
@@ -587,6 +589,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 alphabet_text.x = win_pos.x - alphabet_text.width / 2;
               } else {
                 playCollect();
+                triggerFrameEffect();
                 if (gameData.GameMode != "focus") {
                   for (let collec = 0; collec < collectkeys.length; collec++) {
                     acc_key_from_code(app, collectkeys[collec].letter, false);
@@ -629,6 +632,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 gameData.current_inputed
               ).length == 0
             ) {
+              triggerSquareEffect();
               gameData.current_Issue++;
               gameData.current_inputed = "";
 

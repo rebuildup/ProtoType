@@ -20,6 +20,8 @@ import {
   reaction,
   reaction_jump,
 } from "./014_mogura";
+import { playCollect, playMiss } from "./012_soundplay";
+import { triggerFrameEffect } from "./024_FrameEffect";
 
 export function Player_register(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
@@ -104,6 +106,8 @@ export function Player_register(app: PIXI.Application): Promise<void> {
     app.stage.addChild(player_name_text);
 
     async function get_out() {
+      playCollect();
+      triggerFrameEffect();
       currentKeyController?.abort();
       await closeScene(app, 1);
       resolve();
@@ -146,7 +150,10 @@ export function Player_register(app: PIXI.Application): Promise<void> {
           gameData.CurrentSceneName = "game_select";
           get_out();
         } else if (keyCode.code === "Backspace") {
-          if (player_name.length > 0) player_name = player_name.slice(0, -1);
+          if (player_name.length > 0) {
+            playMiss(0.3);
+            player_name = player_name.slice(0, -1);
+          }
           if (player_name.length == 0) {
             player_name_text.text = gameData.current_Player_name;
           } else {
@@ -155,10 +162,15 @@ export function Player_register(app: PIXI.Application): Promise<void> {
 
           player_name_text.x = screenCenter.x - player_name_text.width / 2;
         } else if (isNomalKey(keyCode.code)) {
+          triggerFrameEffect();
+
           if (player_name.length < 10) {
+            playCollect();
             player_name += keyCodeToText(keyCode.code, keyCode.shift);
             player_name_text.text = player_name;
             player_name_text.x = screenCenter.x - player_name_text.width / 2;
+          } else {
+            playMiss(0.3);
           }
         } else if (keyCode.code === "Enter") {
           reaction_jump(

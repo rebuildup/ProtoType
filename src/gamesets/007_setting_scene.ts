@@ -13,7 +13,7 @@ import { keyLayouts } from "../components/012_KeyLayout";
 import { playMiss, playCollect } from "./012_soundplay";
 
 import { saveToCache, deleteCache } from "./020_cacheControl";
-import { closeScene, flashObj, openScene } from "./014_mogura";
+import { closeScene, flashObj, openScene, reaction } from "./014_mogura";
 import { BG_grid } from "./018_grid";
 const Select_dot_x = 680;
 const option_select_values = { keylayoutset: 0, instantkey_n: 1 };
@@ -75,6 +75,8 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
     let currentKeyController: AbortController | null = null;
 
     exit_btn.on("pointerdown", async () => {
+      reaction(exit_btn, 1.1);
+      playCollect();
       if (isOpened_option == opened_options.menu) {
         gameData.CurrentSceneName = "game_select";
         get_out();
@@ -236,7 +238,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
             layout_selection.y = (i - keyLayouts.length / 2) * 80;
             layout_selection.interactive = true;
             layout_selection.on("pointerdown", async () => {
-              playMiss(0.3);
+              playCollect();
               gameData.KeyLayout = keyLayouts[i].name;
               keylayout_value.text = gameData.KeyLayout;
               keylayout_value.x = setting_value_x - keylayout_value.width;
@@ -301,7 +303,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
           ins_up_btn.on("pointerdown", async () => {
             playMiss(0.3);
             if (current_select >= 100) {
-              current_select = 2;
+              current_select = 10;
             } else {
               current_select++;
             }
@@ -322,7 +324,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
           ins_dwn_btn.interactive = true;
           ins_dwn_btn.on("pointerdown", async () => {
             playMiss(0.3);
-            if (current_select <= 2) {
+            if (current_select <= 10) {
               current_select = 100;
             } else {
               current_select--;
@@ -342,7 +344,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       current_select = keyLayouts.findIndex(
         (layout) => layout.name === gameData.KeyLayout
       );
-      dot_pos_update(option_select);
+      dot_pos_update(0);
       update_open(isOpened_option, current_select);
     });
     keylayout_value.on("pointerdown", async () => {
@@ -351,21 +353,21 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       current_select = keyLayouts.findIndex(
         (layout) => layout.name === gameData.KeyLayout
       );
-      dot_pos_update(option_select);
+      dot_pos_update(0);
       update_open(isOpened_option, current_select);
     });
     instantkey_n_text.on("pointerdown", async () => {
       playMiss(0.3);
       isOpened_option = opened_options.instantkey;
       current_select = gameData.instant_key_n;
-      dot_pos_update(option_select);
+      dot_pos_update(1);
       update_open(isOpened_option, current_select);
     });
     instantkey_n_value.on("pointerdown", async () => {
       playMiss(0.3);
       isOpened_option = opened_options.instantkey;
       current_select = gameData.instant_key_n;
-      dot_pos_update(option_select);
+      dot_pos_update(1);
       update_open(isOpened_option, current_select);
     });
     flashObj(app, keylayout_text);
@@ -378,6 +380,8 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       try {
         const keyCode = await getLatestKey(currentKeyController.signal);
         if (keyCode.code === "Escape") {
+          reaction(exit_btn, 1.1);
+          playCollect();
           if (isOpened_option == opened_options.menu) {
             gameData.CurrentSceneName = "game_select";
             get_out();

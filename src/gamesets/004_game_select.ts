@@ -181,14 +181,6 @@ export async function game_select(app: PIXI.Application): Promise<void> {
     let currentKeyController: AbortController | null = null;
 
     function hideSceneElements() {
-      /*
-      gsap.to(wakuCircle.scale, {
-        x: 1.2,
-        y: 1.2,
-        duration: 0.5,
-        ease: "power4.out",
-      });*/
-
       currentKeyController?.abort();
     }
 
@@ -217,6 +209,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       selectedIndex = 0;
       updateSelectDots(selectedIndex);
       currentKeyController?.abort();
+      playCollect();
       reaction_jump(
         recordBtn,
         winCenter.y - recordBtn.height / 2 - BUTTON_SPACING
@@ -227,6 +220,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       selectedIndex = 2;
       updateSelectDots(selectedIndex);
       currentKeyController?.abort();
+      playCollect();
       reaction_jump(
         settingSelectBtn,
         winCenter.y - settingSelectBtn.height / 2 + BUTTON_SPACING
@@ -237,6 +231,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       selectedIndex = 1;
       updateSelectDots(selectedIndex);
       currentKeyController?.abort();
+      playCollect();
       reaction_jump(gameSelectBtn, winCenter.y - gameSelectBtn.height / 2);
       transitionToGameModeSelect();
     });
@@ -280,19 +275,21 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       try {
         const keyCode = await getLatestKey(currentKeyController.signal);
 
-        triggerFrameEffect();
-
         if (["ArrowDown", "ArrowRight", "ShiftRight"].includes(keyCode.code)) {
           playMiss(0.3);
+          triggerFrameEffect();
           selectedIndex = (selectedIndex + 1) % 3;
           updateSelectDots(selectedIndex, true);
         } else if (
           ["ArrowUp", "ArrowLeft", "ShiftLeft"].includes(keyCode.code)
         ) {
           playMiss(0.3);
+          triggerFrameEffect();
           selectedIndex = (selectedIndex + 2) % 3;
           updateSelectDots(selectedIndex, false);
         } else if (["Enter", "Space"].includes(keyCode.code)) {
+          triggerFrameEffect();
+          playCollect();
           switch (selectedIndex) {
             case 0:
               reaction_jump(
@@ -336,7 +333,6 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
     app.stage.removeChildren();
     BG_grid(app);
-    playCollect();
     const winCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
     const circleRadius = 410;
     let currentKeyController: AbortController | null = null;
@@ -425,6 +421,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       btn.position.set(pos.x, pos.y);
       flashObj(app, btn);
       btn.on("pointerdown", async () => {
+        triggerFrameEffect();
+        playCollect();
         switch (item.label) {
           case "長文モード":
             selectedModeIndex = 0;
@@ -502,6 +500,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     };
 
     async function exit() {
+      triggerFrameEffect();
+      playCollect();
       reaction(mask);
       currentKeyController?.abort();
       gameData.CurrentSceneName = "game_select";
@@ -529,12 +529,14 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
       try {
         const keyCode = await getLatestKey(currentKeyController.signal);
         if (["ArrowDown", "ArrowRight", "ShiftRight"].includes(keyCode.code)) {
+          triggerFrameEffect();
           playMiss(0.3);
           selectedModeIndex = (selectedModeIndex + 1) % modes.length;
           moveDot(selectedModeIndex);
         } else if (
           ["ArrowUp", "ArrowLeft", "ShiftLeft"].includes(keyCode.code)
         ) {
+          triggerFrameEffect();
           playMiss(0.3);
           selectedModeIndex =
             (selectedModeIndex + modes.length - 1) % modes.length;
@@ -542,6 +544,8 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
         } else if (keyCode.code === "Escape") {
           exit();
         } else if (["Enter", "Space"].includes(keyCode.code)) {
+          triggerFrameEffect();
+          playCollect();
           moveDot(selectedModeIndex);
           currentKeyController.abort();
           gameData.GameMode = modes[selectedModeIndex].mode;

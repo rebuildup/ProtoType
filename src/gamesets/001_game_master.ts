@@ -6,7 +6,7 @@ PixiPlugin.registerPIXI(PIXI);
 
 import { game_scene } from "./003_game_scene";
 
-import { playCollect, playMiss } from "./012_soundplay";
+import { playMiss } from "./012_soundplay";
 
 import { gameData, Issue } from "./002_gameConfig";
 
@@ -143,42 +143,33 @@ export async function initializeGame(app: PIXI.Application) {
   while (gameData.CurrentSceneName != "exit") {
     switch (gameData.CurrentSceneName) {
       case "opening":
-        playCollect();
         await opening_scene(app);
         break;
       case "game_scene":
-        playCollect();
         await game_scene(app);
         break;
       case "game_select":
-        playCollect();
         await game_select(app);
         break;
       case "setting_scene":
-        playCollect();
         await setting_scene(app);
         break;
       case "result_scene":
-        playCollect();
         await result_scene(app);
         break;
       case "reload_game":
-        playCollect();
         await reload_game(app);
         break;
       case "error_scene":
         await error_scene(app);
         break;
       case "record_scene":
-        playCollect();
         await record_scene(app);
         break;
       case "register_scene":
-        playCollect();
         await Player_register(app);
         break;
       case "debug_repeat":
-        playCollect();
         await debug_repeat(app);
         break;
       default:

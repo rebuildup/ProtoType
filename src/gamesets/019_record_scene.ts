@@ -8,7 +8,7 @@ import { PixiPlugin } from "gsap/PixiPlugin";
 PixiPlugin.registerPIXI(PIXI);
 
 import { getLatestKey } from "./009_keyinput";
-import { playMiss } from "./012_soundplay";
+import { playCollect, playMiss } from "./012_soundplay";
 
 import { score_graph } from "./013_graphs";
 
@@ -59,6 +59,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
 
     exit_btn.on("pointerdown", async () => {
       reaction(exit_btn, 1.1);
+      playCollect();
       gameData.CurrentSceneName = "game_select";
       get_out();
     });
@@ -654,6 +655,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
 
         if (keyCode.code === "Escape") {
           reaction(exit_btn, 1.1);
+          playCollect();
           gameData.CurrentSceneName = "game_select";
           get_out();
         } else if (
