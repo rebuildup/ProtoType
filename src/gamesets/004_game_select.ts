@@ -17,6 +17,7 @@ import {
   reaction_jump,
 } from "./014_mogura";
 
+import { triggerFrameEffect } from "./024_FrameEffect";
 const BUTTON_SPACING = 120;
 const CIRCULAR_BUTTON_CENTER_OFFSET = 200;
 
@@ -278,6 +279,9 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       currentKeyController = new AbortController();
       try {
         const keyCode = await getLatestKey(currentKeyController.signal);
+
+        triggerFrameEffect();
+
         if (["ArrowDown", "ArrowRight", "ShiftRight"].includes(keyCode.code)) {
           playMiss(0.3);
           selectedIndex = (selectedIndex + 1) % 3;

@@ -7,6 +7,8 @@ import { replaceHash } from "./001_game_master";
 import { gameData } from "./002_gameConfig";
 import { Keyboard, keybord_size, scale } from "./011_keybord";
 
+import { triggerFrameEffect } from "./024_FrameEffect";
+
 import { settings } from "../SiteInterface";
 
 import {
@@ -494,6 +496,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             }
 
             const keyCode = await getLatestKey(currentKeyController.signal);
+            triggerFrameEffect();
             if (keyCode.code === "Escape" && keyCode.shift == true) {
               transitionToResultScene();
               flashObj(app, sentence_text);

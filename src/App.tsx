@@ -10,6 +10,9 @@ import Tab from "./components/001_Tab.tsx";
 
 import Footer from "./components/003_footer.tsx";
 
+import { initializeFrameEffect } from "./gamesets/024_FrameEffect.ts";
+import { initializeSquareEffect } from "./gamesets/025_SquareEffect.ts";
+
 import "./index.css";
 
 import { loadFromCache, updateSetting } from "./SiteInterface.ts";
@@ -64,6 +67,8 @@ const App: React.FC = () => {
     });
     const cachedLayout = loadFromCache<string>("keyLayout", "QWERTY");
     updateSetting("keyLayout", cachedLayout);
+    initializeFrameEffect();
+    initializeSquareEffect();
   }, []);
 
   const renderCurrentComponent = () => {
