@@ -351,14 +351,51 @@ export function getRomanizedTextFromTendency(
 
   dfs(0, false, "", 0);
 
-  results.sort((a, b) => {
-    const scoreA =
-      a.nonPreferred * 10000 + (a.out.length - currentInput.length);
-    const scoreB =
-      b.nonPreferred * 10000 + (b.out.length - currentInput.length);
-    return scoreA - scoreB;
-  });
-  return results[0] ? results[0].out : "";
+  if (results.length > 0) {
+    results.sort((a, b) => {
+      const scoreA =
+        a.nonPreferred * 10000 + (a.out.length - currentInput.length);
+      const scoreB =
+        b.nonPreferred * 10000 + (b.out.length - currentInput.length);
+      return scoreA - scoreB;
+    });
+    return results[0].out;
+  } else {
+    // 結果がない場合はKEY_CONFIGSを使って基本的なローマ字表現を生成
+    return readingTextToBasicRomaji(readingText);
+  }
+}
+function readingTextToBasicRomaji(readingText: string): string {
+  let result = "";
+  let i = 0;
+
+  while (i < readingText.length) {
+    let found = false;
+
+    // 2文字以上の組み合わせを先にチェック
+    for (let len = 3; len > 0; len--) {
+      if (i + len <= readingText.length) {
+        const key = readingText.substring(i, i + len);
+        const config = KEY_CONFIGS.find((c) => c.key === key);
+
+        if (config) {
+          // 見つかった場合は最初のorigin（ローマ字表現）を使用
+          result += config.origins[0];
+          i += len;
+          found = true;
+          break;
+        }
+      }
+    }
+
+    // 見つからなかった場合は1文字進める
+    if (!found) {
+      result += readingText[i];
+      i++;
+    }
+  }
+
+  return result;
 }
 
 function isConsonant(char: string): boolean {

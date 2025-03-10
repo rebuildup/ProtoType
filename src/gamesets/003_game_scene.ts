@@ -198,6 +198,23 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       alpha: 1,
     });
     app.stage.addChild(accuracyLine);
+
+    const accuracyLine_flash = new PIXI.Graphics();
+    accuracyLine_flash.moveTo(
+      win_pos.x - (keybord_size.width * scale) / 2,
+      win_pos.y - 250
+    );
+    accuracyLine_flash.lineTo(
+      win_pos.x + (keybord_size.width * scale) / 2,
+      win_pos.y - 250
+    );
+    accuracyLine_flash.stroke({
+      width: 4,
+      color: replaceHash(settings.colorTheme.colors.MainAccent),
+      alpha: 1,
+    });
+    accuracyLine_flash.alpha = 0;
+    app.stage.addChild(accuracyLine_flash);
     const progressLine = new PIXI.Graphics();
     progressLine.moveTo(
       win_pos.x - (keybord_size.width * scale) / 2,
@@ -285,7 +302,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           x: -anim_max_width,
           y: 0,
           duration: 1,
-          ease: "power2.out",
+          ease: CustomEase.create("custom", "M0,0 C0,0.25 0.2,0.96 1,1"),
         }
       );
       gsap.fromTo(
@@ -295,7 +312,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           x: app.screen.width,
           y: 0,
           duration: 1,
-          ease: "power2.out",
+          ease: CustomEase.create("custom", "M0,0 C0,0.25 0.2,0.96 1,1"),
         }
       );
       gsap.fromTo(
@@ -305,7 +322,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           x: 0,
           y: -anim_max_width,
           duration: 1,
-          ease: "power2.out",
+          ease: CustomEase.create("custom", "M0,0 C0,0.25 0.2,0.96 1,1"),
         }
       );
       gsap.fromTo(
@@ -315,7 +332,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           x: 0,
           y: app.screen.height,
           duration: 1,
-          ease: "power2.out",
+          ease: CustomEase.create("custom", "M0,0 C0,0.25 0.2,0.96 1,1"),
         }
       );
     }
@@ -347,6 +364,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       return 1000 / avgDelta;
     }
     function transitionToResultScene() {
+      progressDot.x = win_pos.x + progressLine.width / 2;
       sentence_text.text = "ゲームセット！";
       sentence_text.x = win_pos.x - sentence_text.width / 2;
       alphabet_current_text.text = "";
@@ -525,6 +543,18 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 }
                 gameData.acc_keys = [];
                 filterflash(app);
+
+                gsap.fromTo(
+                  accuracyLine_flash,
+                  { alpha: 1 },
+                  {
+                    alpha: 0,
+                    duration: 0.2,
+                    ease: CustomEase.create("custom", "M0,0 C0,1 1,0 1,1"),
+                    delay: 0.2,
+                  }
+                );
+
                 if (gameData.GameMode != "focus") {
                   light_key_from_code(app, keyCode.code);
                 }
@@ -610,7 +640,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
             if (
               gameData.current_Issue >= gameData.Issues.length ||
-              gameData.current_Issue + 1 >= gameData.Issues.length
+              gameData.current_Issue >= gameData.Issues.length
             ) {
               transitionToResultScene();
               flashObj(app, sentence_text);
@@ -620,8 +650,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             }
 
             if (
-              gameData.current_Issue + 2 >= gameData.Issues_num ||
-              gameData.current_Issue + 2 >= gameData.Issues.length
+              gameData.current_Issue + 1 >= gameData.Issues_num ||
+              gameData.current_Issue + 1 >= gameData.Issues.length
             ) {
               next_text.text = "";
             } else {
@@ -650,10 +680,10 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             alphabet_current_text.x = win_pos.x - alphabet_text.width / 2;
             next_text.x = win_pos.x - next_text.width / 2;
             progressDot.x =
-              (keybord_size.width / gameData.Issues_num) *
-                scale *
+              win_pos.x +
+              (progressLine.width / (gameData.Issues_num - 1)) *
                 gameData.current_Issue +
-              (app.screen.width - keybord_size.width * scale) / 2;
+              -(progressLine.width / 2);
             if (gameData.combo_cnt == 0) {
               combo_text.text = "";
             } else {
@@ -662,7 +692,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
             combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
 
-            if (gameData.total_hit_cnt > 5) {
+            if (gameData.total_hit_cnt > gameData.instant_key_n) {
               accuracyLine.clear();
               accuracyLine.moveTo(
                 win_pos.x -
@@ -679,6 +709,24 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               accuracyLine.stroke({
                 width: 4,
                 color: replaceHash(settings.colorTheme.colors.MainColor),
+                alpha: 1,
+              });
+              accuracyLine_flash.clear();
+              accuracyLine_flash.moveTo(
+                win_pos.x -
+                  ((keybord_size.width * scale) / 2) *
+                    (1 - gameData.Miss / gameData.total_hit_cnt),
+                win_pos.y - 250
+              );
+              accuracyLine_flash.lineTo(
+                win_pos.x +
+                  ((keybord_size.width * scale) / 2) *
+                    (1 - gameData.Miss / gameData.total_hit_cnt),
+                win_pos.y - 250
+              );
+              accuracyLine_flash.stroke({
+                width: 4,
+                color: replaceHash(settings.colorTheme.colors.MainAccent),
                 alpha: 1,
               });
             }
