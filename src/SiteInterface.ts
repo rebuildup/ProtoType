@@ -17,6 +17,13 @@ export type User = {
   isLoggedin: boolean;
 };
 export type keylayout = string;
+
+// Added animation settings type
+export type AnimationSettings = {
+  enabled: boolean;
+  reducedMotion: boolean;
+};
+
 export const saveToCache = (key: string, data: any) => {
   localStorage.setItem(key, JSON.stringify(data));
 };
@@ -34,6 +41,7 @@ export const updateSetting = <K extends keyof typeof settings>(
   saveToCache(key, newValue);
   //console.log(`${key} updated:`, newValue);
 };
+
 export const settings = {
   colorTheme: loadFromCache<ColorTheme>("colorTheme", {
     name: "default",
@@ -54,6 +62,11 @@ export const settings = {
     isLoggedin: false,
   }),
   keyLayout: loadFromCache<keylayout>("keyLayout", "QWERTY"),
+  // Add animation settings
+  animationSettings: loadFromCache<AnimationSettings>("animationSettings", {
+    enabled: true,
+    reducedMotion: false,
+  }),
 };
 
 /*

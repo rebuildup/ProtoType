@@ -7,6 +7,11 @@
   height: 100%;
   overflow: hidden;
   z-index: -1; /* 最背面に表示 */
+  /* GPU acceleration */
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 .svg-container {
@@ -15,6 +20,9 @@
   left: 50%;
   width: 0;
   height: 0;
+  /* GPU acceleration */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .BG-svg {
@@ -25,18 +33,23 @@
   /* 要素の中心を原点(0,0)に配置 */
   transform: translate(-50%, -50%);
   backface-visibility: hidden;
+  will-change: transform;
 }
 
 .rotate-clockwise {
   animation-name: rotateClockwise;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+  /* Better performance by using compositor-only properties */
+  will-change: transform;
 }
 
 .rotate-counterclockwise {
   animation-name: rotateCounterClockwise;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+  /* Better performance by using compositor-only properties */
+  will-change: transform;
 }
 
 /* 回転速度のクラス */
@@ -86,19 +99,27 @@
 
 /* アニメーションキーフレーム */
 @keyframes rotateClockwise {
-  from {
+  0% {
     transform: translate(-50%, -50%) rotate(0deg);
   }
-  to {
+  100% {
     transform: translate(-50%, -50%) rotate(360deg);
   }
 }
 
 @keyframes rotateCounterClockwise {
-  from {
+  0% {
     transform: translate(-50%, -50%) rotate(0deg);
   }
-  to {
+  100% {
     transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+
+/* Optimize for low-power devices and reduce-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .rotate-clockwise,
+  .rotate-counterclockwise {
+    animation-duration: 180s !important; /* Much slower animation */
   }
 }

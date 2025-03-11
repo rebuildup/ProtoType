@@ -2,6 +2,7 @@ import React from "react";
 import ColorPalette from "./010_ColorPalette";
 import FontSelector from "./011_FontSelector";
 import KeyLayoutSelector from "./012_KeyLayout";
+import AnimationSettings from "./016_AnimationSettings";
 import "../styles/007_setting.css";
 
 const Setting: React.FC = () => {
@@ -10,6 +11,7 @@ const Setting: React.FC = () => {
       <ColorPalette />
       <FontSelector />
       <KeyLayoutSelector />
+      <AnimationSettings />
     </div>
   );
 };
