@@ -9,7 +9,7 @@ interface CenterStarsSvgProps {
 const CenterStarsSvg: React.FC<CenterStarsSvgProps> = ({
   size = "779.65",
   className = "",
-  color = "blue",
+  color = "var(--MainAccent)",
 }) => {
   return (
     <svg

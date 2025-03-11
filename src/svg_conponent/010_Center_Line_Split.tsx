@@ -9,7 +9,7 @@ interface CenterLineSplitSvgProps {
 const CenterLineSplitSvg: React.FC<CenterLineSplitSvgProps> = ({
   size = "1004",
   className = "",
-  color = "blue",
+  color = "var(--MainAccent)",
 }) => {
   return (
     <svg

@@ -9,7 +9,7 @@ interface InnerLineRepeatSvgProps {
 const InnerLineRepeatSvg: React.FC<InnerLineRepeatSvgProps> = ({
   size = "1800.28",
   className = "",
-  color = "blue",
+  color = "var(--MainAccent)",
 }) => {
   return (
     <svg

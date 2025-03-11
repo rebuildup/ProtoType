@@ -9,7 +9,7 @@ interface OuterCircleSvgProps {
 const OuterCircleSvg: React.FC<OuterCircleSvgProps> = ({
   size = "4320",
   className = "",
-  color = "blue",
+  color = "var(--MainAccent)",
 }) => {
   return (
     <svg

@@ -9,7 +9,7 @@ interface InnerLineSplitSvgProps {
 const InnerLineSplitSvg: React.FC<InnerLineSplitSvgProps> = ({
   size = "1357",
   className = "",
-  color = "blue",
+  color = "var(--MainAccent)",
 }) => {
   return (
     <svg

@@ -10,7 +10,7 @@ interface CenterCrownSvgProps {
 const CenterCrownSvg: React.FC<CenterCrownSvgProps> = ({
   size = "615",
   className = "",
-  color = "blue",
+  color = "var(--MainAccent)",
 }) => {
   return (
     <svg

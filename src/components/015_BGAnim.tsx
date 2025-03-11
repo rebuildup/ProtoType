@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/013_BGAnim.css";
 import OuterStarSvg from "../svg_conponent/001_Outer_star";
 import OuterCircleSvg from "../svg_conponent/002_Outer_circ";
@@ -43,52 +43,91 @@ const SVG_ROTATION_CLASSES = {
 const general_svg_size = 1000;
 
 const BGAnim: React.FC = () => {
+  const [accentColor, setAccentColor] = useState<string>("");
+
+  // CSS変数を監視して色の変更を検知する
+  useEffect(() => {
+    // 初期ロード時に色を設定
+    updateAccentColor();
+
+    // MutationObserverを使用してルート要素のstyle属性の変更を監視
+    const observer = new MutationObserver(updateAccentColor);
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  // MainAccent色を取得する関数
+  const updateAccentColor = () => {
+    const color = getComputedStyle(document.documentElement)
+      .getPropertyValue("--MainAccent")
+      .trim();
+    setAccentColor(color);
+  };
+
   return (
     <div className="BG-anim">
       <div className="svg-container">
         <OuterStarSvg
           size={general_svg_size * SVG_RATIOS.OuterStar}
           className={`BG-svg ${SVG_ROTATION_CLASSES.OuterStar}`}
+          color={accentColor}
         />
         <OuterCircleSvg
           size={general_svg_size * SVG_RATIOS.OuterCircle}
           className={`BG-svg ${SVG_ROTATION_CLASSES.OuterCircle}`}
+          color={accentColor}
         />
         <OuterSpearSvg
           size={general_svg_size * SVG_RATIOS.OuterSpear}
           className={`BG-svg ${SVG_ROTATION_CLASSES.OuterSpear}`}
+          color={accentColor}
         />
         <OuterLineRepeatSvg
           size={general_svg_size * SVG_RATIOS.OuterLineRepeat}
           className={`BG-svg ${SVG_ROTATION_CLASSES.OuterLineRepeat}`}
+          color={accentColor}
         />
         <InnerStarsSvg
           size={general_svg_size * SVG_RATIOS.InnerStars}
           className={`BG-svg ${SVG_ROTATION_CLASSES.InnerStars}`}
+          color={accentColor}
         />
         <InnerSpearSvg
           size={general_svg_size * SVG_RATIOS.InnerSpear}
           className={`BG-svg ${SVG_ROTATION_CLASSES.InnerSpear}`}
+          color={accentColor}
         />
         <InnerLineSplitSvg
           size={general_svg_size * SVG_RATIOS.InnerLineSplit}
           className={`BG-svg ${SVG_ROTATION_CLASSES.InnerLineSplit}`}
+          color={accentColor}
         />
         <InnerLineRepeatSvg
           size={general_svg_size * SVG_RATIOS.InnerLineRepeat}
           className={`BG-svg ${SVG_ROTATION_CLASSES.InnerLineRepeat}`}
+          color={accentColor}
         />
         <CenterStarsSvg
           size={general_svg_size * SVG_RATIOS.CenterStars}
           className={`BG-svg ${SVG_ROTATION_CLASSES.CenterStars}`}
+          color={accentColor}
         />
         <CenterLineSplitSvg
           size={general_svg_size * SVG_RATIOS.CenterLineSplit}
           className={`BG-svg ${SVG_ROTATION_CLASSES.CenterLineSplit}`}
+          color={accentColor}
         />
         <CenterCrownSvg
           size={general_svg_size * SVG_RATIOS.CenterCrown}
           className={`BG-svg ${SVG_ROTATION_CLASSES.CenterCrown}`}
+          color={accentColor}
         />
       </div>
     </div>

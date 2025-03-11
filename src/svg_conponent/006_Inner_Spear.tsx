@@ -9,7 +9,7 @@ interface InnerSpearSvgProps {
 const InnerSpearSvg: React.FC<InnerSpearSvgProps> = ({
   size = "2176.16",
   className = "",
-  color = "blue",
+  color = "var(--MainAccent)",
 }) => {
   return (
     <svg

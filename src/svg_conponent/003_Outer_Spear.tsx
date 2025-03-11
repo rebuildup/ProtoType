@@ -9,7 +9,7 @@ interface OuterSpearSvgProps {
 const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
   size = "3155.5",
   className = "",
-  color = "blue",
+  color = "var(--MainAccent)",
 }) => {
   return (
     <svg

@@ -8,7 +8,7 @@ interface OuterStarSvgProps {
 const OuterStarSvg: React.FC<OuterStarSvgProps> = ({
   size = "3705.55",
   className = "",
-  color = "blue",
+  color = "var(--MainAccent)",
 }) => {
   return (
     <svg

@@ -9,7 +9,7 @@ interface OuterLineRepeatSvgProps {
 const OuterLineRepeatSvg: React.FC<OuterLineRepeatSvgProps> = ({
   size = "3601",
   className = "",
-  color = "blue",
+  color = "var(--MainAccent)",
 }) => {
   return (
     <svg

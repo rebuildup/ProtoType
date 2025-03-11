@@ -9,7 +9,7 @@ interface InnerStarsSvgProps {
 const InnerStarsSvg: React.FC<InnerStarsSvgProps> = ({
   size = "1251.52",
   className = "",
-  color = "blue",
+  color = "var(--MainAccent)",
 }) => {
   return (
     <svg
