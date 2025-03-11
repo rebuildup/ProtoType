@@ -203,7 +203,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       align_opt.right
     );
 
-    createText(
+    const play_res_title = createText(
       app,
       "プレイ結果",
       Play_pos,
@@ -479,6 +479,8 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     }
     let currentKeyController: AbortController | null = null;
     let select = 0;
+    flashObj(app, ranking_title);
+    flashObj(app, play_res_title);
     flashObj(app, select_replay);
     flashObj(app, select_select);
     openScene(app, 1);

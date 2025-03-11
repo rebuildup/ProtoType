@@ -6,7 +6,6 @@ gsap.registerPlugin(PixiPlugin, CustomEase);
 import { replaceHash } from "./001_game_master";
 
 import { settings } from "../SiteInterface";
-import { gameData } from "./002_gameConfig";
 export function GM_start(app: PIXI.Application): Promise<void> {
   return new Promise(async (resolve) => {
     const GM_start_container = new PIXI.Container();
