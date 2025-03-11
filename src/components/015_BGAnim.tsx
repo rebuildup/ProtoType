@@ -25,55 +25,72 @@ export const SVG_RATIOS = {
   CenterLineSplit: 1004 / 4320, // 0.2324
   CenterCrown: 615 / 4320, // 0.1424
 };
+
+const SVG_ROTATION_CLASSES = {
+  OuterStar: "rotate-speed-120 rotate-clockwise",
+  OuterCircle: "rotate-speed-100 rotate-counterclockwise",
+  OuterSpear: "rotate-speed-80 rotate-clockwise",
+  OuterLineRepeat: "rotate-speed-90 rotate-counterclockwise",
+  InnerStars: "rotate-speed-70 rotate-clockwise",
+  InnerSpear: "rotate-speed-60 rotate-counterclockwise",
+  InnerLineSplit: "rotate-speed-50 rotate-clockwise",
+  InnerLineRepeat: "rotate-speed-40 rotate-counterclockwise",
+  CenterStars: "rotate-speed-30 rotate-clockwise",
+  CenterLineSplit: "rotate-speed-20 rotate-counterclockwise",
+  CenterCrown: "rotate-speed-25 rotate-clockwise",
+};
+
 const general_svg_size = 1000;
 
 const BGAnim: React.FC = () => {
   return (
-    <div className="BG-anim" style={{ zIndex: 2 }}>
-      <OuterStarSvg
-        size={general_svg_size * SVG_RATIOS.OuterStar}
-        className="BG-svg"
-      />
-      <OuterCircleSvg
-        size={general_svg_size * SVG_RATIOS.OuterCircle}
-        className="BG-svg"
-      />
-      <OuterSpearSvg
-        size={general_svg_size * SVG_RATIOS.OuterSpear}
-        className="BG-svg"
-      />
-      <OuterLineRepeatSvg
-        size={general_svg_size * SVG_RATIOS.OuterLineRepeat}
-        className="BG-svg"
-      />
-      <InnerStarsSvg
-        size={general_svg_size * SVG_RATIOS.InnerStars}
-        className="BG-svg"
-      />
-      <InnerSpearSvg
-        size={general_svg_size * SVG_RATIOS.InnerSpear}
-        className="BG-svg"
-      />
-      <InnerLineSplitSvg
-        size={general_svg_size * SVG_RATIOS.InnerLineSplit}
-        className="BG-svg"
-      />
-      <InnerLineRepeatSvg
-        size={general_svg_size * SVG_RATIOS.InnerLineRepeat}
-        className="BG-svg"
-      />
-      <CenterStarsSvg
-        size={general_svg_size * SVG_RATIOS.CenterStars}
-        className="BG-svg"
-      />
-      <CenterLineSplitSvg
-        size={general_svg_size * SVG_RATIOS.CenterLineSplit}
-        className="BG-svg"
-      />
-      <CenterCrownSvg
-        size={general_svg_size * SVG_RATIOS.CenterCrown}
-        className="BG-svg"
-      />
+    <div className="BG-anim">
+      <div className="svg-container">
+        <OuterStarSvg
+          size={general_svg_size * SVG_RATIOS.OuterStar}
+          className={`BG-svg ${SVG_ROTATION_CLASSES.OuterStar}`}
+        />
+        <OuterCircleSvg
+          size={general_svg_size * SVG_RATIOS.OuterCircle}
+          className={`BG-svg ${SVG_ROTATION_CLASSES.OuterCircle}`}
+        />
+        <OuterSpearSvg
+          size={general_svg_size * SVG_RATIOS.OuterSpear}
+          className={`BG-svg ${SVG_ROTATION_CLASSES.OuterSpear}`}
+        />
+        <OuterLineRepeatSvg
+          size={general_svg_size * SVG_RATIOS.OuterLineRepeat}
+          className={`BG-svg ${SVG_ROTATION_CLASSES.OuterLineRepeat}`}
+        />
+        <InnerStarsSvg
+          size={general_svg_size * SVG_RATIOS.InnerStars}
+          className={`BG-svg ${SVG_ROTATION_CLASSES.InnerStars}`}
+        />
+        <InnerSpearSvg
+          size={general_svg_size * SVG_RATIOS.InnerSpear}
+          className={`BG-svg ${SVG_ROTATION_CLASSES.InnerSpear}`}
+        />
+        <InnerLineSplitSvg
+          size={general_svg_size * SVG_RATIOS.InnerLineSplit}
+          className={`BG-svg ${SVG_ROTATION_CLASSES.InnerLineSplit}`}
+        />
+        <InnerLineRepeatSvg
+          size={general_svg_size * SVG_RATIOS.InnerLineRepeat}
+          className={`BG-svg ${SVG_ROTATION_CLASSES.InnerLineRepeat}`}
+        />
+        <CenterStarsSvg
+          size={general_svg_size * SVG_RATIOS.CenterStars}
+          className={`BG-svg ${SVG_ROTATION_CLASSES.CenterStars}`}
+        />
+        <CenterLineSplitSvg
+          size={general_svg_size * SVG_RATIOS.CenterLineSplit}
+          className={`BG-svg ${SVG_ROTATION_CLASSES.CenterLineSplit}`}
+        />
+        <CenterCrownSvg
+          size={general_svg_size * SVG_RATIOS.CenterCrown}
+          className={`BG-svg ${SVG_ROTATION_CLASSES.CenterCrown}`}
+        />
+      </div>
     </div>
   );
 };
