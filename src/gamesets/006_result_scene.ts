@@ -16,7 +16,13 @@ import { getLatestKey } from "./009_keyinput";
 import { playMiss } from "./012_soundplay";
 import { saveToCache } from "./020_cacheControl";
 import { postPlayData } from "./010_APIget";
-import { closeScene, flashObj, openScene, reaction_jump } from "./014_mogura";
+import {
+  closeScene,
+  flashObj,
+  openScene,
+  reaction_jump,
+  wig_Type,
+} from "./014_mogura";
 
 function createText(
   app: PIXI.Application,
@@ -78,6 +84,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     }
     app.stage.removeChildren();
     BG_grid(app);
+    wig_Type(app);
     gameData.total_keyhit += gameData.total_hit_cnt;
     saveToCache("total_keyhit_GM", gameData.total_keyhit);
     if (!gameData.IsLoggedin) {

@@ -18,6 +18,7 @@ import {
   openScene,
   reaction,
   reaction_jump,
+  wig_Type,
 } from "./014_mogura";
 import { BG_grid } from "./018_grid";
 
@@ -32,6 +33,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
     app.stage.removeChildren();
     BG_grid(app);
+    wig_Type(app);
     let isOpened_record = opened_record.play;
     const screenCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
     const exit_btn = new PIXI.Graphics();

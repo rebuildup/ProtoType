@@ -24,10 +24,9 @@
   transform-origin: center;
   /* 要素の中心を原点(0,0)に配置 */
   transform: translate(-50%, -50%);
-  backface-visibility: hidden; /* パフォーマンス向上 */
+  backface-visibility: hidden;
 }
 
-/* 回転方向のクラス */
 .rotate-clockwise {
   animation-name: rotateClockwise;
   animation-timing-function: linear;

@@ -15,6 +15,7 @@ import {
   openScene,
   reaction,
   reaction_jump,
+  wig_Type,
 } from "./014_mogura";
 
 import { triggerFrameEffect } from "./024_FrameEffect";
@@ -265,6 +266,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
           break;
       }
     };
+    wig_Type(app);
     flashObj(app, recordBtn);
     flashObj(app, gameSelectBtn);
     flashObj(app, settingSelectBtn);
@@ -518,7 +520,7 @@ function game_mode_select(app: PIXI.Application): Promise<void> {
     exit_btn.on("pointerdown", async () => {
       exit();
     });
-
+    wig_Type(app);
     openScene(app, 0);
 
     // 初期選択状態を設定

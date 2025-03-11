@@ -19,13 +19,17 @@ import {
   openScene,
   reaction,
   reaction_jump,
+  wig_Type,
 } from "./014_mogura";
 import { playCollect, playMiss } from "./012_soundplay";
 import { triggerFrameEffect } from "./024_FrameEffect";
+import { BG_grid } from "./018_grid";
 
 export function Player_register(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
     app.stage.removeChildren();
+    BG_grid(app);
+    wig_Type(app);
     const screenCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
     let player_name = "";
     const enter_text = new PIXI.Text({

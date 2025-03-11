@@ -13,7 +13,13 @@ import { keyLayouts } from "../components/012_KeyLayout";
 import { playMiss, playCollect } from "./012_soundplay";
 
 import { saveToCache, deleteCache } from "./020_cacheControl";
-import { closeScene, flashObj, openScene, reaction } from "./014_mogura";
+import {
+  closeScene,
+  flashObj,
+  openScene,
+  reaction,
+  wig_Type,
+} from "./014_mogura";
 import { BG_grid } from "./018_grid";
 const Select_dot_x = 680;
 const option_select_values = { keylayoutset: 0, instantkey_n: 1 };
@@ -22,6 +28,8 @@ const opened_options = { menu: -1, keylayout: 0, instantkey: 1 };
 export function setting_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
     app.stage.removeChildren();
+
+    wig_Type(app);
 
     const setting_title_x = app.screen.width / 2 - 300;
     const setting_value_x = app.screen.width / 2 + 300;
