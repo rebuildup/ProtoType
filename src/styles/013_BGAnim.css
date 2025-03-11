@@ -1,0 +1,19 @@
+.BG-anim {
+  overflow: hidden;
+}
+.BG-svg {
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  animation: rotation 60s infinite linear;
+  transform-origin: center;
+}
+@keyframes rotation {
+  from {
+    transform: rotate(0deg); /* Start at 0 degrees */
+  }
+  to {
+    transform: rotate(360deg); /* End at 360 degrees */
+  }
+}

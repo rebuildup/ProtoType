@@ -17,6 +17,7 @@ import "./index.css";
 
 import { loadFromCache, updateSetting } from "./SiteInterface.ts";
 import { themes } from "./components/010_ColorPalette.tsx";
+import BGAnim from "./components/015_BGAnim.tsx";
 
 import { fonts } from "./components/011_FontSelector.tsx";
 
@@ -88,6 +89,7 @@ const App: React.FC = () => {
 
   return (
     <div>
+      <BGAnim />
       <Header />
       <Tab onTabChange={setCurrentTab} />
       <div className="Components" style={{ zIndex: 1 }}>

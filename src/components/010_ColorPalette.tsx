@@ -57,7 +57,6 @@ export const themes = [
       "--SecondAccent": "#ffffff",
     },
   },
-
   {
     name: "tropical",
     colors: {
@@ -67,7 +66,6 @@ export const themes = [
       "--SecondAccent": "#00CC99",
     },
   },
-
   {
     name: "white",
     colors: {
@@ -173,14 +171,13 @@ const ColorPalette: React.FC = () => {
   return (
     <div className="p-4" style={{ zIndex: 1 }}>
       <h1>カラーテーマ</h1>
-      {/* スクロール可能なコンテナを追加 */}
       <div
         style={{
           overflowX: "auto",
           overflowY: "hidden",
           scrollbarWidth: "thin",
-          WebkitOverflowScrolling: "touch", // iOS用のスムーススクロール
-          paddingBottom: "10px", // スクロールバー用の余白
+          WebkitOverflowScrolling: "touch",
+          paddingBottom: "10px",
           maxWidth: "100%",
         }}
       >
@@ -188,14 +185,12 @@ const ColorPalette: React.FC = () => {
           className="flex gap-4"
           style={{
             display: "flex",
-            flexWrap: "nowrap", // 折り返しなし
-            minWidth: "min-content", // コンテンツの最小幅を確保
+            flexWrap: "nowrap",
+            minWidth: "min-content",
           }}
         >
           {themes.map((theme) => (
             <div key={theme.name} style={{ flexShrink: 0 }}>
-              {" "}
-              {/* 縮小を防止 */}
               <button onClick={() => applyTheme(theme)}>
                 <svg width="100" height="100" viewBox="-100 -100 200 200">
                   <filter id="invert">
