@@ -147,6 +147,43 @@ export const themes = [
       "--SecondAccent": "#99FFCC",
     },
   },
+  {
+    name: "china",
+    colors: {
+      "--MainBG": "#5b0619",
+      "--MainColor": "#eeeeee",
+      "--MainAccent": "#edd862",
+      "--SecondAccent": "#eeeeee",
+    },
+  },
+  {
+    name: "moon",
+    colors: {
+      "--MainBG": "#0a0a3e",
+      "--MainColor": "#eeeeee",
+      "--MainAccent": "#ecd867",
+      "--SecondAccent": "#eeeeee",
+    },
+  },
+  {
+    name: "red",
+    colors: {
+      "--MainBG": "#bf1e2e",
+      "--MainColor": "#eeeeee",
+      "--MainAccent": "#eeeeee",
+      "--SecondAccent": "#eeeeee",
+    },
+  },
+
+  {
+    name: "white red",
+    colors: {
+      "--MainBG": "#eeeeee",
+      "--MainColor": "#bf1e2e",
+      "--MainAccent": "#bf1e2e",
+      "--SecondAccent": "#bf1e2e",
+    },
+  },
 ];
 
 const ColorPalette: React.FC = () => {

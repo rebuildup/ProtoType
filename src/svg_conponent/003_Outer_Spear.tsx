@@ -13,18 +13,19 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
 }) => {
   return (
     <svg
-      id="_レイヤー_2"
-      data-name="レイヤー 2"
+      id="lay 2"
+      data-name="lay 2"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 3155.5 3155.5"
       width={size}
       height={size}
       className={className}
+      opacity={0.2}
     >
       <defs>
         <style>
-          {` .cls-1 {
-        fill: #fff;
+          {`.cls-1 {
+        fill: var(--MainBG);
       }
 
       .cls-2 {

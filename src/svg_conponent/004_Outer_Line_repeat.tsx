@@ -13,8 +13,8 @@ const OuterLineRepeatSvg: React.FC<OuterLineRepeatSvgProps> = ({
 }) => {
   return (
     <svg
-      id="_レイヤー_2"
-      data-name="レイヤー 2"
+      id="lay 2"
+      data-name="lay 2"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 3601 3601"
       width={size}

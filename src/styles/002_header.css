@@ -41,3 +41,21 @@
   border-radius: 8px;
   z-index: 1000;
 }
+button {
+  transition: color 0.5s cubic-bezier(0, 0.7, 0.2, 1);
+}
+
+button:hover {
+  background: linear-gradient(to top, var(--MainAccent) 50%, var(--MainBG) 50%);
+  background-size: 100% 200%;
+  animation: slideInLeft 1s cubic-bezier(0, 0.7, 0.2, 1);
+}
+
+@keyframes slideInLeft {
+  from {
+    background-position: 0 100%;
+  }
+  to {
+    background-position: 0 0;
+  }
+}

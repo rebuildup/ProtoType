@@ -13,13 +13,14 @@ const InnerSpearSvg: React.FC<InnerSpearSvgProps> = ({
 }) => {
   return (
     <svg
-      id="_レイヤー_2"
-      data-name="レイヤー 2"
+      id="lay 2"
+      data-name="lay 2"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 2176.16 2176.16"
       width={size}
       height={size}
       className={className}
+      opacity={0.5}
     >
       <defs>
         <style>

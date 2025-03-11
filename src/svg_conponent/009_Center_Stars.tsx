@@ -13,8 +13,8 @@ const CenterStarsSvg: React.FC<CenterStarsSvgProps> = ({
 }) => {
   return (
     <svg
-      id="_レイヤー_2"
-      data-name="レイヤー 2"
+      id="lay 2"
+      data-name="lay 2"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 779.65 779.65"
       width={size}

@@ -40,7 +40,7 @@ const SVG_ROTATION_CLASSES = {
   CenterCrown: "rotate-speed-25 rotate-clockwise",
 };
 
-const general_svg_size = 1000;
+const general_svg_size = 2200;
 
 const BGAnim: React.FC = () => {
   const [accentColor, setAccentColor] = useState<string>("");

@@ -13,8 +13,8 @@ const InnerLineSplitSvg: React.FC<InnerLineSplitSvgProps> = ({
 }) => {
   return (
     <svg
-      id="_レイヤー_2"
-      data-name="レイヤー 2"
+      id="lay 2"
+      data-name="lay 2"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 1357 1356.89"
       width={size}
