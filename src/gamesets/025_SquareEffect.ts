@@ -182,12 +182,12 @@ class SquareEffectManager {
 
     try {
       // 背景正方形を一度リセットして確実に表示されるようにする
-      this.squareElements.background.style.width = "1px";
-      this.squareElements.background.style.height = "1px";
+      this.squareElements.background.style.width = "480px";
+      this.squareElements.background.style.height = "480px";
 
       // 前景正方形も同様にリセット
-      this.squareElements.foreground.style.width = "1px";
-      this.squareElements.foreground.style.height = "1px";
+      this.squareElements.foreground.style.width = "420px";
+      this.squareElements.foreground.style.height = "420px";
 
       // わずかなディレイを入れて確実にDOM更新が反映されるようにする
       setTimeout(() => {
@@ -195,8 +195,8 @@ class SquareEffectManager {
         gsap.fromTo(
           this.squareElements.background,
           {
-            width: "0px",
-            height: "0px",
+            width: "480px",
+            height: "480px",
             opacity: 0.8,
           },
           {
@@ -221,8 +221,8 @@ class SquareEffectManager {
         gsap.fromTo(
           this.squareElements.foreground,
           {
-            width: "0px",
-            height: "0px",
+            width: "420px",
+            height: "420px",
             opacity: 0.9,
           },
           {

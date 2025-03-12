@@ -956,7 +956,8 @@ function isFibonacci(n: number): boolean {
 import { ColorMatrixFilter } from "pixi.js";
 function filterflash(app: PIXI.Application) {
   const colorMatrix = new ColorMatrixFilter();
-  colorMatrix.negative(true);
+  //colorMatrix.negative(true);
+  colorMatrix.sepia(true);
   app.stage.filters = [colorMatrix];
   setTimeout(() => {
     app.stage.filters = [];

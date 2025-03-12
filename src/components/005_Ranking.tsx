@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { getRanking_Data } from "../gamesets/010_APIget";
 import "../styles/011_rankingtable.css";
+import "../styles/015_RankingLoad.css";
 
 const Ranking: React.FC = () => {
   const [tableData, setTableData] = useState<any[][]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getRanking_Data(0);
-      const transposed = transposeData(data);
-      setTableData(transposed);
-      //setTableData(data);
+      setLoading(true);
+      try {
+        const data = await getRanking_Data(0);
+        const transposed = transposeData(data);
+        setTableData(transposed);
+      } catch (error) {
+        console.error("Failed to fetch ranking data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
@@ -20,17 +28,26 @@ const Ranking: React.FC = () => {
     <div style={{ zIndex: 1 }}>
       <div>オンラインランキング</div>
       <br />
-      <table>
-        <tbody>
-          {tableData.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <td key={cellIndex}>{cell}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {loading ? (
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <div className="loading-text">
+            オンラインランキングを読み込み中...
+          </div>
+        </div>
+      ) : (
+        <table>
+          <tbody>
+            {tableData.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {row.map((cell, cellIndex) => (
+                  <td key={cellIndex}>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
       <br />
     </div>
   );

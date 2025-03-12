@@ -69,54 +69,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
     const winCenter = { x: app.screen.width / 2, y: app.screen.height / 2 };
 
     let selectedIndex = 1;
-    /*
-    const wakuCircle = new PIXI.Graphics();
-    wakuCircle.label = "waku_circle";
-    wakuCircle.circle(0, 0, 840);
-    wakuCircle.position.set(winCenter.x, winCenter.y);
-    wakuCircle.stroke({
-      width: 2,
-      color: replaceHash(settings.colorTheme.colors.MainColor),
-    });
-    app.stage.addChild(wakuCircle);
-    gsap.fromTo(
-      wakuCircle.scale,
-      { x: 1.2, y: 1.2 },
-      { x: 1, y: 1, duration: 2, ease: "power4.out" }
-    );
 
-    const circleAcc = new PIXI.Graphics();
-    circleAcc.label = "circle_acc";
-    circleAcc.circle(0, 0, 1000);
-    circleAcc.position.set(winCenter.x - 300, winCenter.y - 280);
-    circleAcc.fill(replaceHash(settings.colorTheme.colors.MainAccent));
-    circleAcc.scale.set(0.3);
-    circleAcc.alpha = 0.8;
-    app.stage.addChild(circleAcc);
-    gsap.from(circleAcc.scale, {
-      x: 0,
-      y: 0,
-      duration: 2,
-      ease: "power4.out",
-      delay: 0.2,
-    });
-
-    const circleMain = new PIXI.Graphics();
-    circleMain.label = "circle_main";
-    circleMain.circle(0, 0, 1000);
-    circleMain.position.set(winCenter.x + 300, winCenter.y + 280);
-    circleMain.fill(replaceHash(settings.colorTheme.colors.MainColor));
-    circleMain.scale.set(0.2);
-    circleMain.alpha = 0.8;
-    app.stage.addChild(circleMain);
-    gsap.from(circleMain.scale, {
-      x: 0,
-      y: 0,
-      duration: 2,
-      ease: "power4.out",
-      delay: 0.4,
-    });
-    */
     const gameSelectBtn = createButton("ゲーム選択");
     gameSelectBtn.position.set(
       winCenter.x - gameSelectBtn.width / 2,
