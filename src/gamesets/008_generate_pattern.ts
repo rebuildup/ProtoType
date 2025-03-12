@@ -39,13 +39,11 @@ export function getNextKeysOptimized(
   readingText: string,
   currentInput: string
 ): NextKeyInfo[] {
-  // If the conversion is complete, return an empty array
   if (currentInput === readingTextToFullRomaji(readingText)) {
     return [];
   }
 
   const cache = new Map<string, NextKeyInfo[]>();
-  // Sort KEY_CONFIGS by key length descending to prioritize longer matches
   const sortedKeyConfigs = KEY_CONFIGS.slice().sort(
     (a, b) => b.key.length - a.key.length
   );
@@ -248,7 +246,6 @@ export function getRomanizedTextFromTendency(
     }
     const ch = readingText[i];
 
-    // Directly append non-hiragana characters
     if (!isHiragana(ch)) {
       dfs(i + 1, false, out + ch, nonPreferred);
       return;
@@ -392,14 +389,11 @@ function readingTextToFullRomaji(readingText: string): string {
   while (i < readingText.length) {
     // Handle small "っ" (sokuon) separately:
     if (readingText[i] === "っ") {
-      // Look ahead to next character to determine doubling candidate
       if (i + 1 < readingText.length) {
-        // Find the next matching key from sorted configs
         const nextKey = sortedKeyConfigs.find((config) =>
           readingText.startsWith(config.key, i + 1)
         );
         if (nextKey) {
-          // Double the first letter of the first origin
           const origin = nextKey.origins[0];
           result += origin.charAt(0);
         }
@@ -408,7 +402,6 @@ function readingTextToFullRomaji(readingText: string): string {
       continue;
     }
     let found = false;
-    // Try to match up to 3 characters (prioritizing longer keys)
     for (let len = Math.min(3, readingText.length - i); len > 0; len--) {
       const key = readingText.substring(i, i + len);
       const config = sortedKeyConfigs.find((c) => c.key === key);
@@ -427,7 +420,6 @@ function readingTextToFullRomaji(readingText: string): string {
   return result;
 }
 
-// ローマ字変換用のキー設定
 export const KEY_CONFIGS: KeyConfigs = [
   {
     key: "あ",
