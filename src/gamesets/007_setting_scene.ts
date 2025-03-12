@@ -259,7 +259,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
               width: 4,
               color: replaceHash(settings.colorTheme.colors.MainAccent),
             });
-          layout_BG.alpha = 0.96;
+          layout_BG.alpha = 0.9;
           layout_BG.x = -layout_BG.width / 2;
           layout_BG.y = -layout_BG.height / 2;
           layout_container.addChild(layout_BG);
@@ -302,7 +302,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
               width: 4,
               color: replaceHash(settings.colorTheme.colors.MainAccent),
             });
-          instant_BG.alpha = 0.96;
+          instant_BG.alpha = 0.9;
           instant_BG.x = -instant_BG.width / 2;
           instant_BG.y = -instant_BG.height / 2;
           instant_container.addChild(instant_BG);
@@ -391,7 +391,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
               width: 4,
               color: replaceHash(settings.colorTheme.colors.MainAccent),
             });
-          flash_BG.alpha = 0.96;
+          flash_BG.alpha = 0.9;
           flash_BG.x = -flash_BG.width / 2;
           flash_BG.y = -flash_BG.height / 2;
           flash_container.addChild(flash_BG);
@@ -487,6 +487,25 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
     flashObj(app, flashType_text);
     flashObj(app, flashType_value);
     openScene(app, 2);
+
+    const hint = new PIXI.Text({
+      text: "ヒント:左右shift・上下左右キーで移動/Space・Enterで決定/Escキーで戻る",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 20,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    hint.x = app.screen.width / 2 - hint.width / 2;
+    hint.y = app.screen.height - 280;
+    hint.alpha = 0;
+    app.stage.addChild(hint);
+    gsap.fromTo(
+      hint,
+      { alpha: 0, y: app.screen.height - 260 },
+      { alpha: 0.5, y: app.screen.height - 280, duration: 3, delay: 2 }
+    );
     while (gameData.CurrentSceneName === "setting_scene") {
       currentKeyController = new AbortController();
       try {

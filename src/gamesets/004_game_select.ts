@@ -227,8 +227,42 @@ export async function game_select(app: PIXI.Application): Promise<void> {
     flashObj(app, gameSelectBtn);
     flashObj(app, settingSelectBtn);
     openScene(app, gameData.gameselect_open);
-
-    setTimeout(() => {}, 3000);
+    const hint = new PIXI.Text({
+      text: "ヒント:左右shift・上下左右キー・Space・Enter・Escキーで操作可能",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 20,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    hint.x = app.screen.width / 2 - hint.width / 2;
+    hint.y = 60;
+    hint.alpha = 0;
+    app.stage.addChild(hint);
+    gsap.fromTo(
+      hint,
+      { alpha: 0, y: 80 },
+      { alpha: 0.3, y: 60, duration: 5, delay: 5 }
+    );
+    const hint_two = new PIXI.Text({
+      text: "ヒント:左右shift・上下左右キー・Space・Enter・Escキーで操作可能",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 20,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    hint_two.x = app.screen.width / 2 - hint_two.width / 2;
+    hint_two.y = app.screen.height - 60;
+    hint_two.alpha = 0;
+    app.stage.addChild(hint_two);
+    gsap.fromTo(
+      hint_two,
+      { alpha: 0, y: app.screen.height - 60 },
+      { alpha: 0.3, y: app.screen.height - 80, duration: 5, delay: 6 }
+    );
 
     while (gameData.CurrentSceneName === "game_select") {
       currentKeyController = new AbortController();
