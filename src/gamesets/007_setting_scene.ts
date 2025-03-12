@@ -379,6 +379,52 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
 
           setting_container.addChild(instant_container);
           break;
+        case opened_options.flashType:
+          const flash_container = new PIXI.Container();
+          flash_container.position = screenCenter;
+
+          const flash_BG = new PIXI.Graphics();
+          flash_BG
+            .rect(0, 0, app.screen.width + 100, 300)
+            .fill(replaceHash(settings.colorTheme.colors.MainBG))
+            .stroke({
+              width: 4,
+              color: replaceHash(settings.colorTheme.colors.MainAccent),
+            });
+          flash_BG.alpha = 0.96;
+          flash_BG.x = -flash_BG.width / 2;
+          flash_BG.y = -flash_BG.height / 2;
+          flash_container.addChild(flash_BG);
+
+          const flash_options = ["反転", "減彩"];
+          for (let i = 0; i < flash_options.length; i++) {
+            const flash_selection = new PIXI.Text({
+              text: flash_options[i],
+              style: {
+                fontFamily: gameData.FontFamily,
+                fontSize: 40,
+                fill: replaceHash(settings.colorTheme.colors.MainColor),
+                align: "center",
+              },
+            });
+            flash_selection.alpha = i == select ? 1 : 0.5;
+            flash_selection.x = -flash_selection.width / 2;
+            flash_selection.y = (i - flash_options.length / 2) * 80 + 20;
+            flash_selection.interactive = true;
+            flash_selection.on("pointerdown", async () => {
+              triggerFrameEffect();
+              playCollect();
+              gameData.flashType = i;
+              flashType_value.text = i == 0 ? "反転" : "減彩";
+              flashType_value.x = setting_value_x - flashType_value.width;
+              saveToCache("flashType_GM", gameData.flashType);
+              isOpened_option = opened_options.menu;
+              update_open(isOpened_option);
+            });
+            flash_container.addChild(flash_selection);
+          }
+          setting_container.addChild(flash_container);
+          break;
       }
     }
 
@@ -418,10 +464,28 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       dot_pos_update(1);
       update_open(isOpened_option, current_select);
     });
+    flashType_text.on("pointerdown", async () => {
+      triggerFrameEffect();
+      playMiss(0.3);
+      isOpened_option = opened_options.flashType;
+      current_select = gameData.flashType;
+      dot_pos_update(2);
+      update_open(isOpened_option, current_select);
+    });
+    flashType_value.on("pointerdown", async () => {
+      triggerFrameEffect();
+      playMiss(0.3);
+      isOpened_option = opened_options.flashType;
+      current_select = gameData.flashType;
+      dot_pos_update(2);
+      update_open(isOpened_option, current_select);
+    });
     flashObj(app, keylayout_text);
     flashObj(app, keylayout_value);
     flashObj(app, instantkey_n_text);
     flashObj(app, instantkey_n_value);
+    flashObj(app, flashType_text);
+    flashObj(app, flashType_value);
     openScene(app, 2);
     while (gameData.CurrentSceneName === "setting_scene") {
       currentKeyController = new AbortController();
@@ -523,6 +587,10 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
                 isOpened_option = opened_options.instantkey;
                 current_select = gameData.instant_key_n;
                 break;
+              case option_select_values.flashType:
+                isOpened_option = opened_options.flashType;
+                current_select = gameData.flashType;
+                break;
             }
             update_open(isOpened_option, current_select);
           } else if (isOpened_option == opened_options.keylayout) {
@@ -537,6 +605,13 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
             instantkey_n_value.text = String(gameData.instant_key_n);
             instantkey_n_value.x = setting_value_x - instantkey_n_value.width;
             saveToCache("instant_key_GM", gameData.instant_key_n);
+            isOpened_option = opened_options.menu;
+            update_open(isOpened_option);
+          } else if (isOpened_option == opened_options.flashType) {
+            gameData.flashType = current_select;
+            flashType_value.text = current_select == 0 ? "反転" : "減彩";
+            flashType_value.x = setting_value_x - flashType_value.width;
+            saveToCache("flashType_GM", gameData.flashType);
             isOpened_option = opened_options.menu;
             update_open(isOpened_option);
           }

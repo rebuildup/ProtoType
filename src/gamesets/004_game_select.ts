@@ -228,6 +228,8 @@ export async function game_select(app: PIXI.Application): Promise<void> {
     flashObj(app, settingSelectBtn);
     openScene(app, gameData.gameselect_open);
 
+    setTimeout(() => {}, 3000);
+
     while (gameData.CurrentSceneName === "game_select") {
       currentKeyController = new AbortController();
       try {
