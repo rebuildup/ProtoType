@@ -32,20 +32,6 @@ function createText(
   f_size: number = 38,
   option: number = 0
 ) {
-  for (let i = 0; i < 100; i++) {
-    if (
-      ((gameData.total_hit_cnt - gameData.Miss) /
-        ((gameData.EndTime - gameData.StartTime) / 1000)) *
-        60 *
-        (1 - gameData.Miss / gameData.total_hit_cnt) *
-        (1 - gameData.Miss / gameData.total_hit_cnt) *
-        (1 - gameData.Miss / gameData.total_hit_cnt) *
-        100 +
-        gameData.score_extra >
-      gameData.localRanking[i].player_score
-    ) {
-    }
-  }
   const output = new PIXI.Text({
     text: text_t,
     style: {
