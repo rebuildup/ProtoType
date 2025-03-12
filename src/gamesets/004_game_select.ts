@@ -207,6 +207,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
     }
 
     recordBtn.on("pointerdown", () => {
+      triggerFrameEffect();
       selectedIndex = 0;
       updateSelectDots(selectedIndex);
       currentKeyController?.abort();
@@ -218,6 +219,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       transitionToRecord();
     });
     settingSelectBtn.on("pointerdown", () => {
+      triggerFrameEffect();
       selectedIndex = 2;
       updateSelectDots(selectedIndex);
       currentKeyController?.abort();
@@ -229,6 +231,7 @@ export async function game_select(app: PIXI.Application): Promise<void> {
       transitionToSetting();
     });
     gameSelectBtn.on("pointerdown", () => {
+      triggerFrameEffect();
       selectedIndex = 1;
       updateSelectDots(selectedIndex);
       currentKeyController?.abort();

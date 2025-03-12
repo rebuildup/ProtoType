@@ -21,6 +21,7 @@ import {
   wig_Type,
 } from "./014_mogura";
 import { BG_grid } from "./018_grid";
+import { triggerFrameEffect } from "./024_FrameEffect";
 
 const Select_dot_x = 1170;
 const opened_record = { play: 0, achieve: 1, ranking: 2, graph: 3 };
@@ -60,6 +61,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
     let currentKeyController: AbortController | null = null;
 
     exit_btn.on("pointerdown", async () => {
+      triggerFrameEffect();
       reaction(exit_btn, 1.1);
       playCollect();
       gameData.CurrentSceneName = "game_select";
@@ -80,6 +82,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
     play_record_text.y = screenCenter.y - play_record_text.height / 2 - 120;
     play_record_text.interactive = true;
     play_record_text.on("pointerdown", async () => {
+      triggerFrameEffect();
       playMiss(0.3);
       isOpened_record = opened_record.play;
       dot_pos_update(isOpened_record);
@@ -101,6 +104,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
     achieve_text.interactive = true;
     achieve_text.alpha = 0.5;
     achieve_text.on("pointerdown", async () => {
+      triggerFrameEffect();
       playMiss(0.3);
       isOpened_record = opened_record.achieve;
       dot_pos_update(isOpened_record);
@@ -122,6 +126,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
     ranking_text.interactive = true;
     ranking_text.alpha = 0.5;
     ranking_text.on("pointerdown", async () => {
+      triggerFrameEffect();
       playMiss(0.3);
       isOpened_record = opened_record.ranking;
       dot_pos_update(isOpened_record);
@@ -143,6 +148,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
     graph_text.interactive = true;
     graph_text.alpha = 0.5;
     graph_text.on("pointerdown", async () => {
+      triggerFrameEffect();
       playMiss(0.3);
       isOpened_record = opened_record.graph;
       dot_pos_update(isOpened_record);
@@ -656,6 +662,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
         const keyCode = await getLatestKey(currentKeyController.signal);
 
         if (keyCode.code === "Escape") {
+          triggerFrameEffect();
           reaction(exit_btn, 1.1);
           playCollect();
           gameData.CurrentSceneName = "game_select";
@@ -663,6 +670,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
         } else if (
           ["ArrowDown", "ArrowRight", "ShiftRight"].includes(keyCode.code)
         ) {
+          triggerFrameEffect();
           playMiss(0.3);
           if (isOpened_record >= 3) {
             isOpened_record = 0;
@@ -674,6 +682,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
         } else if (
           ["ArrowUp", "ArrowLeft", "ShiftLeft"].includes(keyCode.code)
         ) {
+          triggerFrameEffect();
           playMiss(0.3);
           if (isOpened_record <= 0) {
             isOpened_record = 3;

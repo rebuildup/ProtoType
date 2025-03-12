@@ -145,7 +145,6 @@ export function getNextKeysOptimized(
       }
     }
 
-    // Handle "ん" (n) with context-dependent conversion
     if (currentChar === "ん") {
       const remainingInput = currentInput.substring(matched);
       if (index === readingText.length - 1) {
@@ -287,7 +286,6 @@ export function getRomanizedTextFromTendency(
           }
         }
       } else {
-        // When there's no user input yet, try both possibilities
         dfs(nextIndex, true, out, nonPreferred);
         for (const alt of fixedAlternatives) {
           dfs(nextIndex, false, out + alt, nonPreferred);
