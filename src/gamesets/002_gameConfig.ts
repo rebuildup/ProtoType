@@ -40,6 +40,7 @@ export interface GameData {
   onlineRanking: RankingPlayer[];
   onlinedata: RankingPlayer[];
   gameselect_open: number;
+  flashType: number;
 }
 
 export const gameData: GameData = {
@@ -78,4 +79,5 @@ export const gameData: GameData = {
   onlineRanking: [],
   onlinedata: [],
   gameselect_open: 0,
+  flashType: 0,
 };

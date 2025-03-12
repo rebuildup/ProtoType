@@ -123,6 +123,7 @@ export async function initializeGame(app: PIXI.Application) {
     "instant_key_GM",
     20
   );
+  gameData.flashType = loadFromCache<typeof gameData.flashType>("flashType", 0);
   gameData.total_keyhit = loadFromCache<typeof gameData.total_keyhit>(
     "total_keyhit_GM",
     0

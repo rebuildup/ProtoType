@@ -23,8 +23,8 @@ import {
 import { BG_grid } from "./018_grid";
 import { triggerFrameEffect } from "./024_FrameEffect";
 const Select_dot_x = 680;
-const option_select_values = { keylayoutset: 0, instantkey_n: 1 };
-const opened_options = { menu: -1, keylayout: 0, instantkey: 1 };
+const option_select_values = { keylayoutset: 0, instantkey_n: 1, flashType: 2 };
+const opened_options = { menu: -1, keylayout: 0, instantkey: 1, flashType: 2 };
 
 export function setting_scene(app: PIXI.Application): Promise<void> {
   return new Promise<void>(async (resolve) => {
@@ -107,7 +107,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       },
     });
     keylayout_text.x = setting_title_x;
-    keylayout_text.y = screenCenter.y - keylayout_text.height / 2 - 80;
+    keylayout_text.y = screenCenter.y - keylayout_text.height / 2 - 120;
     keylayout_text.interactive = true;
     app.stage.addChild(keylayout_text);
 
@@ -121,7 +121,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       },
     });
     keylayout_value.x = setting_value_x - keylayout_value.width;
-    keylayout_value.y = screenCenter.y - keylayout_value.height / 2 - 80;
+    keylayout_value.y = screenCenter.y - keylayout_value.height / 2 - 120;
     keylayout_value.interactive = true;
     app.stage.addChild(keylayout_value);
 
@@ -135,7 +135,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       },
     });
     instantkey_n_text.x = setting_title_x;
-    instantkey_n_text.y = screenCenter.y - instantkey_n_text.height / 2 + 80;
+    instantkey_n_text.y = screenCenter.y - instantkey_n_text.height / 2;
     instantkey_n_text.interactive = true;
     app.stage.addChild(instantkey_n_text);
 
@@ -149,9 +149,36 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       },
     });
     instantkey_n_value.x = setting_value_x - instantkey_n_value.width;
-    instantkey_n_value.y = screenCenter.y - instantkey_n_value.height / 2 + 80;
+    instantkey_n_value.y = screenCenter.y - instantkey_n_value.height / 2;
     instantkey_n_value.interactive = true;
     app.stage.addChild(instantkey_n_value);
+
+    const flashType_text = new PIXI.Text({
+      text: "フラッシュ",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 40,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    flashType_text.x = setting_title_x;
+    flashType_text.y = screenCenter.y - flashType_text.height / 2 + 120;
+    flashType_text.interactive = true;
+    app.stage.addChild(flashType_text);
+    const flashType_value = new PIXI.Text({
+      text: gameData.flashType == 0 ? "反転" : "減彩",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 40,
+        fill: replaceHash(settings.colorTheme.colors.MainColor),
+        align: "center",
+      },
+    });
+    flashType_value.x = setting_value_x - flashType_value.width;
+    flashType_value.y = screenCenter.y - flashType_value.height / 2 + 120;
+    flashType_value.interactive = true;
+    app.stage.addChild(flashType_value);
 
     const selectDotAcc = new PIXI.Graphics();
     selectDotAcc.circle(0, 0, 8);
@@ -200,6 +227,9 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
             Select_dot_x,
             instantkey_n_text.y + instantkey_n_text.height / 2
           );
+          break;
+        case option_select_values.flashType:
+          dot_to(Select_dot_x, flashType_text.y + flashType_text.height / 2);
           break;
       }
     }
@@ -415,7 +445,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
           playMiss(0.3);
           switch (isOpened_option) {
             case opened_options.menu:
-              if (option_select >= 1) {
+              if (option_select >= 2) {
                 option_select = 0;
               } else {
                 option_select++;
@@ -438,6 +468,10 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
               }
               update_open(isOpened_option, current_select);
               break;
+            case opened_options.flashType:
+              current_select = current_select == 0 ? 1 : 0;
+              update_open(isOpened_option, current_select);
+              break;
           }
         } else if (
           ["ArrowUp", "ArrowLeft", "ShiftLeft"].includes(keyCode.code)
@@ -447,7 +481,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
           switch (isOpened_option) {
             case opened_options.menu:
               if (option_select <= 0) {
-                option_select = 1;
+                option_select = 2;
               } else {
                 option_select--;
               }
@@ -467,6 +501,10 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
               } else {
                 current_select++;
               }
+              update_open(isOpened_option, current_select);
+              break;
+            case opened_options.flashType:
+              current_select = current_select == 0 ? 1 : 0;
               update_open(isOpened_option, current_select);
               break;
           }

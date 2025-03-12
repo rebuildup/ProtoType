@@ -50,6 +50,7 @@ export function Player_register(app: PIXI.Application): Promise<void> {
     enter_text.on("pointerdown", async () => {
       reaction_jump(enter_text, screenCenter.y - enter_text.height / 2 + 100);
       gameData.CurrentSceneName = "game_scene";
+      flashObj(app, enter_text);
       get_out();
     });
     app.stage.addChild(enter_text);
@@ -185,6 +186,7 @@ export function Player_register(app: PIXI.Application): Promise<void> {
           if (player_name.length != 0) {
             gameData.current_Player_name = player_name;
           }
+          flashObj(app, enter_text);
           get_out();
         }
       } catch (error: any) {
