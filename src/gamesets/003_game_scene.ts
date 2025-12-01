@@ -20,10 +20,9 @@ import {
 } from "./009_keyinput";
 import { loadcache_localranking, RankingPlayer } from "./020_cacheControl";
 
-import {
-  getNextKeysOptimized,
-  getRomanizedTextFromTendency,
-} from "./008_generate_pattern";
+import { getNextKeysOptimized, getRomanizedTextFromTendency } from "./008_generate_pattern";
+import { LONG_TEXT_ISSUES } from "./028_local_texts";
+import { evaluateAchievements } from "./027_achievements";
 
 import { BG_grid } from "./018_grid";
 
@@ -39,7 +38,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     const BG_plane = new PIXI.Graphics();
     app.stage.addChild(BG_plane);
     BG_plane.rect(0, 0, app.screen.width, app.screen.height).fill(
-      replaceHash(settings.colorTheme.colors.MainBG)
+      replaceHash(settings.colorTheme.colors.MainBG),
     );
     const grid = BG_grid(app);
 
@@ -64,9 +63,9 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         gameData.Issues_num = 15;
         break;
       case "long":
-        keybord_flag = true;
-        win_pos.y = app.screen.height / 2 - 210;
-        gameData.Issues_num = 30;
+        keybord_flag = true; // 長文でもキーボードは表示
+        win_pos.y = app.screen.height / 2 - 220;
+        gameData.Issues_num = LONG_TEXT_ISSUES.length;
         break;
       case "number":
         keybord_flag = true;
@@ -80,17 +79,34 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     }
 
     const sentence_text = new PIXI.Text({
-      text: "スペースキーでスタート",
+      text: "Spaceキーでスタート",
       style: {
         fontFamily: gameData.FontFamily,
-        fontSize: 40,
+        fontSize: gameData.GameMode === "long" ? 32 : 40,
+        lineHeight: gameData.GameMode === "long" ? 40 : 44,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
+        wordWrap: gameData.GameMode === "long",
+        wordWrapWidth: gameData.GameMode === "long" ? app.screen.width * 0.55 : undefined,
       },
     });
 
     sentence_text.x = win_pos.x - sentence_text.width / 2;
     sentence_text.y = win_pos.y - sentence_text.height / 2 - 2;
+    const ghost_sentence = new PIXI.Text({
+      text: sentence_text.text,
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: sentence_text.style.fontSize,
+        lineHeight: sentence_text.style.lineHeight,
+        fill: replaceHash(settings.colorTheme.colors.SecondAccent),
+        align: "center",
+        wordWrap: sentence_text.style.wordWrap,
+        wordWrapWidth: sentence_text.style.wordWrapWidth,
+      },
+    });
+    ghost_sentence.alpha = 0.15;
+    app.stage.addChild(ghost_sentence);
     app.stage.addChild(sentence_text);
     const alphabet_text = new PIXI.Text({
       text: "space to start",
@@ -99,11 +115,14 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         fontSize: 25,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
+        wordWrap: gameData.GameMode === "long",
+        wordWrapWidth: gameData.GameMode === "long" ? app.screen.width * 0.55 : undefined,
       },
     });
     alphabet_text.x = win_pos.x - alphabet_text.width / 2;
     alphabet_text.y = win_pos.y - alphabet_text.height / 2 + 40;
-    alphabet_text.alpha = 0.6;
+    alphabet_text.alpha = gameData.GameMode === "long" ? 0 : 0.6;
+    alphabet_text.visible = gameData.GameMode !== "long";
     app.stage.addChild(alphabet_text);
     const alphabet_current_text = new PIXI.Text({
       text: "",
@@ -111,12 +130,39 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         fontFamily: gameData.FontFamily,
         fontSize: 25,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
-        align: "center",
+        align: "left",
+        wordWrap: gameData.GameMode !== "long",
+        wordWrapWidth: gameData.GameMode !== "long" ? app.screen.width * 0.55 : undefined,
       },
     });
-    alphabet_current_text.x = win_pos.x - alphabet_current_text.width / 2;
-    alphabet_current_text.y = win_pos.y - alphabet_current_text.height / 2 + 40;
+    // 長文モードでは次問題表示位置と同じ高さ付近に配置し、横幅をマスクする
+    const inputViewWidth = gameData.GameMode === "long" ? app.screen.width * 0.55 : alphabet_text.width;
+    const inputMask = new PIXI.Graphics();
+    const inputY =
+      gameData.GameMode === "long"
+        ? win_pos.y + (keybord_flag ? 120 : 80) // 少し下げる
+        : win_pos.y + 20;
+    inputMask.rect(win_pos.x - inputViewWidth / 2, inputY, inputViewWidth, 40);
+    inputMask.fill(0xffffff, 1);
+    inputMask.alpha = 0; // mask only
+    app.stage.addChild(inputMask);
+    alphabet_current_text.mask = inputMask;
+    alphabet_current_text.x = win_pos.x - inputViewWidth / 2;
+    alphabet_current_text.y = inputMask.y + 6;
     app.stage.addChild(alphabet_current_text);
+    const alphabet_remaining_text = new PIXI.Text({
+      text: "",
+      style: {
+        fontFamily: gameData.FontFamily,
+        fontSize: 25,
+        fill: replaceHash(settings.colorTheme.colors.SecondAccent),
+        align: "left",
+        wordWrap: false,
+      },
+    });
+    alphabet_remaining_text.alpha = 0.35;
+    alphabet_remaining_text.y = alphabet_current_text.y;
+    app.stage.addChild(alphabet_remaining_text);
 
     const next_text = new PIXI.Text({
       text: "",
@@ -125,11 +171,14 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         fontSize: 25,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
         align: "center",
+        wordWrap: gameData.GameMode === "long",
+        wordWrapWidth: gameData.GameMode === "long" ? app.screen.width * 0.55 : undefined,
       },
     });
 
     next_text.x = win_pos.x - next_text.width / 2;
     next_text.y = win_pos.y - next_text.height / 2 + 150;
+    next_text.alpha = gameData.GameMode === "long" ? 0 : 1;
     app.stage.addChild(next_text);
 
     const rank_text = new PIXI.Text({
@@ -212,14 +261,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     app.stage.addChild(kpm_text);
 
     const accuracyLine = new PIXI.Graphics();
-    accuracyLine.moveTo(
-      win_pos.x - (keybord_size.width * scale) / 2,
-      win_pos.y - 250
-    );
-    accuracyLine.lineTo(
-      win_pos.x + (keybord_size.width * scale) / 2,
-      win_pos.y - 250
-    );
+    accuracyLine.moveTo(win_pos.x - (keybord_size.width * scale) / 2, win_pos.y - 250);
+    accuracyLine.lineTo(win_pos.x + (keybord_size.width * scale) / 2, win_pos.y - 250);
     accuracyLine.stroke({
       width: 4,
       color: replaceHash(settings.colorTheme.colors.MainColor),
@@ -228,14 +271,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     app.stage.addChild(accuracyLine);
 
     const accuracyLine_flash = new PIXI.Graphics();
-    accuracyLine_flash.moveTo(
-      win_pos.x - (keybord_size.width * scale) / 2,
-      win_pos.y - 250
-    );
-    accuracyLine_flash.lineTo(
-      win_pos.x + (keybord_size.width * scale) / 2,
-      win_pos.y - 250
-    );
+    accuracyLine_flash.moveTo(win_pos.x - (keybord_size.width * scale) / 2, win_pos.y - 250);
+    accuracyLine_flash.lineTo(win_pos.x + (keybord_size.width * scale) / 2, win_pos.y - 250);
     accuracyLine_flash.stroke({
       width: 4,
       color: replaceHash(settings.colorTheme.colors.MainAccent),
@@ -244,14 +281,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
     accuracyLine_flash.alpha = 0;
     app.stage.addChild(accuracyLine_flash);
     const progressLine = new PIXI.Graphics();
-    progressLine.moveTo(
-      win_pos.x - (keybord_size.width * scale) / 2,
-      win_pos.y + 250
-    );
-    progressLine.lineTo(
-      win_pos.x + (keybord_size.width * scale) / 2,
-      win_pos.y + 250
-    );
+    progressLine.moveTo(win_pos.x - (keybord_size.width * scale) / 2, win_pos.y + 250);
+    progressLine.lineTo(win_pos.x + (keybord_size.width * scale) / 2, win_pos.y + 250);
     progressLine.stroke({
       width: 4,
       color: replaceHash(settings.colorTheme.colors.MainColor),
@@ -331,7 +362,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           y: 0,
           duration: 1,
           ease: CustomEase.create("custom", "M0,0 C0,0.25 0.2,0.96 1,1"),
-        }
+        },
       );
       gsap.fromTo(
         frame_right,
@@ -341,7 +372,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           y: 0,
           duration: 1,
           ease: CustomEase.create("custom", "M0,0 C0,0.25 0.2,0.96 1,1"),
-        }
+        },
       );
       gsap.fromTo(
         frame_top,
@@ -351,7 +382,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           y: -anim_max_width,
           duration: 1,
           ease: CustomEase.create("custom", "M0,0 C0,0.25 0.2,0.96 1,1"),
-        }
+        },
       );
       gsap.fromTo(
         frame_bottom,
@@ -361,7 +392,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           y: app.screen.height,
           duration: 1,
           ease: CustomEase.create("custom", "M0,0 C0,0.25 0.2,0.96 1,1"),
-        }
+        },
       );
     }
 
@@ -405,16 +436,15 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
       gameData.EndTime = Date.now();
 
+      let tmp_kpm = 0;
       if (gameData.total_hit_cnt > 0) {
-        let tmp_kpm =
+        tmp_kpm =
           ((gameData.total_hit_cnt - gameData.Miss) /
             ((gameData.EndTime - gameData.StartTime) / 1000)) *
           60;
 
         gameData.Score =
-          tmp_kpm *
-            Math.pow(1 - gameData.Miss / gameData.total_hit_cnt, 3) *
-            100 +
+          tmp_kpm * Math.pow(1 - gameData.Miss / gameData.total_hit_cnt, 3) * 100 +
           gameData.score_extra;
 
         if (gameData.Score > gameData.MaxScore) {
@@ -425,6 +455,20 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           gameData.MaxKPM = tmp_kpm;
         }
       }
+
+      const accuracy =
+        gameData.total_hit_cnt > 0 ? 1 - gameData.Miss / gameData.total_hit_cnt : 0;
+      evaluateAchievements({
+        accuracy,
+        avgKpm: tmp_kpm,
+        maxCombo: gameData.max_combo,
+        miss: gameData.Miss,
+        totalHit: gameData.total_hit_cnt,
+        totalKeyHit: gameData.total_keyhit + gameData.total_hit_cnt,
+        playCount: gameData.playCount + 1,
+        gameMode: gameData.GameMode,
+        longCompleted: gameData.GameMode === "long",
+      });
 
       gameData.CurrentSceneName = "result_scene";
     }
@@ -440,7 +484,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           y: win_pos.y - score_text.height / 2 - 198,
           duration: 0.1,
           ease: CustomEase.create("custom", "M0,0 C0,1 1,0 1,1"),
-        }
+        },
       );
       gsap.to(extra_text, {
         alpha: 0,
@@ -476,9 +520,11 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         case "exact":
           issueIndexs = [14, 14];
           break;
-        case "long":
-          issueIndexs = [14, 14];
-          break;
+      case "long":
+        // 長文は1問のみ、ローカル長文からランダムで選択
+        gameData.Issues = [LONG_TEXT_ISSUES[Math.floor(Math.random() * LONG_TEXT_ISSUES.length)]];
+        gameData.Issues_num = 1;
+        break;
         case "number":
           issueIndexs = [16, 16];
           break;
@@ -487,7 +533,10 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           resolve();
           break;
       }
-      await makeIssues(issueIndexs[0], issueIndexs[1], gameData.Issues_num);
+      if (gameData.GameMode !== "long") {
+        await makeIssues(issueIndexs[0], issueIndexs[1], gameData.Issues_num);
+      }
+
       if (gameData.IsLoggedin) {
         const onlineRanking = await getRanking_Data(0);
         gameData.onlineRanking = [];
@@ -514,7 +563,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
           if (gameData.IsStarted) {
             let collectkeys = getNextKeysOptimized(
               gameData.Issues[gameData.current_Issue].romaji,
-              gameData.current_inputed
+              gameData.current_inputed,
             );
             if (gameData.GameMode != "focus") {
               for (let collec = 0; collec < collectkeys.length; collec++) {
@@ -550,16 +599,12 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             if (keyCodeToText(keyCode.code, keyCode.shift) != "") {
               let Ismiss = true;
               for (let i = 0; i < collectkeys.length; i++) {
-                if (
-                  keyCodeToText(keyCode.code, keyCode.shift) ==
-                  collectkeys[i].letter
-                ) {
+                if (keyCodeToText(keyCode.code, keyCode.shift) == collectkeys[i].letter) {
                   Ismiss = false;
                   gameData.current_inputed =
-                    gameData.current_inputed +
-                    keyCodeToText(keyCode.code, keyCode.shift);
+                    gameData.current_inputed + keyCodeToText(keyCode.code, keyCode.shift);
                   const tendency = gameData.Conversion.find(
-                    (t) => t.key === collectkeys[i].flag.configKey
+                    (t) => t.key === collectkeys[i].flag.configKey,
                   );
                   if (tendency) {
                     tendency.tendency = String(collectkeys[i].flag.origin);
@@ -585,7 +630,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                     duration: 0.2,
                     ease: CustomEase.create("custom", "M0,0 C0,1 1,0 1,1"),
                     delay: 0.2,
-                  }
+                  },
                 );
 
                 if (gameData.GameMode != "focus") {
@@ -597,22 +642,17 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                 gameData.total_hit_cnt++;
                 let is_new_misskey = true;
                 for (let missc = 0; missc < gameData.missKeys.length; missc++) {
-                  if (
-                    keyCodeToText(keyCode.code, keyCode.shift) ==
-                    gameData.missKeys[missc]
-                  )
+                  if (keyCodeToText(keyCode.code, keyCode.shift) == gameData.missKeys[missc])
                     is_new_misskey = false;
                 }
                 if (is_new_misskey) {
-                  gameData.missKeys.push(
-                    keyCodeToText(keyCode.code, keyCode.shift)
-                  );
+                  gameData.missKeys.push(keyCodeToText(keyCode.code, keyCode.shift));
                 }
                 if (gameData.GameMode == "exact") gameData.current_inputed = "";
                 alphabet_text.text = getRomanizedTextFromTendency(
                   gameData.Conversion,
                   gameData.Issues[gameData.current_Issue].romaji,
-                  gameData.current_inputed
+                  gameData.current_inputed,
                 );
                 alphabet_text.x = win_pos.x - alphabet_text.width / 2;
               } else {
@@ -630,10 +670,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                   gameData.max_combo = gameData.combo_cnt;
                 gameData.total_hit_cnt++;
                 recordKey();
-                if (
-                  isFibonacci(gameData.combo_cnt) &&
-                  gameData.combo_cnt > 20
-                ) {
+                if (isFibonacci(gameData.combo_cnt) && gameData.combo_cnt > 20) {
                   gameData.score_extra += gameData.combo_cnt * 10;
                   extra_anim(gameData.combo_cnt * 10);
                 }
@@ -648,8 +685,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                     (1 - gameData.Miss / gameData.total_hit_cnt) *
                     100 +
                   gameData.score_extra;
-                if (gameData.Score > gameData.MaxScore)
-                  gameData.MaxScore = gameData.Score;
+                if (gameData.Score > gameData.MaxScore) gameData.MaxScore = gameData.Score;
                 if (tmp_kpm > gameData.MaxKPM) gameData.MaxKPM = tmp_kpm;
               }
             }
@@ -657,7 +693,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             if (
               getNextKeysOptimized(
                 gameData.Issues[gameData.current_Issue].romaji,
-                gameData.current_inputed
+                gameData.current_inputed,
               ).length == 0
             ) {
               triggerSquareEffect();
@@ -694,30 +730,59 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             }
 
             if (gameData.current_Issue < gameData.Issues.length) {
-              sentence_text.text = gameData.Issues[gameData.current_Issue].text;
-              sentence_text.x = win_pos.x - sentence_text.width / 2;
+            sentence_text.text = gameData.Issues[gameData.current_Issue].text;
+            ghost_sentence.text = sentence_text.text;
+            sentence_text.x = win_pos.x - sentence_text.width / 2;
+            ghost_sentence.x = sentence_text.x;
+            if (gameData.GameMode === "long") {
+              const prog =
+                gameData.current_inputed.length /
+                Math.max(1, gameData.Issues[gameData.current_Issue].romaji.length);
+              sentence_text.y = win_pos.y - 120 - prog * 80;
+              ghost_sentence.y = sentence_text.y + 8;
+            }
               if (gameData.current_inputed.length == 0) {
                 flashObj(app, sentence_text);
                 flashObj(app, alphabet_text);
               }
             }
-            alphabet_text.text = getRomanizedTextFromTendency(
-              gameData.Conversion,
-              gameData.Issues[gameData.current_Issue].romaji,
-              gameData.current_inputed
-            );
+            alphabet_text.text =
+              gameData.GameMode === "long"
+                ? ""
+                : getRomanizedTextFromTendency(
+                    gameData.Conversion,
+                    gameData.Issues[gameData.current_Issue].romaji,
+                    gameData.current_inputed,
+                  );
             alphabet_text.x = win_pos.x - alphabet_text.width / 2;
             if (gameData.current_inputed.length == 0) {
               flashObj(app, sentence_text);
               flashObj(app, alphabet_text);
             }
             alphabet_current_text.text = gameData.current_inputed;
-            alphabet_current_text.x = win_pos.x - alphabet_text.width / 2;
+            if (gameData.GameMode === "long") {
+              alphabet_current_text.style.wordWrap = false;
+              const viewWidth = app.screen.width * 0.55;
+              const baseX = win_pos.x - viewWidth / 2;
+              const curWidth = alphabet_current_text.width;
+              alphabet_current_text.x =
+                curWidth > viewWidth ? baseX - (curWidth - viewWidth) : baseX;
+              alphabet_remaining_text.text =
+                gameData.Issues[gameData.current_Issue].romaji.slice(
+                  gameData.current_inputed.length,
+                );
+              alphabet_remaining_text.x = alphabet_current_text.x + alphabet_current_text.width + 4;
+              alphabet_remaining_text.y = alphabet_current_text.y;
+              alphabet_remaining_text.visible = true;
+            } else {
+              alphabet_current_text.style.wordWrap = true;
+              alphabet_current_text.x = win_pos.x - alphabet_text.width / 2;
+              alphabet_remaining_text.visible = false;
+            }
             next_text.x = win_pos.x - next_text.width / 2;
             progressDot.x =
               win_pos.x +
-              (progressLine.width / (gameData.Issues_num - 1)) *
-                gameData.current_Issue +
+              (progressLine.width / (gameData.Issues_num - 1)) * gameData.current_Issue +
               -(progressLine.width / 2);
             if (gameData.combo_cnt == 0) {
               combo_text.text = "";
@@ -731,15 +796,13 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               accuracyLine.clear();
               accuracyLine.moveTo(
                 win_pos.x -
-                  ((keybord_size.width * scale) / 2) *
-                    (1 - gameData.Miss / gameData.total_hit_cnt),
-                win_pos.y - 250
+                  ((keybord_size.width * scale) / 2) * (1 - gameData.Miss / gameData.total_hit_cnt),
+                win_pos.y - 250,
               );
               accuracyLine.lineTo(
                 win_pos.x +
-                  ((keybord_size.width * scale) / 2) *
-                    (1 - gameData.Miss / gameData.total_hit_cnt),
-                win_pos.y - 250
+                  ((keybord_size.width * scale) / 2) * (1 - gameData.Miss / gameData.total_hit_cnt),
+                win_pos.y - 250,
               );
               accuracyLine.stroke({
                 width: 4,
@@ -749,15 +812,13 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               accuracyLine_flash.clear();
               accuracyLine_flash.moveTo(
                 win_pos.x -
-                  ((keybord_size.width * scale) / 2) *
-                    (1 - gameData.Miss / gameData.total_hit_cnt),
-                win_pos.y - 250
+                  ((keybord_size.width * scale) / 2) * (1 - gameData.Miss / gameData.total_hit_cnt),
+                win_pos.y - 250,
               );
               accuracyLine_flash.lineTo(
                 win_pos.x +
-                  ((keybord_size.width * scale) / 2) *
-                    (1 - gameData.Miss / gameData.total_hit_cnt),
-                win_pos.y - 250
+                  ((keybord_size.width * scale) / 2) * (1 - gameData.Miss / gameData.total_hit_cnt),
+                win_pos.y - 250,
               );
               accuracyLine_flash.stroke({
                 width: 4,
@@ -773,8 +834,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               kpm_text.text = getTypingSpeed().toFixed(2);
             }
 
-            kpm_text.x =
-              win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
+            kpm_text.x = win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
             if (rank_text.alpha == 0) {
               gsap.fromTo(
                 rank_text,
@@ -784,7 +844,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                   alpha: 1,
                   duration: 1,
                   ease: CustomEase.create("custom", "M0,0 C0,1 0.1,1 1,1"),
-                }
+                },
               );
               rank_value_text.text = String(Rank_get(gameData.Score));
               gsap.fromTo(
@@ -795,20 +855,16 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                   alpha: 1,
                   duration: 1,
                   ease: CustomEase.create("custom", "M0,0 C0,1 0.1,1 1,1"),
-                }
+                },
               );
               flashObj(app, rank_text);
               flashObj(app, rank_value_text);
             } else if (
               String(Rank_get(gameData.Score)) !=
-              (rank_value_text.text != "ランク外"
-                ? String(rank_value_text.text)
-                : "-1")
+              (rank_value_text.text != "ランク外" ? String(rank_value_text.text) : "-1")
             ) {
               rank_value_text.text = String(
-                Rank_get(gameData.Score) != -1
-                  ? Rank_get(gameData.Score)
-                  : "ランク外"
+                Rank_get(gameData.Score) != -1 ? Rank_get(gameData.Score) : "ランク外",
               );
               gsap.fromTo(
                 rank_value_text,
@@ -818,7 +874,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
                   y: win_pos.y - rank_text.height / 2 - 210,
                   duration: 1,
                   ease: CustomEase.create("custom", "M0,0 C0,1 0.1,1 1,1"),
-                }
+                },
               );
             }
           } else {
@@ -846,46 +902,35 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               if (gameData.current_Issue + 1 >= gameData.Issues_num) {
                 next_text.text = "";
               } else {
-                next_text.text =
-                  gameData.Issues[gameData.current_Issue + 1].text;
+                next_text.text = gameData.Issues[gameData.current_Issue + 1].text;
               }
               sentence_text.text = gameData.Issues[gameData.current_Issue].text;
               sentence_text.x = win_pos.x - sentence_text.width / 2;
 
-              alphabet_text.text = getRomanizedTextFromTendency(
+              alphabet_text.text = gameData.GameMode === "long" ? "" : getRomanizedTextFromTendency(
                 gameData.Conversion,
                 gameData.Issues[gameData.current_Issue].romaji,
-                gameData.current_inputed
+                gameData.current_inputed,
               );
               alphabet_text.x = win_pos.x - alphabet_text.width / 2;
               alphabet_current_text.text = gameData.current_inputed;
-              alphabet_current_text.x =
-                win_pos.x - alphabet_current_text.width / 2;
+              alphabet_current_text.x = win_pos.x - alphabet_current_text.width / 2;
               next_text.x = win_pos.x - next_text.width / 2;
               progressDot.x =
-                (keybord_size.width / gameData.Issues_num) *
-                  scale *
-                  gameData.current_Issue +
+                (keybord_size.width / gameData.Issues_num) * scale * gameData.current_Issue +
                 (app.screen.width - keybord_size.width * scale) / 2;
               combo_text.text = "";
               combo_text.x = win_pos.x - (keybord_size.width * scale) / 2;
               accuracyLine.clear();
-              accuracyLine.moveTo(
-                win_pos.x - (keybord_size.width * scale) / 2,
-                win_pos.y - 250
-              );
-              accuracyLine.lineTo(
-                win_pos.x + (keybord_size.width * scale) / 2,
-                win_pos.y - 250
-              );
+              accuracyLine.moveTo(win_pos.x - (keybord_size.width * scale) / 2, win_pos.y - 250);
+              accuracyLine.lineTo(win_pos.x + (keybord_size.width * scale) / 2, win_pos.y - 250);
               accuracyLine.stroke({
                 width: 4,
                 color: replaceHash(settings.colorTheme.colors.MainColor),
                 alpha: 1,
               });
               kpm_text.text = "";
-              kpm_text.x =
-                win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
+              kpm_text.x = win_pos.x - kpm_text.width + (keybord_size.width * scale) / 2;
               score_text.text = "";
               score_text.x = win_pos.x - score_text.width / 2;
               frame_anim(9);
@@ -914,24 +959,19 @@ function grid_anim(grid: PIXI.Graphics) {
       alpha: 1,
       duration: 4,
       ease: "power1.out",
-    }
+    },
   );
 }
 
 import { Issue } from "./002_gameConfig";
 import { playCollect, playMiss } from "./012_soundplay";
-async function makeIssues(
-  FromLen: number,
-  ToLen: number,
-  N: number
-): Promise<void> {
+async function makeIssues(FromLen: number, ToLen: number, N: number): Promise<void> {
   return new Promise<void>(async (resolve) => {
     let Issues: Issue[] = [];
     const maxIndex = gameData.textsData.length - 1;
 
     for (let i = 0; i < N; i++) {
-      let groupIndex =
-        FromLen - 1 + Math.floor(Math.random() * (ToLen - FromLen + 1));
+      let groupIndex = FromLen - 1 + Math.floor(Math.random() * (ToLen - FromLen + 1));
       groupIndex = Math.max(0, Math.min(groupIndex, maxIndex));
 
       const groupArray = gameData.textsData[groupIndex];
@@ -969,9 +1009,7 @@ function filterflash(app: PIXI.Application) {
 }
 
 function Rank_get(score: number) {
-  const ranking = gameData.IsLoggedin
-    ? gameData.onlineRanking
-    : gameData.localRanking;
+  const ranking = gameData.IsLoggedin ? gameData.onlineRanking : gameData.localRanking;
   for (let i = 0; i < ranking.length; i++) {
     if (score > ranking[i].player_score) {
       return i + 1;

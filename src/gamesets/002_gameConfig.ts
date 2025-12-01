@@ -32,10 +32,12 @@ export interface GameData {
   IsLoggedin: boolean;
   current_Player_name: string;
   localRanking: RankingPlayer[];
+  localRankingByMode: Record<string, RankingPlayer[]>;
   missKeys: string[];
   current_Player_id: number;
   acc_keys: number[];
   total_keyhit: number;
+  playCount: number;
   online_player: { name: string; id: number };
   onlineRanking: RankingPlayer[];
   onlinedata: RankingPlayer[];
@@ -71,10 +73,12 @@ export const gameData: GameData = {
   IsLoggedin: false,
   current_Player_name: "",
   localRanking: [],
+  localRankingByMode: {},
   missKeys: [],
   current_Player_id: 100000,
   acc_keys: [],
   total_keyhit: 0,
+  playCount: 0,
   online_player: { name: "", id: -1 },
   onlineRanking: [],
   onlinedata: [],
