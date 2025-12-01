@@ -4,7 +4,7 @@
 
 ProtoType はタイピングゲームです。
 
-```
-npm install
-npm run dev
+```bash
+pnpm install
+pnpm dev
 ```

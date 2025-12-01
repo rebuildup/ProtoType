@@ -99,8 +99,7 @@ class SquareEffectManager {
       this.squareElements.background.style.height = "50px";
       this.squareElements.background.style.boxSizing = "border-box";
       this.squareElements.background.style.border = `4px solid ${mainColor}`;
-      this.squareElements.background.style.transform =
-        "translate(-50%, -50%) rotate(45deg)";
+      this.squareElements.background.style.transform = "translate(-50%, -50%) rotate(45deg)";
       this.squareElements.background.style.opacity = "0";
       this.squareElements.background.style.pointerEvents = "none";
       this.squareElements.background.style.zIndex = "9000"; // キャンバスの後ろだが、他の要素より前
@@ -114,8 +113,7 @@ class SquareEffectManager {
       this.squareElements.foreground.style.height = "50px";
       this.squareElements.foreground.style.boxSizing = "border-box";
       this.squareElements.foreground.style.border = `2px solid ${accentColor}`;
-      this.squareElements.foreground.style.transform =
-        "translate(-50%, -50%) rotate(45deg)";
+      this.squareElements.foreground.style.transform = "translate(-50%, -50%) rotate(45deg)";
       this.squareElements.foreground.style.opacity = "0";
       this.squareElements.foreground.style.pointerEvents = "none";
       this.squareElements.foreground.style.zIndex = "10000"; // キャンバスの手前
@@ -150,9 +148,7 @@ class SquareEffectManager {
     if (!this.isInitialized) {
       const success = this.initialize();
       if (!success) {
-        console.error(
-          "SquareEffect: 初期化に失敗したためエフェクトを実行できません"
-        );
+        console.error("SquareEffect: 初期化に失敗したためエフェクトを実行できません");
         return;
       }
     }
@@ -163,18 +159,16 @@ class SquareEffectManager {
     // 画面サイズを取得
     const viewportWidth = Math.max(
       document.documentElement.clientWidth || 0,
-      window.innerWidth || 0
+      window.innerWidth || 0,
     );
     const viewportHeight = Math.max(
       document.documentElement.clientHeight || 0,
-      window.innerHeight || 0
+      window.innerHeight || 0,
     );
 
     // 対角線の長さを計算（ピタゴラスの定理）
     const maxSize =
-      Math.sqrt(
-        viewportWidth * viewportWidth + viewportHeight * viewportHeight
-      ) * 1.5;
+      Math.sqrt(viewportWidth * viewportWidth + viewportHeight * viewportHeight) * 1.5;
 
     if (this.debugMode) {
       console.log(`SquareEffect: エフェクト実行 (最大サイズ: ${maxSize}px)`);
@@ -207,14 +201,12 @@ class SquareEffectManager {
             ease: "power4.out",
             delay: 0.1,
             onStart: () => {
-              if (this.debugMode)
-                console.log("SquareEffect: 背景アニメーション開始");
+              if (this.debugMode) console.log("SquareEffect: 背景アニメーション開始");
             },
             onComplete: () => {
-              if (this.debugMode)
-                console.log("SquareEffect: 背景アニメーション完了");
+              if (this.debugMode) console.log("SquareEffect: 背景アニメーション完了");
             },
-          }
+          },
         );
 
         // 前景正方形のアニメーション（先に開始、速く拡大）
@@ -232,14 +224,12 @@ class SquareEffectManager {
             duration: 1,
             ease: "power4.out",
             onStart: () => {
-              if (this.debugMode)
-                console.log("SquareEffect: 前景アニメーション開始");
+              if (this.debugMode) console.log("SquareEffect: 前景アニメーション開始");
             },
             onComplete: () => {
-              if (this.debugMode)
-                console.log("SquareEffect: 前景アニメーション完了");
+              if (this.debugMode) console.log("SquareEffect: 前景アニメーション完了");
             },
-          }
+          },
         );
       }, 10);
     } catch (error) {

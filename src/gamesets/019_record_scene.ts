@@ -17,8 +17,8 @@ import { closeScene, flashObj, openScene, reaction, reaction_jump, wig_Type } fr
 import { BG_grid } from "./018_grid";
 import { triggerFrameEffect } from "./024_FrameEffect";
 
-  const Select_dot_x = 1170;
-  const opened_record = { play: 0, achieve: 1, ranking: 2, graph: 3 };
+const Select_dot_x = 1170;
+const opened_record = { play: 0, achieve: 1, ranking: 2, graph: 3 };
 
 // ranking helper (同等ロジックをここにも配置)
 function Rank_get(score: number) {
@@ -325,7 +325,9 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           title_text.text = play_record_text.text;
           title_text.x = screenCenter.x - title_text.width / 2;
           // プレイ記録のみ表示
-          record_container.addChild(createPlayRecordColumn(play_rec_title_x, play_rec_x, play_rec_pad));
+          record_container.addChild(
+            createPlayRecordColumn(play_rec_title_x, play_rec_x, play_rec_pad),
+          );
           break;
         case opened_record.achieve:
           max_scroll_y = 10;
@@ -378,7 +380,7 @@ export function record_scene(app: PIXI.Application): Promise<void> {
           title_text.x = screenCenter.x - title_text.width / 2;
           const rankingSource = gameData.IsLoggedin
             ? gameData.onlineRanking
-            : gameData.localRankingByMode[gameData.GameMode] ?? gameData.localRanking;
+            : (gameData.localRankingByMode[gameData.GameMode] ?? gameData.localRanking);
           for (let i = 0; i < Math.min(100, rankingSource.length); i++) {
             const rank_index = new PIXI.Text({
               text: padNumber(i + 1),

@@ -25,9 +25,7 @@ export function score_graph(app: Application, container: Container) {
   const innerWidth = graphWidth - marginLeft - marginRight;
   const innerHeight = graphHeight - marginTop - marginBottom;
 
-  const filteredData = sortedStructs
-    .filter((player) => player.player_score !== 0)
-    .slice(-100);
+  const filteredData = sortedStructs.filter((player) => player.player_score !== 0).slice(-100);
   const data_length = filteredData.length;
   if (data_length === 0) {
     return;
@@ -142,16 +140,13 @@ export function score_graph(app: Application, container: Container) {
   const firstPlayer = filteredData[0];
   const firstX = marginLeft;
   const firstScoreY =
-    marginTop +
-    (1 - (firstPlayer.player_score - minScore) / scoreRange) * innerHeight;
+    marginTop + (1 - (firstPlayer.player_score - minScore) / scoreRange) * innerHeight;
   scoreLine.moveTo(firstX, firstScoreY);
 
   for (let i = 1; i < data_length; i++) {
     const player = filteredData[i];
     const xPos = marginLeft + (i / (data_length - 1)) * innerWidth;
-    const scoreY =
-      marginTop +
-      (1 - (player.player_score - minScore) / scoreRange) * innerHeight;
+    const scoreY = marginTop + (1 - (player.player_score - minScore) / scoreRange) * innerHeight;
     scoreLine.lineTo(xPos, scoreY);
   }
 
@@ -165,8 +160,7 @@ export function score_graph(app: Application, container: Container) {
 
   const accLine = new Graphics();
 
-  const firstAccY =
-    marginTop + (1 - firstPlayer.player_accracy / 100) * innerHeight;
+  const firstAccY = marginTop + (1 - firstPlayer.player_accracy / 100) * innerHeight;
   accLine.moveTo(firstX, firstAccY);
 
   for (let i = 1; i < data_length; i++) {
@@ -188,9 +182,7 @@ export function score_graph(app: Application, container: Container) {
     const player = filteredData[i];
     const xPos = marginLeft + (i / (data_length - 1)) * innerWidth;
 
-    const scoreY =
-      marginTop +
-      (1 - (player.player_score - minScore) / scoreRange) * innerHeight;
+    const scoreY = marginTop + (1 - (player.player_score - minScore) / scoreRange) * innerHeight;
     const accY = marginTop + (1 - player.player_accracy / 100) * innerHeight;
 
     const scorePoint = new Graphics();

@@ -124,10 +124,8 @@ export function Keyboard(app: PIXI.Application) {
       keyContainer.addChild(specialAccentKey);
     }
 
-    const finalX =
-      keyX * scale - (keybord_size.width * scale) / 2 + keybord_pos.x;
-    const finalY =
-      keyY * scale - (keybord_size.height * scale) / 2 + keybord_pos.y;
+    const finalX = keyX * scale - (keybord_size.width * scale) / 2 + keybord_pos.x;
+    const finalY = keyY * scale - (keybord_size.height * scale) / 2 + keybord_pos.y;
 
     keyContainer.x = finalX;
     keyContainer.y = finalY + offsetY;
@@ -136,8 +134,7 @@ export function Keyboard(app: PIXI.Application) {
 
     const progress = i / totalKeys;
 
-    const cumulativeDelay =
-      baseDelay * i + (maxDelay - baseDelay) * (progress * progress) * i;
+    const cumulativeDelay = baseDelay * i + (maxDelay - baseDelay) * (progress * progress) * i;
 
     const tl = gsap.timeline({ delay: cumulativeDelay });
 
@@ -155,7 +152,7 @@ export function Keyboard(app: PIXI.Application) {
         alpha: 0,
         ease: "power1.out",
       },
-      "+=0.01"
+      "+=0.01",
     );
 
     tl.to(
@@ -165,7 +162,7 @@ export function Keyboard(app: PIXI.Application) {
         alpha: 1,
         ease: "power1.out",
       },
-      "<"
+      "<",
     );
   }
 }
@@ -182,10 +179,8 @@ export function light_key(app: PIXI.Application, index: number) {
     y: app.screen.height - 320,
   };
 
-  const finalX =
-    keyX * scale - (keybord_size.width * scale) / 2 + keybord_pos.x;
-  const finalY =
-    keyY * scale - (keybord_size.height * scale) / 2 + keybord_pos.y;
+  const finalX = keyX * scale - (keybord_size.width * scale) / 2 + keybord_pos.x;
+  const finalY = keyY * scale - (keybord_size.height * scale) / 2 + keybord_pos.y;
 
   const lightContainer = new PIXI.Container();
   lightContainer.x = finalX;
@@ -231,10 +226,8 @@ export function update_Acc_key(app: PIXI.Application) {
       x: app.screen.width / 2,
       y: app.screen.height - 320,
     };
-    keyContainer.x =
-      keyX * scale - (keybord_size.width * scale) / 2 + keybord_pos.x;
-    keyContainer.y =
-      keyY * scale - (keybord_size.height * scale) / 2 + keybord_pos.y;
+    keyContainer.x = keyX * scale - (keybord_size.width * scale) / 2 + keybord_pos.x;
+    keyContainer.y = keyY * scale - (keybord_size.height * scale) / 2 + keybord_pos.y;
     keyContainer.alpha = 1;
 
     const lightKey = new PIXI.Graphics();

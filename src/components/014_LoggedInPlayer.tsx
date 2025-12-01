@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import "../styles/002_header.css";
 import { settings, updateSetting } from "../SiteInterface";
 
-import {
-  checkUsername,
-  createUser,
-  checkPassword,
-} from "../gamesets/022_Login";
+import { checkUsername, createUser, checkPassword } from "../gamesets/022_Login";
 
 // Check whether the user exists by calling the API.
 // Returns true if the username exists, false otherwise.
@@ -113,14 +109,8 @@ const PlayerProfilePanel: React.FC = () => {
 
   return (
     <div>
-      <button
-        className="player-card"
-        onClick={togglePanel}
-        style={{ zIndex: 2 }}
-      >
-        {settings.user.isLoggedin
-          ? "you : " + settings.user.name
-          : "ログイン/登録"}
+      <button className="player-card" onClick={togglePanel} style={{ zIndex: 2 }}>
+        {settings.user.isLoggedin ? "you : " + settings.user.name : "ログイン/登録"}
       </button>
       {isPanelVisible && (
         <div className="player-panel" style={{ zIndex: 4 }}>
@@ -133,9 +123,7 @@ const PlayerProfilePanel: React.FC = () => {
           </button>
           {/* Loading indicator inserted without altering existing styles */}
           {isLoading && (
-            <p style={{ position: "absolute", top: "76px", left: "100px" }}>
-              読み込み中...
-            </p>
+            <p style={{ position: "absolute", top: "76px", left: "100px" }}>読み込み中...</p>
           )}
           {settings.user.isLoggedin ? (
             <div>

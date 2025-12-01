@@ -24,6 +24,13 @@ export interface KeyConfig {
 
 export type KeyConfigs = Array<KeyConfig>;
 
+type RomajiOption = {
+  out: string;
+  advance: number;
+  configKey: string;
+  origin: string;
+};
+
 // ヘルパー関数
 function isHiragana(char: string): boolean {
   const code = char.charCodeAt(0);
@@ -35,190 +42,178 @@ function isConsonant(char: string): boolean {
 }
 
 // 入力予測エンジン
-export function getNextKeysOptimized(
-  readingText: string,
-  currentInput: string
-): NextKeyInfo[] {
-  if (currentInput === readingTextToFullRomaji(readingText)) {
-    return [];
-  }
+export function getNextKeysOptimized(readingText: string, currentInput: string): NextKeyInfo[] {
+  type State = { pos: number; buffer: string; configKey?: string; origin?: string };
 
-  const cache = new Map<string, NextKeyInfo[]>();
-  const sortedKeyConfigs = KEY_CONFIGS.slice().sort(
-    (a, b) => b.key.length - a.key.length
-  );
+  const optionCache = new Map<number, RomajiOption[]>();
+  const initialCache = new Map<number, string[]>();
 
-  // Helper: Get possible doubling candidates for small "っ"
-  function getDoublingCandidates(syllableIndex: number): string[] {
-    const letters = new Set<string>();
-    for (const config of sortedKeyConfigs) {
-      if (readingText.startsWith(config.key, syllableIndex)) {
-        for (const origin of config.origins) {
-          if (origin.length > 0 && isConsonant(origin.charAt(0))) {
-            letters.add(origin.charAt(0));
-          }
+  const findConfigsAt = (pos: number): KeyConfig[] => {
+    let maxLen = 0;
+    const matches: KeyConfig[] = [];
+    for (const config of SORTED_KEY_CONFIGS) {
+      if (readingText.startsWith(config.key, pos)) {
+        if (config.key.length > maxLen) {
+          maxLen = config.key.length;
+          matches.length = 0;
+          matches.push(config);
+        } else if (config.key.length === maxLen) {
+          matches.push(config);
         }
       }
     }
-    return Array.from(letters);
-  }
+    return matches;
+  };
 
-  function nextLetters(index: number, matched: number): NextKeyInfo[] {
-    const cacheKey = `${index}_${matched}_${currentInput}`;
-    if (cache.has(cacheKey)) return cache.get(cacheKey)!;
-    let results: NextKeyInfo[] = [];
-
-    // Base-case: if we've processed the entire readingText, return empty result.
-    if (index >= readingText.length) {
-      cache.set(cacheKey, results);
-      return results;
+  const getRomajiOptionsAt = (pos: number): RomajiOption[] => {
+    if (optionCache.has(pos)) return optionCache.get(pos)!;
+    const options: RomajiOption[] = [];
+    const ch = readingText[pos];
+    if (!ch) {
+      optionCache.set(pos, options);
+      return options;
     }
 
-    const currentChar = readingText[index];
-
-    // For non-hiragana characters, try direct matching
-    if (!isHiragana(currentChar)) {
-      const remainingInput = currentInput.substring(matched);
-      if (remainingInput.startsWith(currentChar)) {
-        results.push(
-          ...nextLetters(
-            index + currentChar.length,
-            matched + currentChar.length
-          )
-        );
-      } else {
-        results.push({
-          letter: currentChar,
-          flag: {
-            type: "direct",
-            consumed: currentChar.length,
-          },
-        });
+    // Small "っ" (sokuon)
+    if (ch === "っ") {
+      const fixed = KEY_CONFIG_MAP.get("っ");
+      if (fixed) {
+        for (const origin of fixed.origins) {
+          options.push({ out: origin, advance: 1, configKey: "っ", origin });
+        }
       }
-      cache.set(cacheKey, results);
-      return results;
+      const initials = getInitialsOfNext(pos + 1);
+      for (const init of initials) {
+        if (isConsonant(init)) {
+          options.push({ out: init, advance: 1, configKey: "っ", origin: init });
+        }
+      }
+      optionCache.set(pos, options);
+      return options;
     }
 
-    // Handle small "っ" (sokuon) for doubling consonants
-    if (currentChar === "っ") {
-      const tsuConfig = sortedKeyConfigs.find((config) => config.key === "っ");
-      if (!tsuConfig) {
-        cache.set(cacheKey, results);
-        return results;
+    // "ん" handling
+    if (ch === "ん") {
+      const nextInitials = getInitialsOfNext(pos + 1);
+      const prohibitsSingleN = nextInitials.some((c) => "aiueoyn".includes(c));
+      const baseOptions = ["nn", "n'", "xn"];
+      if (!prohibitsSingleN || pos === readingText.length - 1) {
+        baseOptions.push("n");
       }
-      const currentInputRemaining = currentInput.substring(matched);
-      const fixedAlternatives = ["ltu", "xtu", "ltsu", "xtsu"];
-      let possibleResults: NextKeyInfo[] = [];
-      const doublingCandidates = getDoublingCandidates(index + 1);
-
-      if (currentInputRemaining) {
-        const firstChar = currentInputRemaining.charAt(0);
-        // If the input starts with one of the doubling candidates, try consuming one letter
-        if (doublingCandidates.includes(firstChar)) {
-          possibleResults.push(...nextLetters(index + 1, matched + 1));
-        }
-        // Also check if input matches any fixed alternative
-        for (const alt of fixedAlternatives) {
-          if (currentInputRemaining.startsWith(alt)) {
-            possibleResults.push(
-              ...nextLetters(index + 1, matched + alt.length)
-            );
-          }
-        }
-      } else {
-        // No input remaining: try both possibilities
-        possibleResults.push(...nextLetters(index + 1, matched));
-        for (const alt of fixedAlternatives) {
-          possibleResults.push(...nextLetters(index + 1, matched + alt.length));
-        }
+      for (const origin of baseOptions) {
+        options.push({ out: origin, advance: 1, configKey: "ん", origin });
       }
-      // If no branch produced a result, instead of returning candidate hints, propagate completion
-      if (possibleResults.length === 0) {
-        cache.set(cacheKey, []);
-        return [];
-      } else {
-        results.push(...possibleResults);
-        cache.set(cacheKey, results);
-        return results;
-      }
+      optionCache.set(pos, options);
+      return options;
     }
 
-    if (currentChar === "ん") {
-      const remainingInput = currentInput.substring(matched);
-      if (index === readingText.length - 1) {
-        if (remainingInput.startsWith("nn")) {
-          cache.set(cacheKey, []);
-          return [];
-        } else {
-          const consumed = remainingInput.startsWith("n") ? 1 : 0;
-          results.push({
-            letter: "n",
-            flag: { type: "direct", consumed },
+    const configs = findConfigsAt(pos);
+    if (configs.length === 0) {
+      const direct = ch;
+      options.push({ out: direct, advance: 1, configKey: direct, origin: direct });
+      optionCache.set(pos, options);
+      return options;
+    }
+
+    for (const config of configs) {
+      for (const origin of config.origins) {
+        options.push({ out: origin, advance: config.key.length, configKey: config.key, origin });
+      }
+    }
+    optionCache.set(pos, options);
+    return options;
+  };
+
+  const getInitialsOfNext = (pos: number): string[] => {
+    if (initialCache.has(pos)) return initialCache.get(pos)!;
+    const initials = new Set<string>();
+    for (const opt of getRomajiOptionsAt(pos)) {
+      if (opt.out.length > 0) {
+        initials.add(opt.out[0]);
+      }
+    }
+    const arr = Array.from(initials);
+    initialCache.set(pos, arr);
+    return arr;
+  };
+
+  const dedupeStates = (states: State[]): State[] => {
+    const map = new Map<string, State>();
+    for (const st of states) {
+      const key = `${st.pos}|${st.buffer}|${st.configKey ?? ""}|${st.origin ?? ""}`;
+      if (!map.has(key)) map.set(key, st);
+    }
+    return Array.from(map.values());
+  };
+
+  let states: State[] = [{ pos: 0, buffer: "", configKey: undefined, origin: undefined }];
+
+  for (const char of currentInput) {
+    const nextStates: State[] = [];
+    for (const state of states) {
+      if (state.buffer.length > 0) {
+        if (state.buffer[0] === char) {
+          nextStates.push({
+            pos: state.pos,
+            buffer: state.buffer.slice(1),
+            configKey: state.configKey,
+            origin: state.origin,
           });
-          cache.set(cacheKey, results);
-          return results;
         }
-      } else {
-        if (remainingInput.startsWith("nn")) {
-          const rec = nextLetters(index + 1, matched + 2);
-          cache.set(cacheKey, rec);
-          return rec;
-        } else {
-          const branch = nextLetters(index + 1, matched + 1);
-          if (branch.length > 0) {
-            results.push({
-              letter: "n",
-              flag: { type: "direct", consumed: 1 },
-            });
-            results.push(...branch);
-          }
-          cache.set(cacheKey, results);
-          return results;
-        }
+        continue;
       }
-    }
 
-    // Process other hiragana characters using sorted KEY_CONFIGS in order
-    for (const config of sortedKeyConfigs) {
-      if (readingText.startsWith(config.key, index)) {
-        const newIndex = index + config.key.length;
-        for (const origin of config.origins) {
-          const remaining = currentInput.substring(matched);
-          if (remaining.length > origin.length) {
-            if (remaining.startsWith(origin)) {
-              results.push(...nextLetters(newIndex, matched + origin.length));
-            }
-          } else {
-            if (origin.startsWith(remaining)) {
-              if (origin.length > remaining.length) {
-                results.push({
-                  letter: origin.charAt(remaining.length),
-                  flag: {
-                    type: "keyConfig",
-                    configKey: config.key,
-                    origin: origin,
-                    consumed: remaining.length + 1,
-                  },
-                });
-              } else {
-                results.push(...nextLetters(newIndex, matched + origin.length));
-              }
-            }
-          }
+      for (const opt of getRomajiOptionsAt(state.pos)) {
+        if (opt.out.length === 0) continue;
+        if (opt.out[0] === char) {
+          nextStates.push({
+            pos: state.pos + opt.advance,
+            buffer: opt.out.slice(1),
+            configKey: opt.configKey,
+            origin: opt.origin,
+          });
         }
       }
     }
-    cache.set(cacheKey, results);
-    return results;
+    states = dedupeStates(nextStates);
+    if (states.length === 0) break;
   }
 
-  return nextLetters(0, 0);
+  const isComplete = states.some((st) => st.buffer.length === 0 && st.pos >= readingText.length);
+  if (isComplete) return [];
+
+  const results: NextKeyInfo[] = [];
+  const seen = new Set<string>();
+
+  const pushResult = (letter: string, configKey?: string, origin?: string) => {
+    const id = `${letter}|${configKey ?? ""}|${origin ?? ""}`;
+    if (seen.has(id)) return;
+    seen.add(id);
+    const isKnownKey = configKey ? KEY_CONFIG_MAP.has(configKey) : false;
+    results.push({
+      letter,
+      flag: isKnownKey ? { type: "keyConfig", configKey, origin } : { type: "direct", consumed: 0 },
+    });
+  };
+
+  for (const state of states) {
+    if (state.buffer.length > 0) {
+      pushResult(state.buffer[0], state.configKey, state.origin);
+      continue;
+    }
+    for (const opt of getRomajiOptionsAt(state.pos)) {
+      if (opt.out.length === 0) continue;
+      pushResult(opt.out[0], opt.configKey, opt.origin);
+    }
+  }
+
+  return results;
 }
 
 export function getRomanizedTextFromTendency(
   tendencies: ConversionTendencies,
   readingText: string,
-  currentInput: string
+  currentInput: string,
 ): string {
   // Check if the candidate output is consistent with the current input
   function prefixMatches(out: string): boolean {
@@ -233,12 +228,7 @@ export function getRomanizedTextFromTendency(
   const results: Candidate[] = [];
 
   // Depth-first search to build candidate conversion string
-  function dfs(
-    i: number,
-    dup: boolean,
-    out: string,
-    nonPreferred: number
-  ): void {
+  function dfs(i: number, dup: boolean, out: string, nonPreferred: number): void {
     if (!prefixMatches(out)) return;
     if (i >= readingText.length) {
       if (out.startsWith(currentInput)) results.push({ out, nonPreferred });
@@ -257,10 +247,7 @@ export function getRomanizedTextFromTendency(
       // Get doubling candidates from next syllable using sorted KEY_CONFIGS
       const doublingCandidates = (() => {
         const letters = new Set<string>();
-        const sortedKeyConfigs = KEY_CONFIGS.slice().sort(
-          (a, b) => b.key.length - a.key.length
-        );
-        for (const config of sortedKeyConfigs) {
+        for (const config of SORTED_KEY_CONFIGS) {
           if (readingText.startsWith(config.key, nextIndex)) {
             for (const origin of config.origins) {
               if (origin.length > 0 && isConsonant(origin.charAt(0))) {
@@ -293,11 +280,35 @@ export function getRomanizedTextFromTendency(
 
     // Handle "ん" (n)
     if (ch === "ん") {
+      const nextChar = i + 1 < readingText.length ? readingText[i + 1] : "";
+      const nextIsVowelOrN = [
+        "あ",
+        "い",
+        "う",
+        "え",
+        "お",
+        "や",
+        "ゆ",
+        "よ",
+        "ぁ",
+        "ぃ",
+        "ぅ",
+        "ぇ",
+        "ぉ",
+        "ゃ",
+        "ゅ",
+        "ょ",
+        "ん",
+        "な",
+        "に",
+        "ぬ",
+        "ね",
+        "の",
+      ].includes(nextChar);
+
       const candidates =
-        i === readingText.length - 1 ||
-        ["な", "に", "ぬ", "ね", "の"].includes(readingText[i + 1])
-          ? ["nn"]
-          : ["n", "nn"];
+        nextChar === "" || !nextIsVowelOrN ? ["n", "nn", "n'", "xn"] : ["nn", "n'", "xn"];
+
       for (const cand of candidates) {
         dfs(i + 1, false, out + cand, nonPreferred);
       }
@@ -305,24 +316,18 @@ export function getRomanizedTextFromTendency(
     }
 
     // Process other hiragana characters using sorted KEY_CONFIGS
-    const sortedKeyConfigs = KEY_CONFIGS.slice().sort(
-      (a, b) => b.key.length - a.key.length
-    );
-    for (const config of sortedKeyConfigs) {
+    for (const config of SORTED_KEY_CONFIGS) {
       if (readingText.startsWith(config.key, i)) {
         const newIndex = i + config.key.length;
         const tendencyEntry = tendencies.find((t) => t.key === config.key);
         const candidateOrigins = tendencyEntry
           ? [
               tendencyEntry.tendency,
-              ...config.origins.filter(
-                (origin) => origin !== tendencyEntry.tendency
-              ),
+              ...config.origins.filter((origin) => origin !== tendencyEntry.tendency),
             ]
           : config.origins;
         for (const origin of candidateOrigins) {
-          const additionalPenalty =
-            tendencyEntry && origin === tendencyEntry.tendency ? 0 : 1;
+          const additionalPenalty = tendencyEntry && origin === tendencyEntry.tendency ? 0 : 1;
           let conv = origin;
           if (dup && conv.length > 0) {
             conv = conv.charAt(0) + conv;
@@ -337,10 +342,8 @@ export function getRomanizedTextFromTendency(
 
   if (results.length > 0) {
     results.sort((a, b) => {
-      const scoreA =
-        a.nonPreferred * 10000 + (a.out.length - currentInput.length);
-      const scoreB =
-        b.nonPreferred * 10000 + (b.out.length - currentInput.length);
+      const scoreA = a.nonPreferred * 10000 + (a.out.length - currentInput.length);
+      const scoreB = b.nonPreferred * 10000 + (b.out.length - currentInput.length);
       return scoreA - scoreB;
     });
     return results[0].out;
@@ -352,59 +355,18 @@ export function getRomanizedTextFromTendency(
 function readingTextToBasicRomaji(readingText: string): string {
   let result = "";
   let i = 0;
-  // Use sorted KEY_CONFIGS by key length descending for proper matching
-  const sortedKeyConfigs = KEY_CONFIGS.slice().sort(
-    (a, b) => b.key.length - a.key.length
-  );
-
   while (i < readingText.length) {
-    let found = false;
-    // Try matching up to 3 characters (adjust as needed)
-    for (let len = Math.min(3, readingText.length - i); len > 0; len--) {
-      const key = readingText.substring(i, i + len);
-      const config = sortedKeyConfigs.find((c) => c.key === key);
-      if (config) {
-        result += config.origins[0];
-        i += len;
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      result += readingText[i];
-      i++;
-    }
-  }
-  return result;
-}
-// Helper: Convert readingText to full romaji (with proper doubling for "っ")
-function readingTextToFullRomaji(readingText: string): string {
-  let result = "";
-  let i = 0;
-  // Sort key configs descending by key length
-  const sortedKeyConfigs = KEY_CONFIGS.slice().sort(
-    (a, b) => b.key.length - a.key.length
-  );
-
-  while (i < readingText.length) {
-    // Handle small "っ" (sokuon) separately:
-    if (readingText[i] === "っ") {
-      if (i + 1 < readingText.length) {
-        const nextKey = sortedKeyConfigs.find((config) =>
-          readingText.startsWith(config.key, i + 1)
-        );
-        if (nextKey) {
-          const origin = nextKey.origins[0];
-          result += origin.charAt(0);
-        }
-      }
-      i++;
+    // Special-case "ん" to prefer single 'n' as a safe fallback
+    if (readingText[i] === "ん") {
+      result += "n";
+      i += 1;
       continue;
     }
+
     let found = false;
     for (let len = Math.min(3, readingText.length - i); len > 0; len--) {
       const key = readingText.substring(i, i + len);
-      const config = sortedKeyConfigs.find((c) => c.key === key);
+      const config = KEY_CONFIG_MAP.get(key);
       if (config) {
         result += config.origins[0];
         i += len;
@@ -1258,3 +1220,13 @@ export const KEY_CONFIGS: KeyConfigs = [
     origins: ["dwo"],
   },
 ];
+// キー設定をキー長の降順で一度だけソートした配列
+const SORTED_KEY_CONFIGS: KeyConfigs = KEY_CONFIGS.slice().sort(
+  (a, b) => b.key.length - a.key.length,
+);
+
+// キーから設定を即座に引けるマップ
+const KEY_CONFIG_MAP = new Map<string, KeyConfig>();
+for (const config of KEY_CONFIGS) {
+  KEY_CONFIG_MAP.set(config.key, config);
+}

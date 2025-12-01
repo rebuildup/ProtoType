@@ -13,14 +13,7 @@ import { PixiPlugin } from "gsap/PixiPlugin";
 PixiPlugin.registerPIXI(PIXI);
 */
 import { getLatestKey, isNomalKey, keyCodeToText } from "./009_keyinput";
-import {
-  closeScene,
-  flashObj,
-  openScene,
-  reaction,
-  reaction_jump,
-  wig_Type,
-} from "./014_mogura";
+import { closeScene, flashObj, openScene, reaction, reaction_jump, wig_Type } from "./014_mogura";
 import { playCollect, playMiss } from "./012_soundplay";
 import { triggerFrameEffect } from "./024_FrameEffect";
 import { BG_grid } from "./018_grid";
@@ -70,7 +63,7 @@ export function Player_register(app: PIXI.Application): Promise<void> {
         y: 1,
         duration: 1,
         ease: CustomEase.create("custom", "M0,0 C0,0.2 0.3,1 1,1"),
-      }
+      },
     );
 
     const title_text = new PIXI.Text({
@@ -178,10 +171,7 @@ export function Player_register(app: PIXI.Application): Promise<void> {
             playMiss(0.3);
           }
         } else if (keyCode.code === "Enter") {
-          reaction_jump(
-            enter_text,
-            screenCenter.y - enter_text.height / 2 + 100
-          );
+          reaction_jump(enter_text, screenCenter.y - enter_text.height / 2 + 100);
           gameData.CurrentSceneName = "game_scene";
           if (player_name.length != 0) {
             gameData.current_Player_name = player_name;

@@ -21,7 +21,7 @@ import {
 import { loadcache_localranking, RankingPlayer } from "./020_cacheControl";
 
 import { getNextKeysOptimized, getRomanizedTextFromTendency } from "./008_generate_pattern";
-import { LONG_TEXT_ISSUES } from "./028_local_texts";
+import { LONG_TEXT_ISSUES, NUMBER_ISSUES } from "./028_local_texts";
 import { evaluateAchievements } from "./027_achievements";
 
 import { BG_grid } from "./018_grid";
@@ -70,7 +70,8 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
       case "number":
         keybord_flag = true;
         win_pos.y = app.screen.height / 2 - 210;
-        gameData.Issues_num = 15;
+        gameData.Issues = NUMBER_ISSUES;
+        gameData.Issues_num = NUMBER_ISSUES.length;
         break;
       default:
         console.log("gamemode nothing");
@@ -93,20 +94,6 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
 
     sentence_text.x = win_pos.x - sentence_text.width / 2;
     sentence_text.y = win_pos.y - sentence_text.height / 2 - 2;
-    const ghost_sentence = new PIXI.Text({
-      text: sentence_text.text,
-      style: {
-        fontFamily: gameData.FontFamily,
-        fontSize: sentence_text.style.fontSize,
-        lineHeight: sentence_text.style.lineHeight,
-        fill: replaceHash(settings.colorTheme.colors.SecondAccent),
-        align: "center",
-        wordWrap: sentence_text.style.wordWrap,
-        wordWrapWidth: sentence_text.style.wordWrapWidth,
-      },
-    });
-    ghost_sentence.alpha = 0.15;
-    app.stage.addChild(ghost_sentence);
     app.stage.addChild(sentence_text);
     const alphabet_text = new PIXI.Text({
       text: "space to start",
@@ -130,25 +117,24 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         fontFamily: gameData.FontFamily,
         fontSize: 25,
         fill: replaceHash(settings.colorTheme.colors.MainColor),
-        align: "left",
-        wordWrap: gameData.GameMode !== "long",
-        wordWrapWidth: gameData.GameMode !== "long" ? app.screen.width * 0.55 : undefined,
+        align: "center",
+        wordWrap: true,
+        wordWrapWidth: app.screen.width * 0.7,
       },
     });
-    // 長文モードでは次問題表示位置と同じ高さ付近に配置し、横幅をマスクする
-    const inputViewWidth = gameData.GameMode === "long" ? app.screen.width * 0.55 : alphabet_text.width;
+    const inputViewWidth =
+      gameData.GameMode === "long" ? app.screen.width * 0.6 : app.screen.width * 0.7;
     const inputMask = new PIXI.Graphics();
     const inputY =
       gameData.GameMode === "long"
-        ? win_pos.y + (keybord_flag ? 120 : 80) // 少し下げる
-        : win_pos.y + 20;
-    inputMask.rect(win_pos.x - inputViewWidth / 2, inputY, inputViewWidth, 40);
-    inputMask.fill(0xffffff, 1);
-    inputMask.alpha = 0; // mask only
+        ? win_pos.y + 120
+        : win_pos.y - alphabet_current_text.height / 2 + 40;
+    inputMask.rect(win_pos.x - inputViewWidth / 2, inputY, inputViewWidth, 40).fill(0xffffff, 1);
+    inputMask.alpha = 0;
     app.stage.addChild(inputMask);
-    alphabet_current_text.mask = inputMask;
+    alphabet_current_text.mask = gameData.GameMode === "long" ? inputMask : null;
     alphabet_current_text.x = win_pos.x - inputViewWidth / 2;
-    alphabet_current_text.y = inputMask.y + 6;
+    alphabet_current_text.y = inputY;
     app.stage.addChild(alphabet_current_text);
     const alphabet_remaining_text = new PIXI.Text({
       text: "",
@@ -160,8 +146,10 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         wordWrap: false,
       },
     });
-    alphabet_remaining_text.alpha = 0.35;
-    alphabet_remaining_text.y = alphabet_current_text.y;
+    alphabet_remaining_text.alpha = 0.25;
+    alphabet_remaining_text.visible = false;
+    // 同じマスクを適用して背景薄文字も幅を制限
+    alphabet_remaining_text.mask = alphabet_current_text.mask;
     app.stage.addChild(alphabet_remaining_text);
 
     const next_text = new PIXI.Text({
@@ -456,8 +444,7 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         }
       }
 
-      const accuracy =
-        gameData.total_hit_cnt > 0 ? 1 - gameData.Miss / gameData.total_hit_cnt : 0;
+      const accuracy = gameData.total_hit_cnt > 0 ? 1 - gameData.Miss / gameData.total_hit_cnt : 0;
       evaluateAchievements({
         accuracy,
         avgKpm: tmp_kpm,
@@ -520,20 +507,20 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
         case "exact":
           issueIndexs = [14, 14];
           break;
-      case "long":
-        // 長文は1問のみ、ローカル長文からランダムで選択
-        gameData.Issues = [LONG_TEXT_ISSUES[Math.floor(Math.random() * LONG_TEXT_ISSUES.length)]];
-        gameData.Issues_num = 1;
-        break;
+        case "long":
+          gameData.Issues = [LONG_TEXT_ISSUES[Math.floor(Math.random() * LONG_TEXT_ISSUES.length)]];
+          gameData.Issues_num = 1;
+          break;
         case "number":
-          issueIndexs = [16, 16];
+          gameData.Issues = NUMBER_ISSUES;
+          gameData.Issues_num = NUMBER_ISSUES.length;
           break;
         default:
           issueIndexs = [14, 14];
           resolve();
           break;
       }
-      if (gameData.GameMode !== "long") {
+      if (gameData.GameMode !== "long" && gameData.GameMode !== "number") {
         await makeIssues(issueIndexs[0], issueIndexs[1], gameData.Issues_num);
       }
 
@@ -730,17 +717,14 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             }
 
             if (gameData.current_Issue < gameData.Issues.length) {
-            sentence_text.text = gameData.Issues[gameData.current_Issue].text;
-            ghost_sentence.text = sentence_text.text;
-            sentence_text.x = win_pos.x - sentence_text.width / 2;
-            ghost_sentence.x = sentence_text.x;
-            if (gameData.GameMode === "long") {
-              const prog =
-                gameData.current_inputed.length /
-                Math.max(1, gameData.Issues[gameData.current_Issue].romaji.length);
-              sentence_text.y = win_pos.y - 120 - prog * 80;
-              ghost_sentence.y = sentence_text.y + 8;
-            }
+              sentence_text.text = gameData.Issues[gameData.current_Issue].text;
+              sentence_text.x = win_pos.x - sentence_text.width / 2;
+              if (gameData.GameMode === "long") {
+                const prog =
+                  gameData.current_inputed.length /
+                  Math.max(1, gameData.Issues[gameData.current_Issue].romaji.length);
+                sentence_text.y = win_pos.y - 40 - prog * 40;
+              }
               if (gameData.current_inputed.length == 0) {
                 flashObj(app, sentence_text);
                 flashObj(app, alphabet_text);
@@ -762,15 +746,18 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
             alphabet_current_text.text = gameData.current_inputed;
             if (gameData.GameMode === "long") {
               alphabet_current_text.style.wordWrap = false;
-              const viewWidth = app.screen.width * 0.55;
-              const baseX = win_pos.x - viewWidth / 2;
+              const viewWidth = app.screen.width * 0.6;
               const curWidth = alphabet_current_text.width;
-              alphabet_current_text.x =
-                curWidth > viewWidth ? baseX - (curWidth - viewWidth) : baseX;
-              alphabet_remaining_text.text =
-                gameData.Issues[gameData.current_Issue].romaji.slice(
-                  gameData.current_inputed.length,
-                );
+              const baseCenter = win_pos.x;
+              if (curWidth <= viewWidth) {
+                alphabet_current_text.x = baseCenter - curWidth / 2;
+              } else {
+                // 末尾が中央付近に来るように終端をセンターに合わせる
+                alphabet_current_text.x = baseCenter - curWidth + viewWidth / 2;
+              }
+              alphabet_remaining_text.text = gameData.Issues[gameData.current_Issue].romaji.slice(
+                gameData.current_inputed.length,
+              );
               alphabet_remaining_text.x = alphabet_current_text.x + alphabet_current_text.width + 4;
               alphabet_remaining_text.y = alphabet_current_text.y;
               alphabet_remaining_text.visible = true;
@@ -907,11 +894,14 @@ export async function game_scene(app: PIXI.Application): Promise<void> {
               sentence_text.text = gameData.Issues[gameData.current_Issue].text;
               sentence_text.x = win_pos.x - sentence_text.width / 2;
 
-              alphabet_text.text = gameData.GameMode === "long" ? "" : getRomanizedTextFromTendency(
-                gameData.Conversion,
-                gameData.Issues[gameData.current_Issue].romaji,
-                gameData.current_inputed,
-              );
+              alphabet_text.text =
+                gameData.GameMode === "long"
+                  ? ""
+                  : getRomanizedTextFromTendency(
+                      gameData.Conversion,
+                      gameData.Issues[gameData.current_Issue].romaji,
+                      gameData.current_inputed,
+                    );
               alphabet_text.x = win_pos.x - alphabet_text.width / 2;
               alphabet_current_text.text = gameData.current_inputed;
               alphabet_current_text.x = win_pos.x - alphabet_current_text.width / 2;

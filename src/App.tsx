@@ -34,10 +34,7 @@ const App: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<string>("Game");
 
   useLayoutEffect(() => {
-    const cachedTheme = loadFromCache<(typeof themes)[0]>(
-      "colorTheme",
-      themes[0]
-    );
+    const cachedTheme = loadFromCache<(typeof themes)[0]>("colorTheme", themes[0]);
     let colorIndex = 0;
     for (let i = 0; i < themes.length; i++) {
       if (themes[i].name == cachedTheme.name) colorIndex = i;
@@ -58,10 +55,7 @@ const App: React.FC = () => {
     const cachedFont = loadFromCache<{ fontFamily: string }>("fontTheme", {
       fontFamily: fonts[0].value,
     });
-    document.documentElement.style.setProperty(
-      "--First-font",
-      cachedFont.fontFamily
-    );
+    document.documentElement.style.setProperty("--First-font", cachedFont.fontFamily);
     updateSetting("fontTheme", {
       fontFamily: cachedFont.fontFamily,
       fontSize: 16,

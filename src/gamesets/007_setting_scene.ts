@@ -13,13 +13,7 @@ import { keyLayouts } from "../components/012_KeyLayout";
 import { playMiss, playCollect } from "./012_soundplay";
 
 import { saveToCache, deleteCache } from "./020_cacheControl";
-import {
-  closeScene,
-  flashObj,
-  openScene,
-  reaction,
-  wig_Type,
-} from "./014_mogura";
+import { closeScene, flashObj, openScene, reaction, wig_Type } from "./014_mogura";
 import { BG_grid } from "./018_grid";
 import { triggerFrameEffect } from "./024_FrameEffect";
 const Select_dot_x = 680;
@@ -182,10 +176,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
 
     const selectDotAcc = new PIXI.Graphics();
     selectDotAcc.circle(0, 0, 8);
-    selectDotAcc.position.set(
-      Select_dot_x,
-      keylayout_text.y + keylayout_text.height / 2
-    );
+    selectDotAcc.position.set(Select_dot_x, keylayout_text.y + keylayout_text.height / 2);
     selectDotAcc.fill(replaceHash(settings.colorTheme.colors.MainAccent));
     selectDotAcc.stroke({
       width: 4,
@@ -223,10 +214,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
           dot_to(Select_dot_x, keylayout_text.y + keylayout_text.height / 2);
           break;
         case option_select_values.instantkey_n:
-          dot_to(
-            Select_dot_x,
-            instantkey_n_text.y + instantkey_n_text.height / 2
-          );
+          dot_to(Select_dot_x, instantkey_n_text.y + instantkey_n_text.height / 2);
           break;
         case option_select_values.flashType:
           dot_to(Select_dot_x, flashType_text.y + flashType_text.height / 2);
@@ -234,9 +222,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       }
     }
     function update_open(opened: number, select: number = 0) {
-      const lastcontainer = app.stage.children.find(
-        (child) => child.label === "setting_container"
-      );
+      const lastcontainer = app.stage.children.find((child) => child.label === "setting_container");
       if (lastcontainer) {
         app.stage.removeChild(lastcontainer);
       }
@@ -432,9 +418,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       triggerFrameEffect();
       playMiss(0.3);
       isOpened_option = opened_options.keylayout;
-      current_select = keyLayouts.findIndex(
-        (layout) => layout.name === gameData.KeyLayout
-      );
+      current_select = keyLayouts.findIndex((layout) => layout.name === gameData.KeyLayout);
       dot_pos_update(0);
       update_open(isOpened_option, current_select);
     });
@@ -442,9 +426,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
       triggerFrameEffect();
       playMiss(0.3);
       isOpened_option = opened_options.keylayout;
-      current_select = keyLayouts.findIndex(
-        (layout) => layout.name === gameData.KeyLayout
-      );
+      current_select = keyLayouts.findIndex((layout) => layout.name === gameData.KeyLayout);
       dot_pos_update(0);
       update_open(isOpened_option, current_select);
     });
@@ -504,7 +486,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
     gsap.fromTo(
       hint,
       { alpha: 0, y: app.screen.height - 260 },
-      { alpha: 0.5, y: app.screen.height - 280, duration: 3, delay: 2 }
+      { alpha: 0.5, y: app.screen.height - 280, duration: 3, delay: 2 },
     );
     while (gameData.CurrentSceneName === "setting_scene") {
       currentKeyController = new AbortController();
@@ -521,9 +503,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
             isOpened_option = opened_options.menu;
             update_open(isOpened_option);
           }
-        } else if (
-          ["ArrowDown", "ArrowRight", "ShiftRight"].includes(keyCode.code)
-        ) {
+        } else if (["ArrowDown", "ArrowRight", "ShiftRight"].includes(keyCode.code)) {
           triggerFrameEffect();
           playMiss(0.3);
           switch (isOpened_option) {
@@ -556,9 +536,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
               update_open(isOpened_option, current_select);
               break;
           }
-        } else if (
-          ["ArrowUp", "ArrowLeft", "ShiftLeft"].includes(keyCode.code)
-        ) {
+        } else if (["ArrowUp", "ArrowLeft", "ShiftLeft"].includes(keyCode.code)) {
           triggerFrameEffect();
           playMiss(0.3);
           switch (isOpened_option) {
@@ -599,7 +577,7 @@ export function setting_scene(app: PIXI.Application): Promise<void> {
               case option_select_values.keylayoutset:
                 isOpened_option = opened_options.keylayout;
                 current_select = keyLayouts.findIndex(
-                  (layout) => layout.name === gameData.KeyLayout
+                  (layout) => layout.name === gameData.KeyLayout,
                 );
                 break;
               case option_select_values.instantkey_n:

@@ -4,12 +4,11 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: (720) px;
-  height: (600) px;
+  width: 720px;
+  height: 600px;
   background-color: var(--MainBG);
   /*border: 2px solid var(--MainColor);*/
-  box-shadow: -5px -5px 60px 0px rgba(128, 128, 128, 0.1),
-    5px 5px 60px 0px rgba(128, 128, 128, 0.1);
+  box-shadow: -5px -5px 60px 0px rgba(128, 128, 128, 0.1), 5px 5px 60px 0px rgba(128, 128, 128, 0.1);
 }
 
 .webgl-popup canvas {

@@ -39,41 +39,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
       <g id="Outer_Spear">
         <g>
           <g>
-            <line
-              className="cls-2"
-              x1="79.5"
-              y1="1576.75"
-              x2="114.01"
-              y2="1576.75"
-            />
-            <line
-              className="cls-2"
-              x1="138.5"
-              y1="1576.75"
-              x2="155.5"
-              y2="1576.75"
-            />
-            <line
-              className="cls-2"
-              x1="209.5"
-              y1="1576.75"
-              x2="230.5"
-              y2="1576.75"
-            />
-            <line
-              className="cls-2"
-              x1="246.5"
-              y1="1576.75"
-              x2="259.5"
-              y2="1576.75"
-            />
-            <line
-              className="cls-2"
-              x1="277.5"
-              y1="1576.75"
-              x2="290.5"
-              y2="1576.75"
-            />
+            <line className="cls-2" x1="79.5" y1="1576.75" x2="114.01" y2="1576.75" />
+            <line className="cls-2" x1="138.5" y1="1576.75" x2="155.5" y2="1576.75" />
+            <line className="cls-2" x1="209.5" y1="1576.75" x2="230.5" y2="1576.75" />
+            <line className="cls-2" x1="246.5" y1="1576.75" x2="259.5" y2="1576.75" />
+            <line className="cls-2" x1="277.5" y1="1576.75" x2="290.5" y2="1576.75" />
             <g>
               <path
                 className="cls-1"
@@ -136,41 +106,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="3076"
-              y1="1578.75"
-              x2="3041.49"
-              y2="1578.75"
-            />
-            <line
-              className="cls-2"
-              x1="3017"
-              y1="1578.75"
-              x2="3000"
-              y2="1578.75"
-            />
-            <line
-              className="cls-2"
-              x1="2946"
-              y1="1578.75"
-              x2="2925"
-              y2="1578.75"
-            />
-            <line
-              className="cls-2"
-              x1="2909"
-              y1="1578.75"
-              x2="2896"
-              y2="1578.75"
-            />
-            <line
-              className="cls-2"
-              x1="2878"
-              y1="1578.75"
-              x2="2865"
-              y2="1578.75"
-            />
+            <line className="cls-2" x1="3076" y1="1578.75" x2="3041.49" y2="1578.75" />
+            <line className="cls-2" x1="3017" y1="1578.75" x2="3000" y2="1578.75" />
+            <line className="cls-2" x1="2946" y1="1578.75" x2="2925" y2="1578.75" />
+            <line className="cls-2" x1="2909" y1="1578.75" x2="2896" y2="1578.75" />
+            <line className="cls-2" x1="2878" y1="1578.75" x2="2865" y2="1578.75" />
             <g>
               <path
                 className="cls-1"
@@ -233,41 +173,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="93.19"
-              y1="1772.32"
-              x2="127.4"
-              y2="1767.81"
-            />
-            <line
-              className="cls-2"
-              x1="151.68"
-              y1="1764.62"
-              x2="168.54"
-              y2="1762.4"
-            />
-            <line
-              className="cls-2"
-              x1="222.08"
-              y1="1755.35"
-              x2="242.9"
-              y2="1752.61"
-            />
-            <line
-              className="cls-2"
-              x1="258.76"
-              y1="1750.52"
-              x2="271.65"
-              y2="1748.82"
-            />
-            <line
-              className="cls-2"
-              x1="289.49"
-              y1="1746.48"
-              x2="302.38"
-              y2="1744.78"
-            />
+            <line className="cls-2" x1="93.19" y1="1772.32" x2="127.4" y2="1767.81" />
+            <line className="cls-2" x1="151.68" y1="1764.62" x2="168.54" y2="1762.4" />
+            <line className="cls-2" x1="222.08" y1="1755.35" x2="242.9" y2="1752.61" />
+            <line className="cls-2" x1="258.76" y1="1750.52" x2="271.65" y2="1748.82" />
+            <line className="cls-2" x1="289.49" y1="1746.48" x2="302.38" y2="1744.78" />
             <g>
               <path
                 className="cls-1"
@@ -330,41 +240,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="3064.31"
-              y1="1383.18"
-              x2="3030.1"
-              y2="1387.69"
-            />
-            <line
-              className="cls-2"
-              x1="3005.82"
-              y1="1390.88"
-              x2="2988.96"
-              y2="1393.1"
-            />
-            <line
-              className="cls-2"
-              x1="2935.42"
-              y1="1400.15"
-              x2="2914.6"
-              y2="1402.89"
-            />
-            <line
-              className="cls-2"
-              x1="2898.74"
-              y1="1404.98"
-              x2="2885.85"
-              y2="1406.68"
-            />
-            <line
-              className="cls-2"
-              x1="2868.01"
-              y1="1409.02"
-              x2="2855.12"
-              y2="1410.72"
-            />
+            <line className="cls-2" x1="3064.31" y1="1383.18" x2="3030.1" y2="1387.69" />
+            <line className="cls-2" x1="3005.82" y1="1390.88" x2="2988.96" y2="1393.1" />
+            <line className="cls-2" x1="2935.42" y1="1400.15" x2="2914.6" y2="1402.89" />
+            <line className="cls-2" x1="2898.74" y1="1404.98" x2="2885.85" y2="1406.68" />
+            <line className="cls-2" x1="2868.01" y1="1409.02" x2="2855.12" y2="1410.72" />
             <g>
               <path
                 className="cls-1"
@@ -427,41 +307,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="131.29"
-              y1="1964.56"
-              x2="164.63"
-              y2="1955.63"
-            />
-            <line
-              className="cls-2"
-              x1="188.28"
-              y1="1949.29"
-              x2="204.7"
-              y2="1944.89"
-            />
-            <line
-              className="cls-2"
-              x1="256.86"
-              y1="1930.91"
-              x2="277.15"
-              y2="1925.48"
-            />
-            <line
-              className="cls-2"
-              x1="292.6"
-              y1="1921.34"
-              x2="305.16"
-              y2="1917.97"
-            />
-            <line
-              className="cls-2"
-              x1="322.55"
-              y1="1913.31"
-              x2="335.1"
-              y2="1909.95"
-            />
+            <line className="cls-2" x1="131.29" y1="1964.56" x2="164.63" y2="1955.63" />
+            <line className="cls-2" x1="188.28" y1="1949.29" x2="204.7" y2="1944.89" />
+            <line className="cls-2" x1="256.86" y1="1930.91" x2="277.15" y2="1925.48" />
+            <line className="cls-2" x1="292.6" y1="1921.34" x2="305.16" y2="1917.97" />
+            <line className="cls-2" x1="322.55" y1="1913.31" x2="335.1" y2="1909.95" />
             <g>
               <path
                 className="cls-1"
@@ -524,41 +374,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="3026.21"
-              y1="1190.94"
-              x2="2992.87"
-              y2="1199.87"
-            />
-            <line
-              className="cls-2"
-              x1="2969.22"
-              y1="1206.21"
-              x2="2952.8"
-              y2="1210.61"
-            />
-            <line
-              className="cls-2"
-              x1="2900.64"
-              y1="1224.59"
-              x2="2880.35"
-              y2="1230.02"
-            />
-            <line
-              className="cls-2"
-              x1="2864.9"
-              y1="1234.16"
-              x2="2852.34"
-              y2="1237.53"
-            />
-            <line
-              className="cls-2"
-              x1="2834.95"
-              y1="1242.19"
-              x2="2822.4"
-              y2="1245.55"
-            />
+            <line className="cls-2" x1="3026.21" y1="1190.94" x2="2992.87" y2="1199.87" />
+            <line className="cls-2" x1="2969.22" y1="1206.21" x2="2952.8" y2="1210.61" />
+            <line className="cls-2" x1="2900.64" y1="1224.59" x2="2880.35" y2="1230.02" />
+            <line className="cls-2" x1="2864.9" y1="1234.16" x2="2852.34" y2="1237.53" />
+            <line className="cls-2" x1="2834.95" y1="1242.19" x2="2822.4" y2="1245.55" />
             <g>
               <path
                 className="cls-1"
@@ -621,41 +441,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="194.16"
-              y1="2150.18"
-              x2="226.05"
-              y2="2136.97"
-            />
-            <line
-              className="cls-2"
-              x1="248.67"
-              y1="2127.6"
-              x2="264.38"
-              y2="2121.1"
-            />
-            <line
-              className="cls-2"
-              x1="314.27"
-              y1="2100.43"
-              x2="333.67"
-              y2="2092.4"
-            />
-            <line
-              className="cls-2"
-              x1="348.45"
-              y1="2086.27"
-              x2="360.46"
-              y2="2081.3"
-            />
-            <line
-              className="cls-2"
-              x1="377.09"
-              y1="2074.41"
-              x2="389.1"
-              y2="2069.44"
-            />
+            <line className="cls-2" x1="194.16" y1="2150.18" x2="226.05" y2="2136.97" />
+            <line className="cls-2" x1="248.67" y1="2127.6" x2="264.38" y2="2121.1" />
+            <line className="cls-2" x1="314.27" y1="2100.43" x2="333.67" y2="2092.4" />
+            <line className="cls-2" x1="348.45" y1="2086.27" x2="360.46" y2="2081.3" />
+            <line className="cls-2" x1="377.09" y1="2074.41" x2="389.1" y2="2069.44" />
             <g>
               <path
                 className="cls-1"
@@ -718,41 +508,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2963.34"
-              y1="1005.32"
-              x2="2931.45"
-              y2="1018.53"
-            />
-            <line
-              className="cls-2"
-              x1="2908.83"
-              y1="1027.9"
-              x2="2893.12"
-              y2="1034.4"
-            />
-            <line
-              className="cls-2"
-              x1="2843.23"
-              y1="1055.07"
-              x2="2823.83"
-              y2="1063.1"
-            />
-            <line
-              className="cls-2"
-              x1="2809.05"
-              y1="1069.23"
-              x2="2797.04"
-              y2="1074.2"
-            />
-            <line
-              className="cls-2"
-              x1="2780.41"
-              y1="1081.09"
-              x2="2768.4"
-              y2="1086.06"
-            />
+            <line className="cls-2" x1="2963.34" y1="1005.32" x2="2931.45" y2="1018.53" />
+            <line className="cls-2" x1="2908.83" y1="1027.9" x2="2893.12" y2="1034.4" />
+            <line className="cls-2" x1="2843.23" y1="1055.07" x2="2823.83" y2="1063.1" />
+            <line className="cls-2" x1="2809.05" y1="1069.23" x2="2797.04" y2="1074.2" />
+            <line className="cls-2" x1="2780.41" y1="1081.09" x2="2768.4" y2="1086.06" />
             <g>
               <path
                 className="cls-1"
@@ -815,41 +575,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="280.73"
-              y1="2326.01"
-              x2="310.61"
-              y2="2308.75"
-            />
-            <line
-              className="cls-2"
-              x1="331.82"
-              y1="2296.51"
-              x2="346.55"
-              y2="2288.01"
-            />
-            <line
-              className="cls-2"
-              x1="393.31"
-              y1="2261.01"
-              x2="411.5"
-              y2="2250.51"
-            />
-            <line
-              className="cls-2"
-              x1="425.35"
-              y1="2242.51"
-              x2="436.61"
-              y2="2236.01"
-            />
-            <line
-              className="cls-2"
-              x1="452.2"
-              y1="2227.01"
-              x2="463.46"
-              y2="2220.51"
-            />
+            <line className="cls-2" x1="280.73" y1="2326.01" x2="310.61" y2="2308.75" />
+            <line className="cls-2" x1="331.82" y1="2296.51" x2="346.55" y2="2288.01" />
+            <line className="cls-2" x1="393.31" y1="2261.01" x2="411.5" y2="2250.51" />
+            <line className="cls-2" x1="425.35" y1="2242.51" x2="436.61" y2="2236.01" />
+            <line className="cls-2" x1="452.2" y1="2227.01" x2="463.46" y2="2220.51" />
             <g>
               <path
                 className="cls-1"
@@ -912,41 +642,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2876.77"
-              y1="829.49"
-              x2="2846.89"
-              y2="846.75"
-            />
-            <line
-              className="cls-2"
-              x1="2825.68"
-              y1="858.99"
-              x2="2810.95"
-              y2="867.49"
-            />
-            <line
-              className="cls-2"
-              x1="2764.19"
-              y1="894.49"
-              x2="2746"
-              y2="904.99"
-            />
-            <line
-              className="cls-2"
-              x1="2732.15"
-              y1="912.99"
-              x2="2720.89"
-              y2="919.49"
-            />
-            <line
-              className="cls-2"
-              x1="2705.3"
-              y1="928.49"
-              x2="2694.04"
-              y2="934.99"
-            />
+            <line className="cls-2" x1="2876.77" y1="829.49" x2="2846.89" y2="846.75" />
+            <line className="cls-2" x1="2825.68" y1="858.99" x2="2810.95" y2="867.49" />
+            <line className="cls-2" x1="2764.19" y1="894.49" x2="2746" y2="904.99" />
+            <line className="cls-2" x1="2732.15" y1="912.99" x2="2720.89" y2="919.49" />
+            <line className="cls-2" x1="2705.3" y1="928.49" x2="2694.04" y2="934.99" />
             <g>
               <path
                 className="cls-1"
@@ -1009,41 +709,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="389.5"
-              y1="2489.03"
-              x2="416.88"
-              y2="2468.02"
-            />
-            <line
-              className="cls-2"
-              x1="436.31"
-              y1="2453.12"
-              x2="449.79"
-              y2="2442.77"
-            />
-            <line
-              className="cls-2"
-              x1="492.64"
-              y1="2409.89"
-              x2="509.3"
-              y2="2397.11"
-            />
-            <line
-              className="cls-2"
-              x1="521.99"
-              y1="2387.37"
-              x2="532.3"
-              y2="2379.46"
-            />
-            <line
-              className="cls-2"
-              x1="546.58"
-              y1="2368.5"
-              x2="556.9"
-              y2="2360.58"
-            />
+            <line className="cls-2" x1="389.5" y1="2489.03" x2="416.88" y2="2468.02" />
+            <line className="cls-2" x1="436.31" y1="2453.12" x2="449.79" y2="2442.77" />
+            <line className="cls-2" x1="492.64" y1="2409.89" x2="509.3" y2="2397.11" />
+            <line className="cls-2" x1="521.99" y1="2387.37" x2="532.3" y2="2379.46" />
+            <line className="cls-2" x1="546.58" y1="2368.5" x2="556.9" y2="2360.58" />
             <g>
               <path
                 className="cls-1"
@@ -1106,41 +776,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2768"
-              y1="666.47"
-              x2="2740.62"
-              y2="687.48"
-            />
-            <line
-              className="cls-2"
-              x1="2721.19"
-              y1="702.38"
-              x2="2707.71"
-              y2="712.73"
-            />
-            <line
-              className="cls-2"
-              x1="2664.86"
-              y1="745.61"
-              x2="2648.2"
-              y2="758.39"
-            />
-            <line
-              className="cls-2"
-              x1="2635.51"
-              y1="768.13"
-              x2="2625.2"
-              y2="776.04"
-            />
-            <line
-              className="cls-2"
-              x1="2610.92"
-              y1="787"
-              x2="2600.6"
-              y2="794.92"
-            />
+            <line className="cls-2" x1="2768" y1="666.47" x2="2740.62" y2="687.48" />
+            <line className="cls-2" x1="2721.19" y1="702.38" x2="2707.71" y2="712.73" />
+            <line className="cls-2" x1="2664.86" y1="745.61" x2="2648.2" y2="758.39" />
+            <line className="cls-2" x1="2635.51" y1="768.13" x2="2625.2" y2="776.04" />
+            <line className="cls-2" x1="2610.92" y1="787" x2="2600.6" y2="794.92" />
             <g>
               <path
                 className="cls-1"
@@ -1203,41 +843,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="518.62"
-              y1="2636.47"
-              x2="543.02"
-              y2="2612.06"
-            />
-            <line
-              className="cls-2"
-              x1="560.34"
-              y1="2594.75"
-              x2="572.36"
-              y2="2582.73"
-            />
-            <line
-              className="cls-2"
-              x1="610.54"
-              y1="2544.54"
-              x2="625.39"
-              y2="2529.69"
-            />
-            <line
-              className="cls-2"
-              x1="636.71"
-              y1="2518.38"
-              x2="645.9"
-              y2="2509.19"
-            />
-            <line
-              className="cls-2"
-              x1="658.63"
-              y1="2496.46"
-              x2="667.82"
-              y2="2487.27"
-            />
+            <line className="cls-2" x1="518.62" y1="2636.47" x2="543.02" y2="2612.06" />
+            <line className="cls-2" x1="560.34" y1="2594.75" x2="572.36" y2="2582.73" />
+            <line className="cls-2" x1="610.54" y1="2544.54" x2="625.39" y2="2529.69" />
+            <line className="cls-2" x1="636.71" y1="2518.38" x2="645.9" y2="2509.19" />
+            <line className="cls-2" x1="658.63" y1="2496.46" x2="667.82" y2="2487.27" />
             <g>
               <path
                 className="cls-1"
@@ -1300,41 +910,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2638.88"
-              y1="519.03"
-              x2="2614.48"
-              y2="543.44"
-            />
-            <line
-              className="cls-2"
-              x1="2597.16"
-              y1="560.75"
-              x2="2585.14"
-              y2="572.77"
-            />
-            <line
-              className="cls-2"
-              x1="2546.96"
-              y1="610.96"
-              x2="2532.11"
-              y2="625.81"
-            />
-            <line
-              className="cls-2"
-              x1="2520.79"
-              y1="637.12"
-              x2="2511.6"
-              y2="646.31"
-            />
-            <line
-              className="cls-2"
-              x1="2498.87"
-              y1="659.04"
-              x2="2489.68"
-              y2="668.23"
-            />
+            <line className="cls-2" x1="2638.88" y1="519.03" x2="2614.48" y2="543.44" />
+            <line className="cls-2" x1="2597.16" y1="560.75" x2="2585.14" y2="572.77" />
+            <line className="cls-2" x1="2546.96" y1="610.96" x2="2532.11" y2="625.81" />
+            <line className="cls-2" x1="2520.79" y1="637.12" x2="2511.6" y2="646.31" />
+            <line className="cls-2" x1="2498.87" y1="659.04" x2="2489.68" y2="668.23" />
             <g>
               <path
                 className="cls-1"
@@ -1397,41 +977,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="665.88"
-              y1="2765.78"
-              x2="686.89"
-              y2="2738.4"
-            />
-            <line
-              className="cls-2"
-              x1="701.8"
-              y1="2718.98"
-              x2="712.15"
-              y2="2705.49"
-            />
-            <line
-              className="cls-2"
-              x1="745.02"
-              y1="2662.65"
-              x2="757.8"
-              y2="2645.99"
-            />
-            <line
-              className="cls-2"
-              x1="767.54"
-              y1="2633.29"
-              x2="775.46"
-              y2="2622.98"
-            />
-            <line
-              className="cls-2"
-              x1="786.41"
-              y1="2608.7"
-              x2="794.33"
-              y2="2598.39"
-            />
+            <line className="cls-2" x1="665.88" y1="2765.78" x2="686.89" y2="2738.4" />
+            <line className="cls-2" x1="701.8" y1="2718.98" x2="712.15" y2="2705.49" />
+            <line className="cls-2" x1="745.02" y1="2662.65" x2="757.8" y2="2645.99" />
+            <line className="cls-2" x1="767.54" y1="2633.29" x2="775.46" y2="2622.98" />
+            <line className="cls-2" x1="786.41" y1="2608.7" x2="794.33" y2="2598.39" />
             <g>
               <path
                 className="cls-1"
@@ -1494,41 +1044,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2491.62"
-              y1="389.72"
-              x2="2470.61"
-              y2="417.1"
-            />
-            <line
-              className="cls-2"
-              x1="2455.7"
-              y1="436.52"
-              x2="2445.35"
-              y2="450.01"
-            />
-            <line
-              className="cls-2"
-              x1="2412.48"
-              y1="492.85"
-              x2="2399.7"
-              y2="509.51"
-            />
-            <line
-              className="cls-2"
-              x1="2389.96"
-              y1="522.21"
-              x2="2382.04"
-              y2="532.52"
-            />
-            <line
-              className="cls-2"
-              x1="2371.09"
-              y1="546.8"
-              x2="2363.17"
-              y2="557.11"
-            />
+            <line className="cls-2" x1="2491.62" y1="389.72" x2="2470.61" y2="417.1" />
+            <line className="cls-2" x1="2455.7" y1="436.52" x2="2445.35" y2="450.01" />
+            <line className="cls-2" x1="2412.48" y1="492.85" x2="2399.7" y2="509.51" />
+            <line className="cls-2" x1="2389.96" y1="522.21" x2="2382.04" y2="532.52" />
+            <line className="cls-2" x1="2371.09" y1="546.8" x2="2363.17" y2="557.11" />
             <g>
               <path
                 className="cls-1"
@@ -1591,41 +1111,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="828.76"
-              y1="2874.77"
-              x2="846.01"
-              y2="2844.89"
-            />
-            <line
-              className="cls-2"
-              x1="858.26"
-              y1="2823.68"
-              x2="866.76"
-              y2="2808.95"
-            />
-            <line
-              className="cls-2"
-              x1="893.76"
-              y1="2762.19"
-              x2="904.26"
-              y2="2744"
-            />
-            <line
-              className="cls-2"
-              x1="912.26"
-              y1="2730.15"
-              x2="918.76"
-              y2="2718.89"
-            />
-            <line
-              className="cls-2"
-              x1="927.76"
-              y1="2703.3"
-              x2="934.26"
-              y2="2692.04"
-            />
+            <line className="cls-2" x1="828.76" y1="2874.77" x2="846.01" y2="2844.89" />
+            <line className="cls-2" x1="858.26" y1="2823.68" x2="866.76" y2="2808.95" />
+            <line className="cls-2" x1="893.76" y1="2762.19" x2="904.26" y2="2744" />
+            <line className="cls-2" x1="912.26" y1="2730.15" x2="918.76" y2="2718.89" />
+            <line className="cls-2" x1="927.76" y1="2703.3" x2="934.26" y2="2692.04" />
             <g>
               <path
                 className="cls-1"
@@ -1688,41 +1178,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2328.74"
-              y1="280.73"
-              x2="2311.49"
-              y2="310.61"
-            />
-            <line
-              className="cls-2"
-              x1="2299.24"
-              y1="331.82"
-              x2="2290.74"
-              y2="346.55"
-            />
-            <line
-              className="cls-2"
-              x1="2263.74"
-              y1="393.31"
-              x2="2253.24"
-              y2="411.5"
-            />
-            <line
-              className="cls-2"
-              x1="2245.24"
-              y1="425.35"
-              x2="2238.74"
-              y2="436.61"
-            />
-            <line
-              className="cls-2"
-              x1="2229.74"
-              y1="452.2"
-              x2="2223.24"
-              y2="463.46"
-            />
+            <line className="cls-2" x1="2328.74" y1="280.73" x2="2311.49" y2="310.61" />
+            <line className="cls-2" x1="2299.24" y1="331.82" x2="2290.74" y2="346.55" />
+            <line className="cls-2" x1="2263.74" y1="393.31" x2="2253.24" y2="411.5" />
+            <line className="cls-2" x1="2245.24" y1="425.35" x2="2238.74" y2="436.61" />
+            <line className="cls-2" x1="2229.74" y1="452.2" x2="2223.24" y2="463.46" />
             <g>
               <path
                 className="cls-1"
@@ -1785,41 +1245,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="1004.47"
-              y1="2961.57"
-              x2="1017.68"
-              y2="2929.69"
-            />
-            <line
-              className="cls-2"
-              x1="1027.05"
-              y1="2907.06"
-              x2="1033.55"
-              y2="2891.35"
-            />
-            <line
-              className="cls-2"
-              x1="1054.22"
-              y1="2841.47"
-              x2="1062.26"
-              y2="2822.06"
-            />
-            <line
-              className="cls-2"
-              x1="1068.38"
-              y1="2807.28"
-              x2="1073.35"
-              y2="2795.27"
-            />
-            <line
-              className="cls-2"
-              x1="1080.24"
-              y1="2778.64"
-              x2="1085.22"
-              y2="2766.63"
-            />
+            <line className="cls-2" x1="1004.47" y1="2961.57" x2="1017.68" y2="2929.69" />
+            <line className="cls-2" x1="1027.05" y1="2907.06" x2="1033.55" y2="2891.35" />
+            <line className="cls-2" x1="1054.22" y1="2841.47" x2="1062.26" y2="2822.06" />
+            <line className="cls-2" x1="1068.38" y1="2807.28" x2="1073.35" y2="2795.27" />
+            <line className="cls-2" x1="1080.24" y1="2778.64" x2="1085.22" y2="2766.63" />
             <g>
               <path
                 className="cls-1"
@@ -1882,41 +1312,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2153.03"
-              y1="193.93"
-              x2="2139.82"
-              y2="225.81"
-            />
-            <line
-              className="cls-2"
-              x1="2130.45"
-              y1="248.44"
-              x2="2123.95"
-              y2="264.15"
-            />
-            <line
-              className="cls-2"
-              x1="2103.28"
-              y1="314.03"
-              x2="2095.24"
-              y2="333.44"
-            />
-            <line
-              className="cls-2"
-              x1="2089.12"
-              y1="348.22"
-              x2="2084.15"
-              y2="360.23"
-            />
-            <line
-              className="cls-2"
-              x1="2077.26"
-              y1="376.86"
-              x2="2072.28"
-              y2="388.87"
-            />
+            <line className="cls-2" x1="2153.03" y1="193.93" x2="2139.82" y2="225.81" />
+            <line className="cls-2" x1="2130.45" y1="248.44" x2="2123.95" y2="264.15" />
+            <line className="cls-2" x1="2103.28" y1="314.03" x2="2095.24" y2="333.44" />
+            <line className="cls-2" x1="2089.12" y1="348.22" x2="2084.15" y2="360.23" />
+            <line className="cls-2" x1="2077.26" y1="376.86" x2="2072.28" y2="388.87" />
             <g>
               <path
                 className="cls-1"
@@ -1979,41 +1379,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="1190.01"
-              y1="3024.69"
-              x2="1198.94"
-              y2="2991.35"
-            />
-            <line
-              className="cls-2"
-              x1="1205.28"
-              y1="2967.7"
-              x2="1209.68"
-              y2="2951.28"
-            />
-            <line
-              className="cls-2"
-              x1="1223.65"
-              y1="2899.12"
-              x2="1229.09"
-              y2="2878.83"
-            />
-            <line
-              className="cls-2"
-              x1="1233.23"
-              y1="2863.38"
-              x2="1236.6"
-              y2="2850.82"
-            />
-            <line
-              className="cls-2"
-              x1="1241.25"
-              y1="2833.44"
-              x2="1244.62"
-              y2="2820.88"
-            />
+            <line className="cls-2" x1="1190.01" y1="3024.69" x2="1198.94" y2="2991.35" />
+            <line className="cls-2" x1="1205.28" y1="2967.7" x2="1209.68" y2="2951.28" />
+            <line className="cls-2" x1="1223.65" y1="2899.12" x2="1229.09" y2="2878.83" />
+            <line className="cls-2" x1="1233.23" y1="2863.38" x2="1236.6" y2="2850.82" />
+            <line className="cls-2" x1="1241.25" y1="2833.44" x2="1244.62" y2="2820.88" />
             <g>
               <path
                 className="cls-1"
@@ -2076,41 +1446,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="1967.49"
-              y1="130.81"
-              x2="1958.56"
-              y2="164.15"
-            />
-            <line
-              className="cls-2"
-              x1="1952.22"
-              y1="187.8"
-              x2="1947.82"
-              y2="204.22"
-            />
-            <line
-              className="cls-2"
-              x1="1933.85"
-              y1="256.38"
-              x2="1928.41"
-              y2="276.67"
-            />
-            <line
-              className="cls-2"
-              x1="1924.27"
-              y1="292.12"
-              x2="1920.9"
-              y2="304.68"
-            />
-            <line
-              className="cls-2"
-              x1="1916.25"
-              y1="322.06"
-              x2="1912.88"
-              y2="334.62"
-            />
+            <line className="cls-2" x1="1967.49" y1="130.81" x2="1958.56" y2="164.15" />
+            <line className="cls-2" x1="1952.22" y1="187.8" x2="1947.82" y2="204.22" />
+            <line className="cls-2" x1="1933.85" y1="256.38" x2="1928.41" y2="276.67" />
+            <line className="cls-2" x1="1924.27" y1="292.12" x2="1920.9" y2="304.68" />
+            <line className="cls-2" x1="1916.25" y1="322.06" x2="1912.88" y2="334.62" />
             <g>
               <path
                 className="cls-1"
@@ -2173,41 +1513,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="1382.2"
-              y1="3063.05"
-              x2="1386.7"
-              y2="3028.84"
-            />
-            <line
-              className="cls-2"
-              x1="1389.9"
-              y1="3004.56"
-              x2="1392.12"
-              y2="2987.7"
-            />
-            <line
-              className="cls-2"
-              x1="1399.17"
-              y1="2934.16"
-              x2="1401.91"
-              y2="2913.34"
-            />
-            <line
-              className="cls-2"
-              x1="1404"
-              y1="2897.48"
-              x2="1405.69"
-              y2="2884.59"
-            />
-            <line
-              className="cls-2"
-              x1="1408.04"
-              y1="2866.75"
-              x2="1409.74"
-              y2="2853.86"
-            />
+            <line className="cls-2" x1="1382.2" y1="3063.05" x2="1386.7" y2="3028.84" />
+            <line className="cls-2" x1="1389.9" y1="3004.56" x2="1392.12" y2="2987.7" />
+            <line className="cls-2" x1="1399.17" y1="2934.16" x2="1401.91" y2="2913.34" />
+            <line className="cls-2" x1="1404" y1="2897.48" x2="1405.69" y2="2884.59" />
+            <line className="cls-2" x1="1408.04" y1="2866.75" x2="1409.74" y2="2853.86" />
             <g>
               <path
                 className="cls-1"
@@ -2270,41 +1580,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="1775.3"
-              y1="92.45"
-              x2="1770.8"
-              y2="126.66"
-            />
-            <line
-              className="cls-2"
-              x1="1767.6"
-              y1="150.94"
-              x2="1765.38"
-              y2="167.8"
-            />
-            <line
-              className="cls-2"
-              x1="1758.33"
-              y1="221.34"
-              x2="1755.59"
-              y2="242.16"
-            />
-            <line
-              className="cls-2"
-              x1="1753.5"
-              y1="258.02"
-              x2="1751.81"
-              y2="270.91"
-            />
-            <line
-              className="cls-2"
-              x1="1749.46"
-              y1="288.75"
-              x2="1747.76"
-              y2="301.64"
-            />
+            <line className="cls-2" x1="1775.3" y1="92.45" x2="1770.8" y2="126.66" />
+            <line className="cls-2" x1="1767.6" y1="150.94" x2="1765.38" y2="167.8" />
+            <line className="cls-2" x1="1758.33" y1="221.34" x2="1755.59" y2="242.16" />
+            <line className="cls-2" x1="1753.5" y1="258.02" x2="1751.81" y2="270.91" />
+            <line className="cls-2" x1="1749.46" y1="288.75" x2="1747.76" y2="301.64" />
             <g>
               <path
                 className="cls-1"
@@ -2367,41 +1647,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="1577.75"
-              y1="3076"
-              x2="1577.75"
-              y2="3041.49"
-            />
-            <line
-              className="cls-2"
-              x1="1577.75"
-              y1="3017"
-              x2="1577.75"
-              y2="3000"
-            />
-            <line
-              className="cls-2"
-              x1="1577.75"
-              y1="2946"
-              x2="1577.75"
-              y2="2925"
-            />
-            <line
-              className="cls-2"
-              x1="1577.75"
-              y1="2909"
-              x2="1577.75"
-              y2="2896"
-            />
-            <line
-              className="cls-2"
-              x1="1577.75"
-              y1="2878"
-              x2="1577.75"
-              y2="2865"
-            />
+            <line className="cls-2" x1="1577.75" y1="3076" x2="1577.75" y2="3041.49" />
+            <line className="cls-2" x1="1577.75" y1="3017" x2="1577.75" y2="3000" />
+            <line className="cls-2" x1="1577.75" y1="2946" x2="1577.75" y2="2925" />
+            <line className="cls-2" x1="1577.75" y1="2909" x2="1577.75" y2="2896" />
+            <line className="cls-2" x1="1577.75" y1="2878" x2="1577.75" y2="2865" />
             <g>
               <path
                 className="cls-1"
@@ -2464,41 +1714,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="1579.75"
-              y1="79.5"
-              x2="1579.75"
-              y2="114.01"
-            />
-            <line
-              className="cls-2"
-              x1="1579.75"
-              y1="138.5"
-              x2="1579.75"
-              y2="155.5"
-            />
-            <line
-              className="cls-2"
-              x1="1579.75"
-              y1="209.5"
-              x2="1579.75"
-              y2="230.5"
-            />
-            <line
-              className="cls-2"
-              x1="1579.75"
-              y1="246.5"
-              x2="1579.75"
-              y2="259.5"
-            />
-            <line
-              className="cls-2"
-              x1="1579.75"
-              y1="277.5"
-              x2="1579.75"
-              y2="290.5"
-            />
+            <line className="cls-2" x1="1579.75" y1="79.5" x2="1579.75" y2="114.01" />
+            <line className="cls-2" x1="1579.75" y1="138.5" x2="1579.75" y2="155.5" />
+            <line className="cls-2" x1="1579.75" y1="209.5" x2="1579.75" y2="230.5" />
+            <line className="cls-2" x1="1579.75" y1="246.5" x2="1579.75" y2="259.5" />
+            <line className="cls-2" x1="1579.75" y1="277.5" x2="1579.75" y2="290.5" />
             <g>
               <path
                 className="cls-1"
@@ -2561,41 +1781,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="1773.32"
-              y1="3063.31"
-              x2="1768.81"
-              y2="3029.1"
-            />
-            <line
-              className="cls-2"
-              x1="1765.62"
-              y1="3004.82"
-              x2="1763.4"
-              y2="2987.96"
-            />
-            <line
-              className="cls-2"
-              x1="1756.35"
-              y1="2934.42"
-              x2="1753.61"
-              y2="2913.6"
-            />
-            <line
-              className="cls-2"
-              x1="1751.52"
-              y1="2897.74"
-              x2="1749.82"
-              y2="2884.85"
-            />
-            <line
-              className="cls-2"
-              x1="1747.48"
-              y1="2867.01"
-              x2="1745.78"
-              y2="2854.12"
-            />
+            <line className="cls-2" x1="1773.32" y1="3063.31" x2="1768.81" y2="3029.1" />
+            <line className="cls-2" x1="1765.62" y1="3004.82" x2="1763.4" y2="2987.96" />
+            <line className="cls-2" x1="1756.35" y1="2934.42" x2="1753.61" y2="2913.6" />
+            <line className="cls-2" x1="1751.52" y1="2897.74" x2="1749.82" y2="2884.85" />
+            <line className="cls-2" x1="1747.48" y1="2867.01" x2="1745.78" y2="2854.12" />
             <g>
               <path
                 className="cls-1"
@@ -2658,41 +1848,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="1384.18"
-              y1="92.19"
-              x2="1388.69"
-              y2="126.4"
-            />
-            <line
-              className="cls-2"
-              x1="1391.88"
-              y1="150.68"
-              x2="1394.1"
-              y2="167.54"
-            />
-            <line
-              className="cls-2"
-              x1="1401.15"
-              y1="221.08"
-              x2="1403.89"
-              y2="241.9"
-            />
-            <line
-              className="cls-2"
-              x1="1405.98"
-              y1="257.76"
-              x2="1407.68"
-              y2="270.65"
-            />
-            <line
-              className="cls-2"
-              x1="1410.02"
-              y1="288.49"
-              x2="1411.72"
-              y2="301.38"
-            />
+            <line className="cls-2" x1="1384.18" y1="92.19" x2="1388.69" y2="126.4" />
+            <line className="cls-2" x1="1391.88" y1="150.68" x2="1394.1" y2="167.54" />
+            <line className="cls-2" x1="1401.15" y1="221.08" x2="1403.89" y2="241.9" />
+            <line className="cls-2" x1="1405.98" y1="257.76" x2="1407.68" y2="270.65" />
+            <line className="cls-2" x1="1410.02" y1="288.49" x2="1411.72" y2="301.38" />
             <g>
               <path
                 className="cls-1"
@@ -2755,41 +1915,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="1965.56"
-              y1="3025.21"
-              x2="1956.63"
-              y2="2991.87"
-            />
-            <line
-              className="cls-2"
-              x1="1950.29"
-              y1="2968.22"
-              x2="1945.89"
-              y2="2951.8"
-            />
-            <line
-              className="cls-2"
-              x1="1931.91"
-              y1="2899.64"
-              x2="1926.48"
-              y2="2879.35"
-            />
-            <line
-              className="cls-2"
-              x1="1922.34"
-              y1="2863.9"
-              x2="1918.97"
-              y2="2851.34"
-            />
-            <line
-              className="cls-2"
-              x1="1914.31"
-              y1="2833.95"
-              x2="1910.95"
-              y2="2821.4"
-            />
+            <line className="cls-2" x1="1965.56" y1="3025.21" x2="1956.63" y2="2991.87" />
+            <line className="cls-2" x1="1950.29" y1="2968.22" x2="1945.89" y2="2951.8" />
+            <line className="cls-2" x1="1931.91" y1="2899.64" x2="1926.48" y2="2879.35" />
+            <line className="cls-2" x1="1922.34" y1="2863.9" x2="1918.97" y2="2851.34" />
+            <line className="cls-2" x1="1914.31" y1="2833.95" x2="1910.95" y2="2821.4" />
             <g>
               <path
                 className="cls-1"
@@ -2852,41 +1982,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="1191.94"
-              y1="130.29"
-              x2="1200.87"
-              y2="163.63"
-            />
-            <line
-              className="cls-2"
-              x1="1207.21"
-              y1="187.28"
-              x2="1211.61"
-              y2="203.7"
-            />
-            <line
-              className="cls-2"
-              x1="1225.59"
-              y1="255.86"
-              x2="1231.02"
-              y2="276.15"
-            />
-            <line
-              className="cls-2"
-              x1="1235.16"
-              y1="291.6"
-              x2="1238.53"
-              y2="304.16"
-            />
-            <line
-              className="cls-2"
-              x1="1243.19"
-              y1="321.55"
-              x2="1246.55"
-              y2="334.1"
-            />
+            <line className="cls-2" x1="1191.94" y1="130.29" x2="1200.87" y2="163.63" />
+            <line className="cls-2" x1="1207.21" y1="187.28" x2="1211.61" y2="203.7" />
+            <line className="cls-2" x1="1225.59" y1="255.86" x2="1231.02" y2="276.15" />
+            <line className="cls-2" x1="1235.16" y1="291.6" x2="1238.53" y2="304.16" />
+            <line className="cls-2" x1="1243.19" y1="321.55" x2="1246.55" y2="334.1" />
             <g>
               <path
                 className="cls-1"
@@ -2949,41 +2049,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2151.18"
-              y1="2962.34"
-              x2="2137.97"
-              y2="2930.45"
-            />
-            <line
-              className="cls-2"
-              x1="2128.6"
-              y1="2907.83"
-              x2="2122.1"
-              y2="2892.12"
-            />
-            <line
-              className="cls-2"
-              x1="2101.43"
-              y1="2842.23"
-              x2="2093.4"
-              y2="2822.83"
-            />
-            <line
-              className="cls-2"
-              x1="2087.27"
-              y1="2808.05"
-              x2="2082.3"
-              y2="2796.04"
-            />
-            <line
-              className="cls-2"
-              x1="2075.41"
-              y1="2779.41"
-              x2="2070.44"
-              y2="2767.4"
-            />
+            <line className="cls-2" x1="2151.18" y1="2962.34" x2="2137.97" y2="2930.45" />
+            <line className="cls-2" x1="2128.6" y1="2907.83" x2="2122.1" y2="2892.12" />
+            <line className="cls-2" x1="2101.43" y1="2842.23" x2="2093.4" y2="2822.83" />
+            <line className="cls-2" x1="2087.27" y1="2808.05" x2="2082.3" y2="2796.04" />
+            <line className="cls-2" x1="2075.41" y1="2779.41" x2="2070.44" y2="2767.4" />
             <g>
               <path
                 className="cls-1"
@@ -3046,41 +2116,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="1006.32"
-              y1="193.16"
-              x2="1019.53"
-              y2="225.05"
-            />
-            <line
-              className="cls-2"
-              x1="1028.9"
-              y1="247.67"
-              x2="1035.4"
-              y2="263.38"
-            />
-            <line
-              className="cls-2"
-              x1="1056.07"
-              y1="313.27"
-              x2="1064.1"
-              y2="332.67"
-            />
-            <line
-              className="cls-2"
-              x1="1070.23"
-              y1="347.45"
-              x2="1075.2"
-              y2="359.46"
-            />
-            <line
-              className="cls-2"
-              x1="1082.09"
-              y1="376.09"
-              x2="1087.06"
-              y2="388.1"
-            />
+            <line className="cls-2" x1="1006.32" y1="193.16" x2="1019.53" y2="225.05" />
+            <line className="cls-2" x1="1028.9" y1="247.67" x2="1035.4" y2="263.38" />
+            <line className="cls-2" x1="1056.07" y1="313.27" x2="1064.1" y2="332.67" />
+            <line className="cls-2" x1="1070.23" y1="347.45" x2="1075.2" y2="359.46" />
+            <line className="cls-2" x1="1082.09" y1="376.09" x2="1087.06" y2="388.1" />
             <g>
               <path
                 className="cls-1"
@@ -3143,41 +2183,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2327.01"
-              y1="2875.77"
-              x2="2309.75"
-              y2="2845.89"
-            />
-            <line
-              className="cls-2"
-              x1="2297.51"
-              y1="2824.68"
-              x2="2289.01"
-              y2="2809.95"
-            />
-            <line
-              className="cls-2"
-              x1="2262.01"
-              y1="2763.19"
-              x2="2251.51"
-              y2="2745"
-            />
-            <line
-              className="cls-2"
-              x1="2243.51"
-              y1="2731.15"
-              x2="2237.01"
-              y2="2719.89"
-            />
-            <line
-              className="cls-2"
-              x1="2228.01"
-              y1="2704.3"
-              x2="2221.51"
-              y2="2693.04"
-            />
+            <line className="cls-2" x1="2327.01" y1="2875.77" x2="2309.75" y2="2845.89" />
+            <line className="cls-2" x1="2297.51" y1="2824.68" x2="2289.01" y2="2809.95" />
+            <line className="cls-2" x1="2262.01" y1="2763.19" x2="2251.51" y2="2745" />
+            <line className="cls-2" x1="2243.51" y1="2731.15" x2="2237.01" y2="2719.89" />
+            <line className="cls-2" x1="2228.01" y1="2704.3" x2="2221.51" y2="2693.04" />
             <g>
               <path
                 className="cls-1"
@@ -3240,41 +2250,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="830.49"
-              y1="279.73"
-              x2="847.75"
-              y2="309.61"
-            />
-            <line
-              className="cls-2"
-              x1="859.99"
-              y1="330.82"
-              x2="868.49"
-              y2="345.55"
-            />
-            <line
-              className="cls-2"
-              x1="895.49"
-              y1="392.31"
-              x2="905.99"
-              y2="410.5"
-            />
-            <line
-              className="cls-2"
-              x1="913.99"
-              y1="424.35"
-              x2="920.49"
-              y2="435.61"
-            />
-            <line
-              className="cls-2"
-              x1="929.49"
-              y1="451.2"
-              x2="935.99"
-              y2="462.46"
-            />
+            <line className="cls-2" x1="830.49" y1="279.73" x2="847.75" y2="309.61" />
+            <line className="cls-2" x1="859.99" y1="330.82" x2="868.49" y2="345.55" />
+            <line className="cls-2" x1="895.49" y1="392.31" x2="905.99" y2="410.5" />
+            <line className="cls-2" x1="913.99" y1="424.35" x2="920.49" y2="435.61" />
+            <line className="cls-2" x1="929.49" y1="451.2" x2="935.99" y2="462.46" />
             <g>
               <path
                 className="cls-1"
@@ -3337,41 +2317,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2490.03"
-              y1="2767"
-              x2="2469.02"
-              y2="2739.62"
-            />
-            <line
-              className="cls-2"
-              x1="2454.12"
-              y1="2720.19"
-              x2="2443.77"
-              y2="2706.71"
-            />
-            <line
-              className="cls-2"
-              x1="2410.89"
-              y1="2663.86"
-              x2="2398.11"
-              y2="2647.2"
-            />
-            <line
-              className="cls-2"
-              x1="2388.37"
-              y1="2634.51"
-              x2="2380.46"
-              y2="2624.2"
-            />
-            <line
-              className="cls-2"
-              x1="2369.5"
-              y1="2609.92"
-              x2="2361.58"
-              y2="2599.6"
-            />
+            <line className="cls-2" x1="2490.03" y1="2767" x2="2469.02" y2="2739.62" />
+            <line className="cls-2" x1="2454.12" y1="2720.19" x2="2443.77" y2="2706.71" />
+            <line className="cls-2" x1="2410.89" y1="2663.86" x2="2398.11" y2="2647.2" />
+            <line className="cls-2" x1="2388.37" y1="2634.51" x2="2380.46" y2="2624.2" />
+            <line className="cls-2" x1="2369.5" y1="2609.92" x2="2361.58" y2="2599.6" />
             <g>
               <path
                 className="cls-1"
@@ -3434,41 +2384,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="667.47"
-              y1="388.5"
-              x2="688.48"
-              y2="415.88"
-            />
-            <line
-              className="cls-2"
-              x1="703.38"
-              y1="435.31"
-              x2="713.73"
-              y2="448.79"
-            />
-            <line
-              className="cls-2"
-              x1="746.61"
-              y1="491.64"
-              x2="759.39"
-              y2="508.3"
-            />
-            <line
-              className="cls-2"
-              x1="769.13"
-              y1="520.99"
-              x2="777.04"
-              y2="531.3"
-            />
-            <line
-              className="cls-2"
-              x1="788"
-              y1="545.58"
-              x2="795.92"
-              y2="555.9"
-            />
+            <line className="cls-2" x1="667.47" y1="388.5" x2="688.48" y2="415.88" />
+            <line className="cls-2" x1="703.38" y1="435.31" x2="713.73" y2="448.79" />
+            <line className="cls-2" x1="746.61" y1="491.64" x2="759.39" y2="508.3" />
+            <line className="cls-2" x1="769.13" y1="520.99" x2="777.04" y2="531.3" />
+            <line className="cls-2" x1="788" y1="545.58" x2="795.92" y2="555.9" />
             <g>
               <path
                 className="cls-1"
@@ -3531,41 +2451,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2637.47"
-              y1="2637.88"
-              x2="2613.06"
-              y2="2613.48"
-            />
-            <line
-              className="cls-2"
-              x1="2595.75"
-              y1="2596.16"
-              x2="2583.73"
-              y2="2584.14"
-            />
-            <line
-              className="cls-2"
-              x1="2545.54"
-              y1="2545.96"
-              x2="2530.69"
-              y2="2531.11"
-            />
-            <line
-              className="cls-2"
-              x1="2519.38"
-              y1="2519.79"
-              x2="2510.19"
-              y2="2510.6"
-            />
-            <line
-              className="cls-2"
-              x1="2497.46"
-              y1="2497.87"
-              x2="2488.27"
-              y2="2488.68"
-            />
+            <line className="cls-2" x1="2637.47" y1="2637.88" x2="2613.06" y2="2613.48" />
+            <line className="cls-2" x1="2595.75" y1="2596.16" x2="2583.73" y2="2584.14" />
+            <line className="cls-2" x1="2545.54" y1="2545.96" x2="2530.69" y2="2531.11" />
+            <line className="cls-2" x1="2519.38" y1="2519.79" x2="2510.19" y2="2510.6" />
+            <line className="cls-2" x1="2497.46" y1="2497.87" x2="2488.27" y2="2488.68" />
             <g>
               <path
                 className="cls-1"
@@ -3628,41 +2518,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="520.03"
-              y1="517.62"
-              x2="544.44"
-              y2="542.02"
-            />
-            <line
-              className="cls-2"
-              x1="561.75"
-              y1="559.34"
-              x2="573.77"
-              y2="571.36"
-            />
-            <line
-              className="cls-2"
-              x1="611.96"
-              y1="609.54"
-              x2="626.81"
-              y2="624.39"
-            />
-            <line
-              className="cls-2"
-              x1="638.12"
-              y1="635.71"
-              x2="647.31"
-              y2="644.9"
-            />
-            <line
-              className="cls-2"
-              x1="660.04"
-              y1="657.63"
-              x2="669.23"
-              y2="666.82"
-            />
+            <line className="cls-2" x1="520.03" y1="517.62" x2="544.44" y2="542.02" />
+            <line className="cls-2" x1="561.75" y1="559.34" x2="573.77" y2="571.36" />
+            <line className="cls-2" x1="611.96" y1="609.54" x2="626.81" y2="624.39" />
+            <line className="cls-2" x1="638.12" y1="635.71" x2="647.31" y2="644.9" />
+            <line className="cls-2" x1="660.04" y1="657.63" x2="669.23" y2="666.82" />
             <g>
               <path
                 className="cls-1"
@@ -3725,41 +2585,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2766.78"
-              y1="2490.62"
-              x2="2739.4"
-              y2="2469.61"
-            />
-            <line
-              className="cls-2"
-              x1="2719.98"
-              y1="2454.7"
-              x2="2706.49"
-              y2="2444.35"
-            />
-            <line
-              className="cls-2"
-              x1="2663.65"
-              y1="2411.48"
-              x2="2646.99"
-              y2="2398.7"
-            />
-            <line
-              className="cls-2"
-              x1="2634.29"
-              y1="2388.96"
-              x2="2623.98"
-              y2="2381.04"
-            />
-            <line
-              className="cls-2"
-              x1="2609.7"
-              y1="2370.09"
-              x2="2599.39"
-              y2="2362.17"
-            />
+            <line className="cls-2" x1="2766.78" y1="2490.62" x2="2739.4" y2="2469.61" />
+            <line className="cls-2" x1="2719.98" y1="2454.7" x2="2706.49" y2="2444.35" />
+            <line className="cls-2" x1="2663.65" y1="2411.48" x2="2646.99" y2="2398.7" />
+            <line className="cls-2" x1="2634.29" y1="2388.96" x2="2623.98" y2="2381.04" />
+            <line className="cls-2" x1="2609.7" y1="2370.09" x2="2599.39" y2="2362.17" />
             <g>
               <path
                 className="cls-1"
@@ -3822,41 +2652,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="390.72"
-              y1="664.88"
-              x2="418.1"
-              y2="685.89"
-            />
-            <line
-              className="cls-2"
-              x1="437.52"
-              y1="700.8"
-              x2="451.01"
-              y2="711.15"
-            />
-            <line
-              className="cls-2"
-              x1="493.85"
-              y1="744.02"
-              x2="510.51"
-              y2="756.8"
-            />
-            <line
-              className="cls-2"
-              x1="523.21"
-              y1="766.54"
-              x2="533.52"
-              y2="774.46"
-            />
-            <line
-              className="cls-2"
-              x1="547.8"
-              y1="785.41"
-              x2="558.11"
-              y2="793.33"
-            />
+            <line className="cls-2" x1="390.72" y1="664.88" x2="418.1" y2="685.89" />
+            <line className="cls-2" x1="437.52" y1="700.8" x2="451.01" y2="711.15" />
+            <line className="cls-2" x1="493.85" y1="744.02" x2="510.51" y2="756.8" />
+            <line className="cls-2" x1="523.21" y1="766.54" x2="533.52" y2="774.46" />
+            <line className="cls-2" x1="547.8" y1="785.41" x2="558.11" y2="793.33" />
             <g>
               <path
                 className="cls-1"
@@ -3919,41 +2719,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2875.77"
-              y1="2327.74"
-              x2="2845.89"
-              y2="2310.49"
-            />
-            <line
-              className="cls-2"
-              x1="2824.68"
-              y1="2298.24"
-              x2="2809.95"
-              y2="2289.74"
-            />
-            <line
-              className="cls-2"
-              x1="2763.19"
-              y1="2262.74"
-              x2="2745"
-              y2="2252.24"
-            />
-            <line
-              className="cls-2"
-              x1="2731.15"
-              y1="2244.24"
-              x2="2719.89"
-              y2="2237.74"
-            />
-            <line
-              className="cls-2"
-              x1="2704.3"
-              y1="2228.74"
-              x2="2693.04"
-              y2="2222.24"
-            />
+            <line className="cls-2" x1="2875.77" y1="2327.74" x2="2845.89" y2="2310.49" />
+            <line className="cls-2" x1="2824.68" y1="2298.24" x2="2809.95" y2="2289.74" />
+            <line className="cls-2" x1="2763.19" y1="2262.74" x2="2745" y2="2252.24" />
+            <line className="cls-2" x1="2731.15" y1="2244.24" x2="2719.89" y2="2237.74" />
+            <line className="cls-2" x1="2704.3" y1="2228.74" x2="2693.04" y2="2222.24" />
             <g>
               <path
                 className="cls-1"
@@ -4016,41 +2786,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="281.73"
-              y1="827.76"
-              x2="311.61"
-              y2="845.01"
-            />
-            <line
-              className="cls-2"
-              x1="332.82"
-              y1="857.26"
-              x2="347.55"
-              y2="865.76"
-            />
-            <line
-              className="cls-2"
-              x1="394.31"
-              y1="892.76"
-              x2="412.5"
-              y2="903.26"
-            />
-            <line
-              className="cls-2"
-              x1="426.35"
-              y1="911.26"
-              x2="437.61"
-              y2="917.76"
-            />
-            <line
-              className="cls-2"
-              x1="453.2"
-              y1="926.76"
-              x2="464.46"
-              y2="933.26"
-            />
+            <line className="cls-2" x1="281.73" y1="827.76" x2="311.61" y2="845.01" />
+            <line className="cls-2" x1="332.82" y1="857.26" x2="347.55" y2="865.76" />
+            <line className="cls-2" x1="394.31" y1="892.76" x2="412.5" y2="903.26" />
+            <line className="cls-2" x1="426.35" y1="911.26" x2="437.61" y2="917.76" />
+            <line className="cls-2" x1="453.2" y1="926.76" x2="464.46" y2="933.26" />
             <g>
               <path
                 className="cls-1"
@@ -4113,41 +2853,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="2962.57"
-              y1="2152.03"
-              x2="2930.69"
-              y2="2138.82"
-            />
-            <line
-              className="cls-2"
-              x1="2908.06"
-              y1="2129.45"
-              x2="2892.35"
-              y2="2122.95"
-            />
-            <line
-              className="cls-2"
-              x1="2842.47"
-              y1="2102.28"
-              x2="2823.06"
-              y2="2094.24"
-            />
-            <line
-              className="cls-2"
-              x1="2808.28"
-              y1="2088.12"
-              x2="2796.27"
-              y2="2083.15"
-            />
-            <line
-              className="cls-2"
-              x1="2779.64"
-              y1="2076.26"
-              x2="2767.63"
-              y2="2071.28"
-            />
+            <line className="cls-2" x1="2962.57" y1="2152.03" x2="2930.69" y2="2138.82" />
+            <line className="cls-2" x1="2908.06" y1="2129.45" x2="2892.35" y2="2122.95" />
+            <line className="cls-2" x1="2842.47" y1="2102.28" x2="2823.06" y2="2094.24" />
+            <line className="cls-2" x1="2808.28" y1="2088.12" x2="2796.27" y2="2083.15" />
+            <line className="cls-2" x1="2779.64" y1="2076.26" x2="2767.63" y2="2071.28" />
             <g>
               <path
                 className="cls-1"
@@ -4210,41 +2920,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="194.93"
-              y1="1003.47"
-              x2="226.81"
-              y2="1016.68"
-            />
-            <line
-              className="cls-2"
-              x1="249.44"
-              y1="1026.05"
-              x2="265.15"
-              y2="1032.55"
-            />
-            <line
-              className="cls-2"
-              x1="315.03"
-              y1="1053.22"
-              x2="334.44"
-              y2="1061.26"
-            />
-            <line
-              className="cls-2"
-              x1="349.22"
-              y1="1067.38"
-              x2="361.23"
-              y2="1072.35"
-            />
-            <line
-              className="cls-2"
-              x1="377.86"
-              y1="1079.24"
-              x2="389.87"
-              y2="1084.22"
-            />
+            <line className="cls-2" x1="194.93" y1="1003.47" x2="226.81" y2="1016.68" />
+            <line className="cls-2" x1="249.44" y1="1026.05" x2="265.15" y2="1032.55" />
+            <line className="cls-2" x1="315.03" y1="1053.22" x2="334.44" y2="1061.26" />
+            <line className="cls-2" x1="349.22" y1="1067.38" x2="361.23" y2="1072.35" />
+            <line className="cls-2" x1="377.86" y1="1079.24" x2="389.87" y2="1084.22" />
             <g>
               <path
                 className="cls-1"
@@ -4307,41 +2987,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="3025.69"
-              y1="1966.49"
-              x2="2992.35"
-              y2="1957.56"
-            />
-            <line
-              className="cls-2"
-              x1="2968.7"
-              y1="1951.22"
-              x2="2952.28"
-              y2="1946.82"
-            />
-            <line
-              className="cls-2"
-              x1="2900.12"
-              y1="1932.85"
-              x2="2879.83"
-              y2="1927.41"
-            />
-            <line
-              className="cls-2"
-              x1="2864.38"
-              y1="1923.27"
-              x2="2851.82"
-              y2="1919.9"
-            />
-            <line
-              className="cls-2"
-              x1="2834.44"
-              y1="1915.25"
-              x2="2821.88"
-              y2="1911.88"
-            />
+            <line className="cls-2" x1="3025.69" y1="1966.49" x2="2992.35" y2="1957.56" />
+            <line className="cls-2" x1="2968.7" y1="1951.22" x2="2952.28" y2="1946.82" />
+            <line className="cls-2" x1="2900.12" y1="1932.85" x2="2879.83" y2="1927.41" />
+            <line className="cls-2" x1="2864.38" y1="1923.27" x2="2851.82" y2="1919.9" />
+            <line className="cls-2" x1="2834.44" y1="1915.25" x2="2821.88" y2="1911.88" />
             <g>
               <path
                 className="cls-1"
@@ -4404,41 +3054,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="131.81"
-              y1="1189.01"
-              x2="165.15"
-              y2="1197.94"
-            />
-            <line
-              className="cls-2"
-              x1="188.8"
-              y1="1204.28"
-              x2="205.22"
-              y2="1208.68"
-            />
-            <line
-              className="cls-2"
-              x1="257.38"
-              y1="1222.65"
-              x2="277.67"
-              y2="1228.09"
-            />
-            <line
-              className="cls-2"
-              x1="293.12"
-              y1="1232.23"
-              x2="305.68"
-              y2="1235.6"
-            />
-            <line
-              className="cls-2"
-              x1="323.06"
-              y1="1240.25"
-              x2="335.62"
-              y2="1243.62"
-            />
+            <line className="cls-2" x1="131.81" y1="1189.01" x2="165.15" y2="1197.94" />
+            <line className="cls-2" x1="188.8" y1="1204.28" x2="205.22" y2="1208.68" />
+            <line className="cls-2" x1="257.38" y1="1222.65" x2="277.67" y2="1228.09" />
+            <line className="cls-2" x1="293.12" y1="1232.23" x2="305.68" y2="1235.6" />
+            <line className="cls-2" x1="323.06" y1="1240.25" x2="335.62" y2="1243.62" />
             <g>
               <path
                 className="cls-1"
@@ -4501,41 +3121,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="3064.05"
-              y1="1774.3"
-              x2="3029.84"
-              y2="1769.8"
-            />
-            <line
-              className="cls-2"
-              x1="3005.56"
-              y1="1766.6"
-              x2="2988.7"
-              y2="1764.38"
-            />
-            <line
-              className="cls-2"
-              x1="2935.16"
-              y1="1757.33"
-              x2="2914.34"
-              y2="1754.59"
-            />
-            <line
-              className="cls-2"
-              x1="2898.48"
-              y1="1752.5"
-              x2="2885.59"
-              y2="1750.81"
-            />
-            <line
-              className="cls-2"
-              x1="2867.75"
-              y1="1748.46"
-              x2="2854.86"
-              y2="1746.76"
-            />
+            <line className="cls-2" x1="3064.05" y1="1774.3" x2="3029.84" y2="1769.8" />
+            <line className="cls-2" x1="3005.56" y1="1766.6" x2="2988.7" y2="1764.38" />
+            <line className="cls-2" x1="2935.16" y1="1757.33" x2="2914.34" y2="1754.59" />
+            <line className="cls-2" x1="2898.48" y1="1752.5" x2="2885.59" y2="1750.81" />
+            <line className="cls-2" x1="2867.75" y1="1748.46" x2="2854.86" y2="1746.76" />
             <g>
               <path
                 className="cls-1"
@@ -4598,41 +3188,11 @@ const OuterSpearSvg: React.FC<OuterSpearSvgProps> = ({
             </g>
           </g>
           <g>
-            <line
-              className="cls-2"
-              x1="93.45"
-              y1="1381.2"
-              x2="127.66"
-              y2="1385.7"
-            />
-            <line
-              className="cls-2"
-              x1="151.94"
-              y1="1388.9"
-              x2="168.8"
-              y2="1391.12"
-            />
-            <line
-              className="cls-2"
-              x1="222.34"
-              y1="1398.17"
-              x2="243.16"
-              y2="1400.91"
-            />
-            <line
-              className="cls-2"
-              x1="259.02"
-              y1="1403"
-              x2="271.91"
-              y2="1404.69"
-            />
-            <line
-              className="cls-2"
-              x1="289.75"
-              y1="1407.04"
-              x2="302.64"
-              y2="1408.74"
-            />
+            <line className="cls-2" x1="93.45" y1="1381.2" x2="127.66" y2="1385.7" />
+            <line className="cls-2" x1="151.94" y1="1388.9" x2="168.8" y2="1391.12" />
+            <line className="cls-2" x1="222.34" y1="1398.17" x2="243.16" y2="1400.91" />
+            <line className="cls-2" x1="259.02" y1="1403" x2="271.91" y2="1404.69" />
+            <line className="cls-2" x1="289.75" y1="1407.04" x2="302.64" y2="1408.74" />
             <g>
               <path
                 className="cls-1"

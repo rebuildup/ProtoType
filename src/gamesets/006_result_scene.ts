@@ -16,13 +16,7 @@ import { getLatestKey } from "./009_keyinput";
 import { playMiss } from "./012_soundplay";
 import { saveToCache } from "./020_cacheControl";
 import { postPlayData } from "./010_APIget";
-import {
-  closeScene,
-  flashObj,
-  openScene,
-  reaction_jump,
-  wig_Type,
-} from "./014_mogura";
+import { closeScene, flashObj, openScene, reaction_jump, wig_Type } from "./014_mogura";
 
 function createText(
   app: PIXI.Application,
@@ -30,7 +24,7 @@ function createText(
   x: number = 0,
   y: number = 0,
   f_size: number = 38,
-  option: number = 0
+  option: number = 0,
 ) {
   const output = new PIXI.Text({
     text: text_t,
@@ -73,6 +67,8 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     wig_Type(app);
     gameData.total_keyhit += gameData.total_hit_cnt;
     saveToCache("total_keyhit_GM", gameData.total_keyhit);
+    gameData.playCount += 1;
+    saveToCache("playCount_GM", gameData.playCount);
     if (!gameData.IsLoggedin) {
       gameData.current_Player_id++;
     }
@@ -83,9 +79,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
     const table_top_y = 240;
     const table_pad_y = 72;
     const accuracy =
-      gameData.total_hit_cnt > 0
-        ? (1 - gameData.Miss / gameData.total_hit_cnt) * 100
-        : 0;
+      gameData.total_hit_cnt > 0 ? (1 - gameData.Miss / gameData.total_hit_cnt) * 100 : 0;
 
     const avgKpm =
       gameData.EndTime > gameData.StartTime && gameData.total_hit_cnt > 0
@@ -95,8 +89,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
         : 0;
 
     const score =
-      avgKpm * Math.pow(1 - gameData.Miss / gameData.total_hit_cnt, 3) * 100 +
-      gameData.score_extra;
+      avgKpm * Math.pow(1 - gameData.Miss / gameData.total_hit_cnt, 3) * 100 + gameData.score_extra;
 
     const newPlayer: RankingPlayer = {
       player_id: gameData.current_Player_id,
@@ -128,7 +121,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
         ((gameData.total_hit_cnt - gameData.Miss) /
           ((gameData.EndTime - gameData.StartTime) / 1000)) *
           60,
-        gameData.MaxKPM
+        gameData.MaxKPM,
       );
     }
 
@@ -140,7 +133,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Ranking_pos,
       table_top_y - table_pad_y,
       38,
-      align_opt.center
+      align_opt.center,
     );
     for (let i = 0; i < 10; i++) {
       createText(
@@ -151,7 +144,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
         Ranking_pos - ranking_pad_x,
         table_pad_y * i + table_top_y,
         35,
-        align_opt.left
+        align_opt.left,
       );
       createText(
         app,
@@ -161,7 +154,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
         Ranking_pos + ranking_pad_x,
         table_pad_y * i + table_top_y,
         35,
-        align_opt.right
+        align_opt.right,
       );
     }
     const Ur_rank_line = new PIXI.Graphics();
@@ -178,7 +171,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Ranking_pos - ranking_pad_x,
       table_pad_y * 11 + table_top_y,
       38,
-      align_opt.left
+      align_opt.left,
     );
     createText(
       app,
@@ -186,7 +179,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Ranking_pos + ranking_pad_x,
       table_pad_y * 11 + table_top_y,
       38,
-      align_opt.right
+      align_opt.right,
     );
 
     const play_res_title = createText(
@@ -195,19 +188,12 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos,
       table_top_y - table_pad_y,
       38,
-      align_opt.center
+      align_opt.center,
     );
 
     const result_t_f_s = 32;
     const result_n_f_s = 30;
-    createText(
-      app,
-      "スコア",
-      Play_pos - play_pad_x,
-      table_top_y,
-      result_t_f_s,
-      align_opt.left
-    );
+    createText(app, "スコア", Play_pos - play_pad_x, table_top_y, result_t_f_s, align_opt.left);
     createText(
       app,
       String(
@@ -220,12 +206,12 @@ export function result_scene(app: PIXI.Application): Promise<void> {
             (1 - gameData.Miss / gameData.total_hit_cnt) *
             100 +
           gameData.score_extra
-        ).toFixed(0)
+        ).toFixed(0),
       ),
       Play_pos + play_pad_x,
       table_top_y,
       result_n_f_s,
-      align_opt.right
+      align_opt.right,
     );
     createText(
       app,
@@ -233,7 +219,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos - play_pad_x,
       table_top_y + table_pad_y,
       result_t_f_s,
-      align_opt.left
+      align_opt.left,
     );
     createText(
       app,
@@ -241,7 +227,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos + play_pad_x,
       table_top_y + table_pad_y,
       result_n_f_s,
-      align_opt.right
+      align_opt.right,
     );
     createText(
       app,
@@ -249,16 +235,15 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos - play_pad_x,
       table_top_y + table_pad_y * 2,
       result_t_f_s,
-      align_opt.left
+      align_opt.left,
     );
     createText(
       app,
-      String(((1 - gameData.Miss / gameData.total_hit_cnt) * 100).toFixed(1)) +
-        "%",
+      String(((1 - gameData.Miss / gameData.total_hit_cnt) * 100).toFixed(1)) + "%",
       Play_pos + play_pad_x,
       table_top_y + table_pad_y * 2,
       result_n_f_s,
-      align_opt.right
+      align_opt.right,
     );
     createText(
       app,
@@ -266,7 +251,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos - play_pad_x,
       table_top_y + table_pad_y * 3,
       result_t_f_s,
-      align_opt.left
+      align_opt.left,
     );
     createText(
       app,
@@ -274,7 +259,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos + play_pad_x,
       table_top_y + table_pad_y * 3,
       result_n_f_s,
-      align_opt.right
+      align_opt.right,
     );
     createText(
       app,
@@ -282,7 +267,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos - play_pad_x,
       table_top_y + table_pad_y * 4,
       result_t_f_s,
-      align_opt.left
+      align_opt.left,
     );
     createText(
       app,
@@ -290,7 +275,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos + play_pad_x,
       table_top_y + table_pad_y * 4,
       result_n_f_s,
-      align_opt.right
+      align_opt.right,
     );
     createText(
       app,
@@ -298,27 +283,23 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos - play_pad_x,
       table_top_y + table_pad_y * 5,
       result_t_f_s,
-      align_opt.left
+      align_opt.left,
     );
 
     let time_text_t = "";
     if ((gameData.EndTime - gameData.StartTime) / 1000 > 60) {
       time_text_t +=
-        String(
-          ((gameData.EndTime - gameData.StartTime) / 1000 / 60).toFixed(0)
-        ) + "分";
+        String(((gameData.EndTime - gameData.StartTime) / 1000 / 60).toFixed(0)) + "分";
     }
     time_text_t +=
-      String(
-        (((gameData.EndTime - gameData.StartTime) / 1000) % 60).toFixed(0)
-      ) + "秒";
+      String((((gameData.EndTime - gameData.StartTime) / 1000) % 60).toFixed(0)) + "秒";
     createText(
       app,
       time_text_t,
       Play_pos + play_pad_x,
       table_top_y + table_pad_y * 5,
       result_n_f_s,
-      align_opt.right
+      align_opt.right,
     );
     createText(
       app,
@@ -326,7 +307,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos - play_pad_x,
       table_top_y + table_pad_y * 6,
       result_t_f_s,
-      align_opt.left
+      align_opt.left,
     );
     createText(
       app,
@@ -335,12 +316,12 @@ export function result_scene(app: PIXI.Application): Promise<void> {
           ((gameData.total_hit_cnt - gameData.Miss) /
             ((gameData.EndTime - gameData.StartTime) / 1000)) *
           60
-        ).toFixed(0)
+        ).toFixed(0),
       ),
       Play_pos + play_pad_x,
       table_top_y + table_pad_y * 6,
       result_n_f_s,
-      align_opt.right
+      align_opt.right,
     );
     createText(
       app,
@@ -348,7 +329,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos - play_pad_x,
       table_top_y + table_pad_y * 7,
       result_t_f_s,
-      align_opt.left
+      align_opt.left,
     );
     createText(
       app,
@@ -356,7 +337,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos + play_pad_x,
       table_top_y + table_pad_y * 7,
       result_n_f_s,
-      align_opt.right
+      align_opt.right,
     );
     createText(
       app,
@@ -364,7 +345,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos - play_pad_x,
       table_top_y + table_pad_y * 8,
       result_t_f_s,
-      align_opt.left
+      align_opt.left,
     );
 
     let misskey_text_out = "無し";
@@ -385,7 +366,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       Play_pos + play_pad_x,
       table_top_y + table_pad_y * 8,
       result_n_f_s,
-      align_opt.right
+      align_opt.right,
     );
 
     const select_replay = new PIXI.Text({
@@ -451,11 +432,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       color: replaceHash(settings.colorTheme.colors.MainAccent),
     });
     app.stage.addChild(selectDotAcc);
-    gsap.fromTo(
-      selectDotAcc,
-      { alpha: 0 },
-      { alpha: 1, duration: 2, ease: "power3.out" }
-    );
+    gsap.fromTo(selectDotAcc, { alpha: 0 }, { alpha: 1, duration: 2, ease: "power3.out" });
     function dot_anim(y: number) {
       gsap.to(selectDotAcc, {
         y: y,
@@ -475,14 +452,9 @@ export function result_scene(app: PIXI.Application): Promise<void> {
       try {
         const keyCode = await getLatestKey(currentKeyController.signal);
         if (
-          [
-            "ArrowDown",
-            "ArrowRight",
-            "ShiftRight",
-            "ArrowUp",
-            "ArrowLeft",
-            "ShiftLeft",
-          ].includes(keyCode.code)
+          ["ArrowDown", "ArrowRight", "ShiftRight", "ArrowUp", "ArrowLeft", "ShiftLeft"].includes(
+            keyCode.code,
+          )
         ) {
           playMiss(0.3);
           select = select == 0 ? 1 : 0;
@@ -493,7 +465,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
               dot_anim(table_top_y + table_pad_y * 10);
               reaction_jump(
                 select_replay,
-                table_top_y + table_pad_y * 10 - select_replay.height / 2
+                table_top_y + table_pad_y * 10 - select_replay.height / 2,
               );
               select_replay.alpha = 1;
               break;
@@ -502,7 +474,7 @@ export function result_scene(app: PIXI.Application): Promise<void> {
               select_select.alpha = 1;
               reaction_jump(
                 select_select,
-                table_top_y + table_pad_y * 11 - select_select.height / 2
+                table_top_y + table_pad_y * 11 - select_select.height / 2,
               );
               break;
           }

@@ -2,32 +2,22 @@ const apiUrl =
   "https://script.google.com/macros/s/AKfycbyVgq9boRy9J0bMhxKAyDfkPXryA45m7tOigWeRBkVAxQmyzsogxPWEv5mf8TtprdR8/exec";
 
 export async function checkUsername(username: string): Promise<number> {
-  const url = `${apiUrl}?action=checkUsername&username=${encodeURIComponent(
-    username
-  )}`;
+  const url = `${apiUrl}?action=checkUsername&username=${encodeURIComponent(username)}`;
   const response = await fetch(url);
   const data = await response.json();
   return data;
 }
 
-export async function checkPassword(
-  id: number,
-  password: string
-): Promise<boolean> {
-  const url = `${apiUrl}?action=checkPassword&id=${id}&password=${encodeURIComponent(
-    password
-  )}`;
+export async function checkPassword(id: number, password: string): Promise<boolean> {
+  const url = `${apiUrl}?action=checkPassword&id=${id}&password=${encodeURIComponent(password)}`;
   const response = await fetch(url);
   const data = await response.json();
   return data;
 }
 
-export async function createUser(
-  username: string,
-  password: string
-): Promise<number> {
+export async function createUser(username: string, password: string): Promise<number> {
   const url = `${apiUrl}?action=createUser&username=${encodeURIComponent(
-    username
+    username,
   )}&password=${encodeURIComponent(password)}`;
   const response = await fetch(url);
   const data = await response.json();

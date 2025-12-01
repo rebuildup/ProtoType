@@ -18,13 +18,12 @@ export function createMouseFollowContainer(
     easing?: number; // アニメーションのイージング係数（小さいほど遅く追従）
     returnToCenter?: boolean; // マウス移動が止まったとき中心に戻るか
     returnSpeed?: number; // 中心に戻る速度
-  } = {}
+  } = {},
 ): PIXI.Container {
   // デフォルト値の設定
   const maxDistance = options.maxDistance || 50;
   const easing = options.easing || 0.1;
-  const returnToCenter =
-    options.returnToCenter !== undefined ? options.returnToCenter : true;
+  const returnToCenter = options.returnToCenter !== undefined ? options.returnToCenter : true;
   const returnSpeed = options.returnSpeed || 0.05;
 
   // コンテナの作成
@@ -60,10 +59,7 @@ export function createMouseFollowContainer(
 
   app.ticker.add(() => {
     // マウスが動いているかチェック
-    if (
-      lastMousePosition.x !== mousePosition.x ||
-      lastMousePosition.y !== mousePosition.y
-    ) {
+    if (lastMousePosition.x !== mousePosition.x || lastMousePosition.y !== mousePosition.y) {
       isMoving = true;
       lastMousePosition = { x: mousePosition.x, y: mousePosition.y };
     } else {
@@ -79,19 +75,13 @@ export function createMouseFollowContainer(
     const dy = mousePosition.y - originalPosition.y;
 
     // 最大移動距離を制限した目標位置
-    const targetX =
-      originalPosition.x +
-      Math.max(-maxDistance, Math.min(maxDistance, dx * 0.2));
-    const targetY =
-      originalPosition.y +
-      Math.max(-maxDistance, Math.min(maxDistance, dy * 0.2));
+    const targetX = originalPosition.x + Math.max(-maxDistance, Math.min(maxDistance, dx * 0.2));
+    const targetY = originalPosition.y + Math.max(-maxDistance, Math.min(maxDistance, dy * 0.2));
 
     if (returnToCenter && !isMoving && Date.now() - lastTimestamp > 500) {
       // マウスが動いていない状態が続いたら中心に戻る
-      container.position.x +=
-        (originalPosition.x - container.position.x) * returnSpeed;
-      container.position.y +=
-        (originalPosition.y - container.position.y) * returnSpeed;
+      container.position.x += (originalPosition.x - container.position.x) * returnSpeed;
+      container.position.y += (originalPosition.y - container.position.y) * returnSpeed;
     } else {
       // マウスの動きに追従
       container.position.x += (targetX - container.position.x) * easing;
@@ -121,7 +111,7 @@ export function openMouseFollowScene(
     returnSpeed?: number;
     entranceAnimation?: "fade" | "scale" | "slide" | "none";
     animationDuration?: number;
-  } = {}
+  } = {},
 ): { container: PIXI.Container; animationPromise: Promise<void> } {
   // アニメーション設定
   const entranceAnimation = options.entranceAnimation || "fade";
@@ -200,7 +190,7 @@ export function openMouseFollowScene(
 export function closeMouseFollowScene(
   container: PIXI.Container,
   exitAnimation: "fade" | "scale" | "slide" | "none" = "fade",
-  animationDuration: number = 0.5
+  animationDuration: number = 0.5,
 ): Promise<void> {
   return new Promise<void>((resolve) => {
     switch (exitAnimation) {

@@ -31,9 +31,7 @@ const Ranking: React.FC = () => {
       {loading ? (
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <div className="loading-text">
-            オンラインランキングを読み込み中...
-          </div>
+          <div className="loading-text">オンラインランキングを読み込み中...</div>
         </div>
       ) : (
         <table>
@@ -57,14 +55,7 @@ export default Ranking;
 
 function transposeData(data: any) {
   let output: string[][] = [];
-  const head: string[] = [
-    " ",
-    "プレイヤー名",
-    "スコア",
-    "正確率",
-    "平均kpm",
-    "最大kpm",
-  ];
+  const head: string[] = [" ", "プレイヤー名", "スコア", "正確率", "平均kpm", "最大kpm"];
   output.push(head);
   for (let i = 0; i < 100; i++) {
     const row: string[] = [

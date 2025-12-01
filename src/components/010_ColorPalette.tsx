@@ -258,24 +258,9 @@ const ColorPalette: React.FC = () => {
                     filter="url(#invert)"
                   />
 
-                  <circle
-                    cx="-30"
-                    cy="-20"
-                    r="40"
-                    fill={theme.colors["--MainColor"]}
-                  />
-                  <circle
-                    cx="40"
-                    cy="10"
-                    r="25"
-                    fill={theme.colors["--MainAccent"]}
-                  />
-                  <circle
-                    cx="0"
-                    cy="45"
-                    r="15"
-                    fill={theme.colors["--SecondAccent"]}
-                  />
+                  <circle cx="-30" cy="-20" r="40" fill={theme.colors["--MainColor"]} />
+                  <circle cx="40" cy="10" r="25" fill={theme.colors["--MainAccent"]} />
+                  <circle cx="0" cy="45" r="15" fill={theme.colors["--SecondAccent"]} />
                 </svg>
                 <br />
                 <span>{theme.name}</span>

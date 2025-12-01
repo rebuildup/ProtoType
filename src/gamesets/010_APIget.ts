@@ -1,26 +1,10 @@
-import { saveToCache, loadFromCache } from "../SiteInterface";
+import { getLocalTexts } from "./028_local_texts";
 
-const WEB_APP_URL =
-  "https://script.google.com/macros/s/AKfycbx727jT1TLHJmBc4ds0vi8-EQzZR27wPzlbk1hYEY_fx-hwu3GvoRYffwlToKVL5D-i/exec";
+const WEB_APP_URL = (import.meta.env.VITE_WEB_APP_URL ?? "") as string;
 
+// ローカル定義を返すだけのダミー。APIは呼ばない。
 export async function fetchTexts(): Promise<any> {
-  let data_Cache: string[] = loadFromCache<typeof data_Cache>("api_texts", [
-    "no_text",
-  ]);
-  if (data_Cache[0] == "no_text") {
-    const response = await fetch(
-      WEB_APP_URL +
-        "?sheetName=texts&startRow=1&startCol=1&endRow=250&endCol=60"
-    );
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    saveToCache("api_texts", data);
-    return data;
-  } else {
-    return data_Cache;
-  }
+  return getLocalTexts();
 }
 export async function postPlayData(
   playerId: string | number,
@@ -28,7 +12,7 @@ export async function postPlayData(
   score: number,
   accuracy: number,
   avgKpm: number,
-  maxKpm: number
+  maxKpm: number,
 ): Promise<any> {
   const params = new URLSearchParams();
   params.append("playerId", playerId.toString());
@@ -56,7 +40,7 @@ export async function getRanking_Data(option: number) {
     WEB_APP_URL +
       `?sheetName=ranking&startRow=2&startCol=${
         8 * option + 1
-      }&endRow=102&endCol=${8 * option + 7}`
+      }&endRow=102&endCol=${8 * option + 7}`,
   );
   if (!response.ok) {
     throw new Error("Network response was not ok");

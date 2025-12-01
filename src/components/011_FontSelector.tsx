@@ -21,9 +21,7 @@ export const fonts = [
 ];
 
 export default function FontSelector() {
-  const [selectedFont, setSelectedFont] = useState(
-    settings.fontTheme.fontFamily
-  );
+  const [selectedFont, setSelectedFont] = useState(settings.fontTheme.fontFamily);
 
   const changeFont = (font: string) => {
     setSelectedFont(font);
@@ -38,10 +36,7 @@ export default function FontSelector() {
     <div style={{ zIndex: 1 }}>
       <h1>フォント</h1>
       <label className="selectbox-5">
-        <select
-          value={selectedFont}
-          onChange={(e) => changeFont(e.target.value)}
-        >
+        <select value={selectedFont} onChange={(e) => changeFont(e.target.value)}>
           {fonts.map((font) => (
             <option key={font.value} value={font.value}>
               {font.name}

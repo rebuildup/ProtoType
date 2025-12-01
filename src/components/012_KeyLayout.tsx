@@ -77,10 +77,7 @@ export default function KeyLayoutSelector() {
     <div style={{ zIndex: 1 }}>
       <h1>キー配列</h1>
       <label className="selectbox-5">
-        <select
-          value={selectedLayout}
-          onChange={(e) => changeLayout(e.target.value)}
-        >
+        <select value={selectedLayout} onChange={(e) => changeLayout(e.target.value)}>
           {keyLayouts.map((layout) => (
             <option key={layout.name} value={layout.name}>
               {layout.name}

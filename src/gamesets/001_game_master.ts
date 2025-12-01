@@ -8,7 +8,7 @@ import { game_scene } from "./003_game_scene";
 
 import { playMiss } from "./012_soundplay";
 
-import { gameData, Issue } from "./002_gameConfig";
+import { gameData } from "./002_gameConfig";
 
 import { opening_scene } from "./005_opening";
 import { game_select } from "./004_game_select";
@@ -23,9 +23,9 @@ import { Player_register } from "./021_Player_register";
 import { BG_grid } from "./018_grid";
 
 import { settings } from "../SiteInterface";
-import { fetchTexts /*postPlayData*/ } from "./010_APIget";
-
-import { loadcache_localranking, loadFromCache } from "./020_cacheControl";
+import { getLocalTexts } from "./028_local_texts";
+import { loadFromCache } from "../SiteInterface";
+import { loadcache_localranking } from "./020_cacheControl";
 
 export async function initializeGame(app: PIXI.Application) {
   app.stage.removeChildren();
@@ -58,9 +58,7 @@ export async function initializeGame(app: PIXI.Application) {
 
   for (let i = 0; i < 2; i++) {
     const line = new PIXI.Graphics();
-    line
-      .rect(0, 0, lineWidth, lineHeight)
-      .fill(replaceHash(settings.colorTheme.colors.MainColor));
+    line.rect(0, 0, lineWidth, lineHeight).fill(replaceHash(settings.colorTheme.colors.MainColor));
     line.position = { x: startX, y: startY + i * (lineHeight + spacing) };
     app.stage.addChild(line);
     lines.push(line);
@@ -90,47 +88,18 @@ export async function initializeGame(app: PIXI.Application) {
       })
       .set(mask, { x: startX });
   });
-  let fetchtext = await fetchTexts();
-
-  let textsData: Issue[][] = [];
-  for (let i = 0; i < fetchtext.length; i++) {
-    for (let j = 0; j < fetchtext[i].length; j += 3) {
-      if (fetchtext[i][j] !== "") {
-        let tmp_Issue: Issue = {
-          text: String(fetchtext[i][j]),
-          romaji: String(fetchtext[i][j + 1]),
-        };
-        let groupIndex = j / 3;
-        if (!textsData[groupIndex]) {
-          textsData[groupIndex] = [];
-        }
-        textsData[groupIndex].push(tmp_Issue);
-      }
-    }
-  }
-  gameData.textsData = textsData;
-  //console.log(textsData);
+  // ローカル定義をそのまま利用
+  gameData.textsData = getLocalTexts();
 
   gameData.CurrentSceneName = "opening";
   //gameData.CurrentSceneName = "debug_repeat";
   gameData.GameMode = "nomal";
   gameData.FontFamily = settings.fontTheme.fontFamily;
-  gameData.KeyLayout = loadFromCache<typeof gameData.KeyLayout>(
-    "keylayout_GM",
-    settings.keyLayout
-  );
-  gameData.instant_key_n = loadFromCache<typeof gameData.instant_key_n>(
-    "instant_key_GM",
-    20
-  );
-  gameData.flashType = loadFromCache<typeof gameData.flashType>(
-    "flashType_GM",
-    0
-  );
-  gameData.total_keyhit = loadFromCache<typeof gameData.total_keyhit>(
-    "total_keyhit_GM",
-    0
-  );
+  gameData.KeyLayout = loadFromCache<typeof gameData.KeyLayout>("keylayout_GM", settings.keyLayout);
+  gameData.instant_key_n = loadFromCache<typeof gameData.instant_key_n>("instant_key_GM", 20);
+  gameData.flashType = loadFromCache<typeof gameData.flashType>("flashType_GM", 0);
+  gameData.total_keyhit = loadFromCache<typeof gameData.total_keyhit>("total_keyhit_GM", 0);
+  gameData.playCount = loadFromCache<typeof gameData.playCount>("playCount_GM", 0);
   gameData.acc_keys = [];
   if (settings.user.isLoggedin) {
     gameData.IsLoggedin = true;
@@ -375,7 +344,7 @@ function TendenciesInit() {
     },
     {
       key: "ん",
-      tendency: "nn",
+      tendency: "n",
     },
     {
       key: "が",

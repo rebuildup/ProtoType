@@ -30,7 +30,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
           duration: 0.73,
           ease: CustomEase.create("custom", "M0,0 C0,1 1,0 1,1"),
         },
-        0.53
+        0.53,
       );
       GM_start_container.addChild(inner_circle);
     }
@@ -47,7 +47,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
       tl.to(outer_circle, { alpha: 1, duration: 0 }, 0.4).to(
         outer_circle,
         { alpha: 0, duration: 0 },
-        0.6
+        0.6,
       );
     }
 
@@ -68,7 +68,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
           duration: 1.3,
           ease: CustomEase.create("custom", "M0,0 C0,0.2 0.3,1 1,1"),
         },
-        -0.27
+        -0.27,
       ).to(
         line_circle.scale,
         {
@@ -77,7 +77,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
           duration: 0.33,
           ease: CustomEase.create("custom", "M0,0 C1,0.06 0.9,0.7 1,1"),
         },
-        1.03
+        1.03,
       );
       GM_start_container.addChild(line_circle);
     }
@@ -92,12 +92,11 @@ export function GM_start(app: PIXI.Application): Promise<void> {
       inner_rect_inst.y = app.screen.height / 2;
       inner_rect_inst.rotation = Math.PI / 4;
       inner_rect_inst.alpha = 0;
-      tl.fromTo(
+      tl.fromTo(inner_rect_inst, { alpha: 0 }, { alpha: 0.8, duration: 0 }, 0.07).to(
         inner_rect_inst,
-        { alpha: 0 },
-        { alpha: 0.8, duration: 0 },
-        0.07
-      ).to(inner_rect_inst, { alpha: 0, duration: 0 }, 0.37);
+        { alpha: 0, duration: 0 },
+        0.37,
+      );
       GM_start_container.addChild(inner_rect_inst);
     }
 
@@ -122,7 +121,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
           duration: 0.73,
           ease: CustomEase.create("custom", "M0,0 C0,1 1,0 1,1"),
         },
-        0.37
+        0.37,
       );
     }
 
@@ -146,7 +145,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
           duration: 0.7,
           ease: CustomEase.create("custom", "M0,0 C0,0.7 0.1,1 1,1"),
         },
-        0.4
+        0.4,
       ).to(
         outer_rect.scale,
         {
@@ -155,7 +154,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
           duration: 0.3,
           ease: CustomEase.create("custom", "M0,0 C0,0.7 0.1,1 1,1"),
         },
-        1.03
+        1.03,
       );
     }
     {
@@ -202,7 +201,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
               duration: 0.1,
               ease: CustomEase.create("custom", "M0,0 C0,1 0.1,1 1,1"),
             },
-            0
+            0,
           )
           .to(
             star.scale,
@@ -212,7 +211,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
               duration: 0.47,
               ease: CustomEase.create("custom", "M0,0 C0,1 0.1,1 1,1"),
             },
-            0.1
+            0.1,
           )
           .to(
             star.scale,
@@ -222,7 +221,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
               duration: 0.27,
               ease: CustomEase.create("custom", "M0,0 C0,1 0.1,1 1,1"),
             },
-            0.63
+            0.63,
           );
       }, 433);
     }
@@ -381,10 +380,7 @@ export function GM_start(app: PIXI.Application): Promise<void> {
     }, 1300);
   });
 }
-export function closeScene(
-  app: PIXI.Application,
-  option: number
-): Promise<void> {
+export function closeScene(app: PIXI.Application, option: number): Promise<void> {
   return new Promise(async (resolve) => {
     CustomEase.create("slideOutEase", "M0,0 C1.0,0 0.0,1.33 1,1");
     let arr_dir = { top: 0, right: 0, bottom: 0, left: 0 };
@@ -411,15 +407,9 @@ export function closeScene(
       .moveTo(-arr_offset, -arr_offset)
       .lineTo(app.screen.width / 2, -arr_offset + arr_dir.top)
       .lineTo(app.screen.width + arr_offset, -arr_offset)
-      .lineTo(
-        app.screen.width + arr_dir.right + arr_offset,
-        app.screen.height / 2
-      )
+      .lineTo(app.screen.width + arr_dir.right + arr_offset, app.screen.height / 2)
       .lineTo(app.screen.width + arr_offset, app.screen.height + arr_offset)
-      .lineTo(
-        app.screen.width / 2,
-        app.screen.height + arr_dir.bottom + arr_offset
-      )
+      .lineTo(app.screen.width / 2, app.screen.height + arr_dir.bottom + arr_offset)
       .lineTo(-arr_offset, app.screen.height + arr_offset)
       .lineTo(arr_dir.left - arr_offset, app.screen.height / 2)
       .lineTo(-arr_offset, -arr_offset)
@@ -433,15 +423,9 @@ export function closeScene(
       .moveTo(-arr_offset, -arr_offset)
       .lineTo(app.screen.width / 2, -arr_offset + arr_dir.top)
       .lineTo(app.screen.width + arr_offset, -arr_offset)
-      .lineTo(
-        app.screen.width + arr_dir.right + arr_offset,
-        app.screen.height / 2
-      )
+      .lineTo(app.screen.width + arr_dir.right + arr_offset, app.screen.height / 2)
       .lineTo(app.screen.width + arr_offset, app.screen.height + arr_offset)
-      .lineTo(
-        app.screen.width / 2,
-        app.screen.height + arr_dir.bottom + arr_offset
-      )
+      .lineTo(app.screen.width / 2, app.screen.height + arr_dir.bottom + arr_offset)
       .lineTo(-arr_offset, app.screen.height + arr_offset)
       .lineTo(arr_dir.left - arr_offset, app.screen.height / 2)
       .lineTo(-arr_offset, -arr_offset)
@@ -453,52 +437,52 @@ export function closeScene(
         gsap.fromTo(
           closeFirst,
           { x: -app.screen.width - arr_offset - arr_offset },
-          { x: 0, duration: 1.2, ease: "slideOutEase", delay: 0 }
+          { x: 0, duration: 1.2, ease: "slideOutEase", delay: 0 },
         );
 
         gsap.fromTo(
           closeSecond,
           { x: -app.screen.width - arr_offset - arr_offset },
-          { x: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 }
+          { x: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 },
         );
         break;
       case 1:
         gsap.fromTo(
           closeFirst,
           { x: app.screen.width + arr_offset + arr_offset },
-          { x: 0, duration: 1.2, ease: "slideOutEase", delay: 0 }
+          { x: 0, duration: 1.2, ease: "slideOutEase", delay: 0 },
         );
 
         gsap.fromTo(
           closeSecond,
           { x: app.screen.width + arr_offset + arr_offset },
-          { x: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 }
+          { x: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 },
         );
         break;
       case 2:
         gsap.fromTo(
           closeFirst,
           { y: -app.screen.height - arr_offset - arr_offset },
-          { y: 0, duration: 1.2, ease: "slideOutEase", delay: 0 }
+          { y: 0, duration: 1.2, ease: "slideOutEase", delay: 0 },
         );
 
         gsap.fromTo(
           closeSecond,
           { y: -app.screen.height - arr_offset - arr_offset },
-          { y: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 }
+          { y: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 },
         );
         break;
       case 3:
         gsap.fromTo(
           closeFirst,
           { y: app.screen.height + arr_offset + arr_offset },
-          { y: 0, duration: 1.2, ease: "slideOutEase", delay: 0 }
+          { y: 0, duration: 1.2, ease: "slideOutEase", delay: 0 },
         );
 
         gsap.fromTo(
           closeSecond,
           { y: app.screen.height + arr_offset + arr_offset },
-          { y: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 }
+          { y: 0, duration: 1.0, ease: "slideOutEase", delay: 0.2 },
         );
         break;
     }
@@ -510,10 +494,7 @@ export function closeScene(
     }, 750);
   });
 }
-export function openScene(
-  app: PIXI.Application,
-  option: number
-): Promise<void> {
+export function openScene(app: PIXI.Application, option: number): Promise<void> {
   return new Promise(async (resolve) => {
     CustomEase.create("slideOutEase", "M0,0 C1.0,0 0.0,1.33 1,1");
     let arr_dir = { top: 0, right: 0, bottom: 0, left: 0 };
@@ -541,15 +522,9 @@ export function openScene(
       .moveTo(-arr_offset, -arr_offset)
       .lineTo(app.screen.width / 2, -arr_offset + arr_dir.top)
       .lineTo(app.screen.width + arr_offset, -arr_offset)
-      .lineTo(
-        app.screen.width + arr_dir.right + arr_offset,
-        app.screen.height / 2
-      )
+      .lineTo(app.screen.width + arr_dir.right + arr_offset, app.screen.height / 2)
       .lineTo(app.screen.width + arr_offset, app.screen.height + arr_offset)
-      .lineTo(
-        app.screen.width / 2,
-        app.screen.height + arr_dir.bottom + arr_offset
-      )
+      .lineTo(app.screen.width / 2, app.screen.height + arr_dir.bottom + arr_offset)
       .lineTo(-arr_offset, app.screen.height + arr_offset)
       .lineTo(arr_dir.left - arr_offset, app.screen.height / 2)
       .lineTo(-arr_offset, -arr_offset)
@@ -562,15 +537,9 @@ export function openScene(
       .moveTo(-arr_offset, -arr_offset)
       .lineTo(app.screen.width / 2, -arr_offset + arr_dir.top)
       .lineTo(app.screen.width + arr_offset, -arr_offset)
-      .lineTo(
-        app.screen.width + arr_dir.right + arr_offset,
-        app.screen.height / 2
-      )
+      .lineTo(app.screen.width + arr_dir.right + arr_offset, app.screen.height / 2)
       .lineTo(app.screen.width + arr_offset, app.screen.height + arr_offset)
-      .lineTo(
-        app.screen.width / 2,
-        app.screen.height + arr_dir.bottom + arr_offset
-      )
+      .lineTo(app.screen.width / 2, app.screen.height + arr_dir.bottom + arr_offset)
       .lineTo(-arr_offset, app.screen.height + arr_offset)
       .lineTo(arr_dir.left - arr_offset, app.screen.height / 2)
       .lineTo(-arr_offset, -arr_offset)
@@ -587,7 +556,7 @@ export function openScene(
             duration: 1.2,
             ease: "slideOutEase",
             delay: 0,
-          }
+          },
         );
         gsap.fromTo(
           openFirst,
@@ -597,7 +566,7 @@ export function openScene(
             duration: 1.0,
             ease: "slideOutEase",
             delay: 0.2,
-          }
+          },
         );
         break;
       case 1:
@@ -609,7 +578,7 @@ export function openScene(
             duration: 1.2,
             ease: "slideOutEase",
             delay: 0,
-          }
+          },
         );
         gsap.fromTo(
           openFirst,
@@ -619,7 +588,7 @@ export function openScene(
             duration: 1.0,
             ease: "slideOutEase",
             delay: 0.2,
-          }
+          },
         );
         break;
       case 2:
@@ -631,7 +600,7 @@ export function openScene(
             duration: 1.2,
             ease: "slideOutEase",
             delay: 0,
-          }
+          },
         );
         gsap.fromTo(
           openFirst,
@@ -641,7 +610,7 @@ export function openScene(
             duration: 1.0,
             ease: "slideOutEase",
             delay: 0.2,
-          }
+          },
         );
 
         break;
@@ -654,7 +623,7 @@ export function openScene(
             duration: 1.2,
             ease: "slideOutEase",
             delay: 0,
-          }
+          },
         );
         gsap.fromTo(
           openFirst,
@@ -664,7 +633,7 @@ export function openScene(
             duration: 1.0,
             ease: "slideOutEase",
             delay: 0.2,
-          }
+          },
         );
         break;
     }
@@ -676,13 +645,10 @@ export function openScene(
     }, 1200);
   });
 }
-export function flashObj(
-  app: PIXI.Application,
-  Obj: PIXI.Text | PIXI.Graphics
-) {
+export function flashObj(app: PIXI.Application, Obj: PIXI.Text | PIXI.Graphics) {
   const FlashMask = new PIXI.Graphics();
   FlashMask.rect(0, 0, Obj.width, Obj.height).fill(
-    replaceHash(settings.colorTheme.colors.MainAccent)
+    replaceHash(settings.colorTheme.colors.MainAccent),
   );
   FlashMask.x = Obj.x;
   FlashMask.y = Obj.y;
@@ -692,10 +658,7 @@ export function flashObj(
     app.stage.removeChild(FlashMask);
   }, 100);
 }
-export function reaction(
-  obj: PIXI.Graphics | PIXI.Text,
-  ins_scale: number = 1.05
-) {
+export function reaction(obj: PIXI.Graphics | PIXI.Text, ins_scale: number = 1.05) {
   gsap.fromTo(
     obj.scale,
     { x: ins_scale, y: ins_scale },
@@ -704,13 +667,10 @@ export function reaction(
       y: 1,
       duration: 1,
       ease: CustomEase.create("custom", "M0,0 C0.2,1 0.3,1 1,1"),
-    }
+    },
   );
 }
-export function reaction_jump(
-  obj: PIXI.Graphics | PIXI.Text,
-  absolute_y: number
-) {
+export function reaction_jump(obj: PIXI.Graphics | PIXI.Text, absolute_y: number) {
   gsap.fromTo(
     obj,
     { y: absolute_y - 4 },
@@ -718,7 +678,7 @@ export function reaction_jump(
       y: absolute_y,
       duration: 1,
       ease: CustomEase.create("custom", "M0,0 C0.2,1 0.3,1 1,1"),
-    }
+    },
   );
 }
 
@@ -757,21 +717,17 @@ export function wig_Type(app: PIXI.Application) {
     // 画面サイズに基づいて円の最大半径を調整
     const maxPossibleRadius = Math.min(
       app.screen.width / 2 - CONFIG.MARGIN,
-      app.screen.height / 2 - CONFIG.MARGIN
+      app.screen.height / 2 - CONFIG.MARGIN,
     );
 
     // 設定した最大半径が画面に収まらない場合は調整
-    const effectiveMaxRadius = Math.min(
-      maxPossibleRadius,
-      CONFIG.CIRCLE_RADIUS_MAX
-    );
+    const effectiveMaxRadius = Math.min(maxPossibleRadius, CONFIG.CIRCLE_RADIUS_MAX);
 
     // 各文字を円周上に配置
     letters.forEach((letter, index) => {
       // ランダムなフォントサイズ
       const randomFontSize = Math.floor(
-        CONFIG.FONT_SIZE_MIN +
-          Math.random() * (CONFIG.FONT_SIZE_MAX - CONFIG.FONT_SIZE_MIN + 1)
+        CONFIG.FONT_SIZE_MIN + Math.random() * (CONFIG.FONT_SIZE_MAX - CONFIG.FONT_SIZE_MIN + 1),
       );
 
       const textStyle = new PIXI.TextStyle({
@@ -807,8 +763,7 @@ export function wig_Type(app: PIXI.Application) {
 
       // ランダムな透明度
       textObj.alpha =
-        CONFIG.OPACITY_MIN +
-        Math.random() * (CONFIG.OPACITY_MAX - CONFIG.OPACITY_MIN);
+        CONFIG.OPACITY_MIN + Math.random() * (CONFIG.OPACITY_MAX - CONFIG.OPACITY_MIN);
 
       textContainer.addChild(textObj);
       textObjs.push(textObj);
@@ -846,14 +801,11 @@ export function wig_Type(app: PIXI.Application) {
 
     // ランダムなフォントサイズ
     const newFontSize = Math.floor(
-      CONFIG.FONT_SIZE_MIN +
-        Math.random() * (CONFIG.FONT_SIZE_MAX - CONFIG.FONT_SIZE_MIN + 1)
+      CONFIG.FONT_SIZE_MIN + Math.random() * (CONFIG.FONT_SIZE_MAX - CONFIG.FONT_SIZE_MIN + 1),
     );
 
     // ランダムな透明度
-    const newAlpha =
-      CONFIG.OPACITY_MIN +
-      Math.random() * (CONFIG.OPACITY_MAX - CONFIG.OPACITY_MIN);
+    const newAlpha = CONFIG.OPACITY_MIN + Math.random() * (CONFIG.OPACITY_MAX - CONFIG.OPACITY_MIN);
 
     // 即座に位置を変更（アニメーションなし）
     textObj.x = newX;

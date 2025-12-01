@@ -3,12 +3,8 @@ import { updateSetting, settings } from "../SiteInterface";
 import "../styles/014_animation-setting.css";
 
 const AnimationSettings: React.FC = () => {
-  const [animEnabled, setAnimEnabled] = useState(
-    settings.animationSettings.enabled
-  );
-  const [reducedMotion, setReducedMotion] = useState(
-    settings.animationSettings.reducedMotion
-  );
+  const [animEnabled, setAnimEnabled] = useState(settings.animationSettings.enabled);
+  const [reducedMotion, setReducedMotion] = useState(settings.animationSettings.reducedMotion);
 
   // Update settings when toggles change
   const handleAnimationToggle = () => {
@@ -35,11 +31,7 @@ const AnimationSettings: React.FC = () => {
 
       <div className="toggle-container">
         <label className="toggle-switch">
-          <input
-            type="checkbox"
-            checked={animEnabled}
-            onChange={handleAnimationToggle}
-          />
+          <input type="checkbox" checked={animEnabled} onChange={handleAnimationToggle} />
           <span className="toggle-slider"></span>
         </label>
         <span className="toggle-label">背景アニメーションを表示</span>
@@ -48,16 +40,10 @@ const AnimationSettings: React.FC = () => {
       {animEnabled && (
         <div className="toggle-container">
           <label className="toggle-switch">
-            <input
-              type="checkbox"
-              checked={reducedMotion}
-              onChange={handleReducedMotionToggle}
-            />
+            <input type="checkbox" checked={reducedMotion} onChange={handleReducedMotionToggle} />
             <span className="toggle-slider"></span>
           </label>
-          <span className="toggle-label">
-            パフォーマンスモード (アニメーション簡略化)
-          </span>
+          <span className="toggle-label">パフォーマンスモード (アニメーション簡略化)</span>
         </div>
       )}
 
