@@ -1,3 +1,15 @@
-onlyBuiltDependencies:
-  - '@biomejs/biome'
-  - esbuild
+# pnpm 12.x build-script allowlist (canonical).
+#
+# `onlyBuiltDependencies` / `onlyBuiltDependenciesFile` /
+# `neverBuiltDependencies` / `ignoredBuiltDependencies` / `ignoreDepScripts`
+# were removed in pnpm v11 and replaced by `allowBuilds`.
+# Format: map of package-name -> boolean.
+#
+# `@biomejs/biome` needs its native binary extracted; `esbuild` needs
+# its platform binary compiled at install time. Both are required for
+# `pnpm lint` and `pnpm run build` respectively, so we allow them.
+# Everything else stays default-deny.
+
+allowBuilds:
+  '@biomejs/biome': true
+  esbuild: true
