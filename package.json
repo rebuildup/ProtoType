@@ -10,8 +10,7 @@
     "lint": "biome check .",
     "test": "pnpm lint && pnpm run build",
     "format": "biome format . --write",
-    "preview": "vite preview",
-    "preinstall": "node preinstall.js"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
