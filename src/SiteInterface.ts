@@ -1,3 +1,5 @@
+import { loadFromCache, saveToCache } from "./lib/safeStorage";
+
 export type ColorTheme = {
   name: string;
   colors: {
@@ -24,14 +26,11 @@ export type AnimationSettings = {
   reducedMotion: boolean;
 };
 
-export const saveToCache = (key: string, data: any) => {
-  localStorage.setItem(key, JSON.stringify(data));
-};
-
-export const loadFromCache = <T>(key: string, defaultValue: T): T => {
-  const cachedData = localStorage.getItem(key);
-  return cachedData ? JSON.parse(cachedData) : defaultValue;
-};
+// `loadFromCache` and `saveToCache` are re-exported so legacy
+// `import { loadFromCache, saveToCache } from "../SiteInterface"`
+// call sites continue to work. New code should import directly from
+// `./lib/safeStorage` (or `../lib/safeStorage`).
+export { loadFromCache, saveToCache };
 
 export const updateSetting = <K extends keyof typeof settings>(
   key: K,
@@ -76,7 +75,7 @@ updateSetting("colorTheme", {
     MainBG: "#000000",
     MainColor: "#ffffff",
     MainAccent: "#ff9900",
-    SecondAccent: "#0099ff",
+    MainColor: "#0099ff",
   },
 });
 */

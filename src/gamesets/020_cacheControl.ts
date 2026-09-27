@@ -1,6 +1,14 @@
 import { gameData } from "./002_gameConfig";
 import { settings } from "../SiteInterface";
 import { fetchPlayerData } from "./022_Login";
+import { loadFromCache, saveToCache, clearCache } from "../lib/safeStorage";
+
+// Re-export so legacy gamesets that previously imported cache helpers
+// from `./020_cacheControl` keep compiling after the storage layer was
+// moved to `../lib/safeStorage` (which is the sandbox-safe path; see
+// `safeStorage.ts` for the localStorage probe that gracefully no-ops in
+// opaque-origin iframes like the my-web-2026 sandbox).
+export { loadFromCache, saveToCache, clearCache };
 export interface RankingPlayer {
   player_name: string;
   player_id: number;
@@ -68,13 +76,6 @@ export function savecache_localranking() {
   gameData.localRankingByMode[gameData.GameMode] = ensureLength(gameData.localRanking);
   saveToCache("localRankingByMode", gameData.localRankingByMode);
 }
-export const saveToCache = (key: string, data: any) => {
-  localStorage.setItem(key, JSON.stringify(data));
-};
-export const loadFromCache = <T>(key: string, defaultValue: T): T => {
-  const cachedData = localStorage.getItem(key);
-  return cachedData ? JSON.parse(cachedData) : defaultValue;
-};
 export function insertLocalRanking(newPlayer: RankingPlayer): number {
   const mode = gameData.GameMode;
   const ranking = ensureLength(gameData.localRankingByMode[mode] ?? [DEFAULT_RANKING]);

@@ -1,0 +1,58 @@
+name: e2e
+
+# Standalone browser interaction coverage for ProtoType.
+#
+# Proves the built artifact (`dist/`) is healthy end-to-end:
+#   1. React mounts the App tree inside `#root`.
+#   2. Tab button clicks swap the rendered view (the "representative
+#      interaction" the my-web-2026 iframe cannot drive directly).
+#   3. No console errors fire during the mount + interaction cycle.
+#
+# Triggered on push to `main` and on every PR. Reuses the build job
+# output from `.github/workflows/build.yml` would be cheaper, but
+# keeping the jobs independent avoids cross-workflow orchestration
+# complexity (GitHub Actions reusable-workflows require a separate
+# `workflow_call` event wiring).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.3.4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run browser interaction tests
+        run: pnpm run test:e2e
+        env:
+          CI: "true"
