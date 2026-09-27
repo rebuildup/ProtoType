@@ -1,7 +1,18 @@
 import { gameData } from "./002_gameConfig";
 import { settings } from "../SiteInterface";
 import { fetchPlayerData } from "./022_Login";
-import { loadFromCache, saveToCache } from "../lib/safeStorage";
+import {
+  loadFromCache,
+  saveToCache,
+  clearCache,
+} from "../lib/safeStorage";
+
+// Re-export so legacy gamesets that previously imported cache helpers
+// from `./020_cacheControl` keep compiling after the storage layer was
+// moved to `../lib/safeStorage` (which is the sandbox-safe path; see
+// `safeStorage.ts` for the localStorage probe that gracefully no-ops in
+// opaque-origin iframes like the my-web-2026 sandbox).
+export { loadFromCache, saveToCache, clearCache };
 export interface RankingPlayer {
   player_name: string;
   player_id: number;
