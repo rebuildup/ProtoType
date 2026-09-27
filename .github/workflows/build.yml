@@ -1,0 +1,59 @@
+name: build
+
+# Standalone Vite build path for ProtoType.
+#
+# Proves the artifact my-web-2026 collects under `/tools/prototype/app/`
+# (see https://github.com/rebuildup/my-web-2026/blob/main/src/tools/manifest.json
+# for the orchestrator) is independently buildable: `pnpm install` +
+# `pnpm run build` on a clean runner must produce a usable `dist/`.
+#
+# Triggered on push to `main` and on every PR. The browser interaction
+# coverage (`.github/workflows/e2e.yml`, separate workflow) exercises the
+# built artifact.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.3.4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm run typecheck
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Verify dist artifact
+        run: |
+          test -f dist/index.html
+          test -d dist/assets
+          echo "Build produced $(find dist -type f | wc -l) files in dist/"
