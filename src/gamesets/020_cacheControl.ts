@@ -1,6 +1,7 @@
 import { gameData } from "./002_gameConfig";
 import { settings } from "../SiteInterface";
 import { fetchPlayerData } from "./022_Login";
+import { loadFromCache, saveToCache } from "../lib/safeStorage";
 export interface RankingPlayer {
   player_name: string;
   player_id: number;
@@ -68,13 +69,6 @@ export function savecache_localranking() {
   gameData.localRankingByMode[gameData.GameMode] = ensureLength(gameData.localRanking);
   saveToCache("localRankingByMode", gameData.localRankingByMode);
 }
-export const saveToCache = (key: string, data: any) => {
-  localStorage.setItem(key, JSON.stringify(data));
-};
-export const loadFromCache = <T>(key: string, defaultValue: T): T => {
-  const cachedData = localStorage.getItem(key);
-  return cachedData ? JSON.parse(cachedData) : defaultValue;
-};
 export function insertLocalRanking(newPlayer: RankingPlayer): number {
   const mode = gameData.GameMode;
   const ranking = ensureLength(gameData.localRankingByMode[mode] ?? [DEFAULT_RANKING]);
