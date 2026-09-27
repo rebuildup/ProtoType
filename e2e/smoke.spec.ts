@@ -9,12 +9,14 @@ import { expect, test } from "@playwright/test";
  *
  *   1. React mounts children inside `#root`.
  *   2. Tab buttons swap the rendered view (representative interaction).
- *   3. No console errors fire during the mount + interaction.
+ *   3. No React/JS console errors fire during the mount + interaction.
  *
  * The default tab is `Game` (renders `.home-container`). Clicking
- * `ランキング` swaps to the ranking view (renders `オンラインランキング`).
- * Clicking `サイト設定` swaps to the setting view (renders
- * `.setting-container`).
+ * `ランキング` swaps to the ranking view (renders the heading
+ * `オンラインランキング` and starts fetching the online ranking; the
+ * fetch will fail because no backend is reachable from this standalone
+ * preview — that is fine and is filtered out of the console-error
+ * assertion below). Clicking `サイト設定` swaps to the setting view.
  *
  * Note on visibility vs attachment:
  *
@@ -30,16 +32,30 @@ import { expect, test } from "@playwright/test";
  *   - `.home-container` is attached to the DOM (mount contract), AND
  *   - `.openbtn` inside it is the visible interactive surface.
  *
- * `.setting-container` has the same shape — we assert `.setting-container`
- * is attached and that the visible Setting UI text "キーコンフィグ" /
- * "キー配列" is on screen.
+ * `.setting-container` has the same shape — we assert
+ * `.setting-container` is attached and that visible Setting UI text is
+ * on screen.
  */
+
+// Console messages we deliberately ignore. The standalone preview has
+// no backend, so the Ranking tab's `fetch(/api/v1/...)` rejects and
+// surfaces a `console.error("Failed to fetch ranking data: ...")`
+// during the interaction cycle. That is not a mount failure — the
+// parent my-web-2026 iframe uses the same fetch path but its origin is
+// the same as the API, so the fetch resolves in the integrated build.
+const IGNORED_CONSOLE_PATTERNS: RegExp[] = [/Failed to fetch ranking data/i];
+
+function isIgnoredConsoleError(text: string): boolean {
+  return IGNORED_CONSOLE_PATTERNS.some((re) => re.test(text));
+}
 
 test.describe("ProtoType standalone smoke", () => {
   test("React mounts the App tree inside #root", async ({ page }) => {
     const consoleErrors: string[] = [];
     page.on("console", (msg) => {
-      if (msg.type() === "error") consoleErrors.push(msg.text());
+      if (msg.type() === "error" && !isIgnoredConsoleError(msg.text())) {
+        consoleErrors.push(msg.text());
+      }
     });
 
     await page.goto("/");
@@ -64,9 +80,11 @@ test.describe("ProtoType standalone smoke", () => {
     await expect(page.locator(".home-container")).toBeAttached({ timeout: 15_000 });
     await expect(page.locator(".home-container .openbtn")).toBeVisible();
 
-    // Click the Ranking tab and assert the view swaps.
+    // Click the Ranking tab and assert the view swaps. Use exact
+    // text match — the loading state also contains this prefix
+    // ("オンラインランキングを読み込み中...").
     await page.getByRole("button", { name: "ランキング" }).click();
-    await expect(page.getByText("オンラインランキング")).toBeVisible({
+    await expect(page.getByText("オンラインランキング", { exact: true })).toBeVisible({
       timeout: 5_000,
     });
     // The Game container should no longer be in the DOM.
@@ -93,7 +111,9 @@ test.describe("ProtoType standalone smoke", () => {
   test("no console errors fire during the full interaction cycle", async ({ page }) => {
     const consoleErrors: string[] = [];
     page.on("console", (msg) => {
-      if (msg.type() === "error") consoleErrors.push(msg.text());
+      if (msg.type() === "error" && !isIgnoredConsoleError(msg.text())) {
+        consoleErrors.push(msg.text());
+      }
     });
 
     await page.goto("/");
@@ -101,7 +121,7 @@ test.describe("ProtoType standalone smoke", () => {
     await expect(page.locator(".home-container .openbtn")).toBeVisible();
 
     await page.getByRole("button", { name: "ランキング" }).click();
-    await expect(page.getByText("オンラインランキング")).toBeVisible({
+    await expect(page.getByText("オンラインランキング", { exact: true })).toBeVisible({
       timeout: 5_000,
     });
 
