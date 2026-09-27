@@ -20,25 +20,25 @@ import { defineConfig, devices } from "@playwright/test";
  *   pnpm run test:e2e
  */
 export default defineConfig({
-	testDir: "./e2e",
-	timeout: 30_000,
-	fullyParallel: true,
-	retries: process.env.CI ? 2 : 0,
-	reporter: process.env.CI ? "github" : "list",
-	use: {
-		baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:4173",
-		trace: "retain-on-failure",
-	},
-	projects: [
-		{
-			name: "chromium",
-			use: { ...devices["Desktop Chrome"] },
-		},
-	],
-	webServer: {
-		command: "pnpm run preview --port 4173 --strictPort",
-		url: "http://127.0.0.1:4173",
-		reuseExistingServer: !process.env.CI,
-		timeout: 30_000,
-	},
+  testDir: "./e2e",
+  timeout: 30_000,
+  fullyParallel: true,
+  retries: process.env.CI ? 2 : 0,
+  reporter: process.env.CI ? "github" : "list",
+  use: {
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:4173",
+    trace: "retain-on-failure",
+  },
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+  ],
+  webServer: {
+    command: "pnpm run preview --port 4173 --strictPort",
+    url: "http://127.0.0.1:4173",
+    reuseExistingServer: !process.env.CI,
+    timeout: 30_000,
+  },
 });

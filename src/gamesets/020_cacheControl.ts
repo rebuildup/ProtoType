@@ -1,11 +1,7 @@
 import { gameData } from "./002_gameConfig";
 import { settings } from "../SiteInterface";
 import { fetchPlayerData } from "./022_Login";
-import {
-  loadFromCache,
-  saveToCache,
-  clearCache,
-} from "../lib/safeStorage";
+import { loadFromCache, saveToCache, clearCache } from "../lib/safeStorage";
 
 // Re-export so legacy gamesets that previously imported cache helpers
 // from `./020_cacheControl` keep compiling after the storage layer was

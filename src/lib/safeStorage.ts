@@ -23,50 +23,50 @@
  * diagnostic accuracy in the iframe sandbox.
  */
 function hasUsableStorage(): boolean {
-	try {
-		// `localStorage` access can throw a `SecurityError` directly
-		// (opaque origin) or a `ReferenceError` (no `localStorage`).
-		// `try/catch` covers both, plus `setItem` quota errors.
-		const probeKey = "__safeStorageProbe__";
-		window.localStorage.setItem(probeKey, probeKey);
-		window.localStorage.removeItem(probeKey);
-		return true;
-	} catch {
-		return false;
-	}
+  try {
+    // `localStorage` access can throw a `SecurityError` directly
+    // (opaque origin) or a `ReferenceError` (no `localStorage`).
+    // `try/catch` covers both, plus `setItem` quota errors.
+    const probeKey = "__safeStorageProbe__";
+    window.localStorage.setItem(probeKey, probeKey);
+    window.localStorage.removeItem(probeKey);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 const storageAvailable = hasUsableStorage();
 
 export function loadFromCache<T>(key: string, defaultValue: T): T {
-	if (!storageAvailable) return defaultValue;
-	try {
-		const cachedData = window.localStorage.getItem(key);
-		if (cachedData === null) return defaultValue;
-		return JSON.parse(cachedData) as T;
-	} catch {
-		// Malformed JSON or a transient `SecurityError` (e.g. the
-		// sandbox was revoked mid-session): fall back rather than
-		// throwing through to module top-level code.
-		return defaultValue;
-	}
+  if (!storageAvailable) return defaultValue;
+  try {
+    const cachedData = window.localStorage.getItem(key);
+    if (cachedData === null) return defaultValue;
+    return JSON.parse(cachedData) as T;
+  } catch {
+    // Malformed JSON or a transient `SecurityError` (e.g. the
+    // sandbox was revoked mid-session): fall back rather than
+    // throwing through to module top-level code.
+    return defaultValue;
+  }
 }
 
 export function saveToCache(key: string, data: unknown): void {
-	if (!storageAvailable) return;
-	try {
-		window.localStorage.setItem(key, JSON.stringify(data));
-	} catch {
-		// Quota exceeded or sandbox revoked: drop the write. The
-		// in-memory state in `settings` already carries the change.
-	}
+  if (!storageAvailable) return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(data));
+  } catch {
+    // Quota exceeded or sandbox revoked: drop the write. The
+    // in-memory state in `settings` already carries the change.
+  }
 }
 
 export function clearCache(): void {
-	if (!storageAvailable) return;
-	try {
-		window.localStorage.clear();
-	} catch {
-		// No-op on failure.
-	}
+  if (!storageAvailable) return;
+  try {
+    window.localStorage.clear();
+  } catch {
+    // No-op on failure.
+  }
 }
