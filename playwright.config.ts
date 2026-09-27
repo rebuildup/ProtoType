@@ -36,7 +36,11 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm run preview --port 4173 --strictPort",
+    // `--host 127.0.0.1` pins preview to the IPv4 loopback that the
+    // `url` probe below also uses. Without it, Vite defaults to
+    // `localhost`, which can resolve to `::1` on the GitHub-hosted
+    // runner and make Playwright's `url` probe miss it (IPv4 vs IPv6).
+    command: "pnpm run preview --port 4173 --strictPort --host 127.0.0.1",
     url: "http://127.0.0.1:4173",
     reuseExistingServer: !process.env.CI,
     // Vite preview cold-start on the GitHub-hosted runner takes ~15s;
