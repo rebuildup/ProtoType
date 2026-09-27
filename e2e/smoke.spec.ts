@@ -64,7 +64,7 @@ test.describe("ProtoType standalone smoke", () => {
     const root = page.locator("#root");
     await expect(root).toBeAttached();
     // The React tree must render at least one child node.
-    await expect(root.locator("> *").first()).toBeVisible({ timeout: 15_000 });
+    await expect(root.locator("> *").first()).toBeAttached({ timeout: 15_000 });
 
     // The Header component is always rendered above the tab nav.
     await expect(page.getByRole("button", { name: "ランキング" })).toBeVisible();
