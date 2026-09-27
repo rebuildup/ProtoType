@@ -36,84 +36,84 @@ import { expect, test } from "@playwright/test";
  */
 
 test.describe("ProtoType standalone smoke", () => {
-	test("React mounts the App tree inside #root", async ({ page }) => {
-		const consoleErrors: string[] = [];
-		page.on("console", (msg) => {
-			if (msg.type() === "error") consoleErrors.push(msg.text());
-		});
+  test("React mounts the App tree inside #root", async ({ page }) => {
+    const consoleErrors: string[] = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") consoleErrors.push(msg.text());
+    });
 
-		await page.goto("/");
+    await page.goto("/");
 
-		// `#root` is the mount target emitted by Vite's index.html.
-		const root = page.locator("#root");
-		await expect(root).toBeAttached();
-		// The React tree must render at least one child node.
-		await expect(root.locator("> *").first()).toBeVisible({ timeout: 15_000 });
+    // `#root` is the mount target emitted by Vite's index.html.
+    const root = page.locator("#root");
+    await expect(root).toBeAttached();
+    // The React tree must render at least one child node.
+    await expect(root.locator("> *").first()).toBeVisible({ timeout: 15_000 });
 
-		// The Header component is always rendered above the tab nav.
-		await expect(page.getByRole("button", { name: "ランキング" })).toBeVisible();
+    // The Header component is always rendered above the tab nav.
+    await expect(page.getByRole("button", { name: "ランキング" })).toBeVisible();
 
-		// No console errors during mount.
-		expect(consoleErrors, consoleErrors.join("\n")).toEqual([]);
-	});
+    // No console errors during mount.
+    expect(consoleErrors, consoleErrors.join("\n")).toEqual([]);
+  });
 
-	test("clicking the Ranking tab swaps the rendered view", async ({ page }) => {
-		await page.goto("/");
+  test("clicking the Ranking tab swaps the rendered view", async ({ page }) => {
+    await page.goto("/");
 
-		// The default tab is Game — assert mount + visible button.
-		await expect(page.locator(".home-container")).toBeAttached({ timeout: 15_000 });
-		await expect(page.locator(".home-container .openbtn")).toBeVisible();
+    // The default tab is Game — assert mount + visible button.
+    await expect(page.locator(".home-container")).toBeAttached({ timeout: 15_000 });
+    await expect(page.locator(".home-container .openbtn")).toBeVisible();
 
-		// Click the Ranking tab and assert the view swaps.
-		await page.getByRole("button", { name: "ランキング" }).click();
-		await expect(page.getByText("オンラインランキング")).toBeVisible({
-			timeout: 5_000,
-		});
-		// The Game container should no longer be in the DOM.
-		await expect(page.locator(".home-container")).toHaveCount(0);
-	});
+    // Click the Ranking tab and assert the view swaps.
+    await page.getByRole("button", { name: "ランキング" }).click();
+    await expect(page.getByText("オンラインランキング")).toBeVisible({
+      timeout: 5_000,
+    });
+    // The Game container should no longer be in the DOM.
+    await expect(page.locator(".home-container")).toHaveCount(0);
+  });
 
-	test("clicking the Setting tab swaps to the setting view", async ({ page }) => {
-		await page.goto("/");
-		await expect(page.locator(".home-container")).toBeAttached({ timeout: 15_000 });
-		await expect(page.locator(".home-container .openbtn")).toBeVisible();
+  test("clicking the Setting tab swaps to the setting view", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator(".home-container")).toBeAttached({ timeout: 15_000 });
+    await expect(page.locator(".home-container .openbtn")).toBeVisible();
 
-		await page.getByRole("button", { name: "サイト設定" }).click();
-		await expect(page.locator(".setting-container")).toBeAttached({
-			timeout: 5_000,
-		});
-		// Assert the Setting UI renders something visible to the user
-		// (Setting container is also a flex wrapper around fixed-position
-		// controls, so we assert by content text instead).
-		await expect(
-			page.locator(".setting-container").getByText("キー"),
-		).toBeVisible({ timeout: 5_000 });
-	});
+    await page.getByRole("button", { name: "サイト設定" }).click();
+    await expect(page.locator(".setting-container")).toBeAttached({
+      timeout: 5_000,
+    });
+    // Assert the Setting UI renders something visible to the user
+    // (Setting container is also a flex wrapper around fixed-position
+    // controls, so we assert by content text instead).
+    await expect(page.locator(".setting-container").getByText("キー")).toBeVisible({
+      timeout: 5_000,
+    });
+  });
 
-	test("no console errors fire during the full interaction cycle", async ({ page }) => {
-		const consoleErrors: string[] = [];
-		page.on("console", (msg) => {
-			if (msg.type() === "error") consoleErrors.push(msg.text());
-		});
+  test("no console errors fire during the full interaction cycle", async ({ page }) => {
+    const consoleErrors: string[] = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") consoleErrors.push(msg.text());
+    });
 
-		await page.goto("/");
-		await expect(page.locator(".home-container")).toBeAttached({ timeout: 15_000 });
-		await expect(page.locator(".home-container .openbtn")).toBeVisible();
+    await page.goto("/");
+    await expect(page.locator(".home-container")).toBeAttached({ timeout: 15_000 });
+    await expect(page.locator(".home-container .openbtn")).toBeVisible();
 
-		await page.getByRole("button", { name: "ランキング" }).click();
-		await expect(page.getByText("オンラインランキング")).toBeVisible({
-			timeout: 5_000,
-		});
+    await page.getByRole("button", { name: "ランキング" }).click();
+    await expect(page.getByText("オンラインランキング")).toBeVisible({
+      timeout: 5_000,
+    });
 
-		await page.getByRole("button", { name: "サイト設定" }).click();
-		await expect(page.locator(".setting-container")).toBeAttached({
-			timeout: 5_000,
-		});
+    await page.getByRole("button", { name: "サイト設定" }).click();
+    await expect(page.locator(".setting-container")).toBeAttached({
+      timeout: 5_000,
+    });
 
-		// Switch back to Game.
-		await page.getByRole("button", { name: "ゲーム" }).click();
-		await expect(page.locator(".home-container")).toBeAttached({ timeout: 5_000 });
+    // Switch back to Game.
+    await page.getByRole("button", { name: "ゲーム" }).click();
+    await expect(page.locator(".home-container")).toBeAttached({ timeout: 5_000 });
 
-		expect(consoleErrors, consoleErrors.join("\n")).toEqual([]);
-	});
+    expect(consoleErrors, consoleErrors.join("\n")).toEqual([]);
+  });
 });
