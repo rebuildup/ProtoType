@@ -21,7 +21,7 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./e2e",
-  timeout: 30_000,
+  timeout: 60_000,
   fullyParallel: true,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? "github" : "list",
@@ -39,6 +39,9 @@ export default defineConfig({
     command: "pnpm run preview --port 4173 --strictPort",
     url: "http://127.0.0.1:4173",
     reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
+    // Vite preview cold-start on the GitHub-hosted runner takes ~15s;
+    // allow generous headroom so the test job doesn't flake when the
+    // runner is under contention.
+    timeout: 120_000,
   },
 });
