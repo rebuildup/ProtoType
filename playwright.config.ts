@@ -40,8 +40,13 @@ export default defineConfig({
     // `url` probe below also uses. Without it, Vite defaults to
     // `localhost`, which can resolve to `::1` on the GitHub-hosted
     // runner and make Playwright's `url` probe miss it (IPv4 vs IPv6).
+    //
+    // The probe targets the `base` path (Issue #896): with
+    // `base: '/tools/prototype/app/'` the preview server answers
+    // `302` at `/` and `200` under the base, so probing `/` would
+    // depend on the runner following the redirect.
     command: "pnpm run preview --port 4173 --strictPort --host 127.0.0.1",
-    url: "http://127.0.0.1:4173",
+    url: "http://127.0.0.1:4173/tools/prototype/app/",
     reuseExistingServer: !process.env.CI,
     // Vite preview cold-start on the GitHub-hosted runner takes ~15s;
     // allow generous headroom so the test job doesn't flake when the
