@@ -29,6 +29,22 @@
   margin: 0;
 }
 
+/*
+ * Below 640px the fixed header row (`.player-card` on the left,
+ * `.title` centered, `.current-time` on the right) is wider than the
+ * viewport: the 280px player card and the 32px title collide around
+ * 390px, and the clock sits on top of the title. Drop the fixed
+ * offsets so the three children flow in the header's own grid row
+ * (1fr auto 1fr) instead of stacking on the same pixels
+ * (my-web-2026#910).
+ */
+@media (max-width: 639px) {
+  .player-card,
+  .current-time {
+    position: static;
+  }
+}
+
 .player-panel {
   width: 280px;
   height: 200px;

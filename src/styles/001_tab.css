@@ -5,6 +5,33 @@
   margin-left: 5vw;
   transform: translateY(-50%);
 }
+
+/*
+ * `.Components` is a 50vw × 50vh box centred on the viewport and
+ * `.openbtn` (Game Start) is fixed at 50% / 50% with a 50px font —
+ * both collide with the `.tab` rail below 640px, where 50vw is
+ * narrower than the tab rail plus the button. Give the content box
+ * the full row under the header and move the Game Start button into
+ * the normal flow so the two never share the same pixels
+ * (my-web-2026#910).
+ */
+@media (max-width: 639px) {
+  .Components {
+    position: static;
+    width: 100%;
+    height: auto;
+    min-height: 50vh;
+    transform: none;
+    margin: 12vh 0 0;
+  }
+
+  .openbtn {
+    position: static;
+    transform: none;
+    display: block;
+    margin: 0 auto;
+  }
+}
 button {
   border: none;
   font-size: 1.2rem;
