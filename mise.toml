@@ -5,10 +5,10 @@
 bun = "1.4.2"
 
 [tasks.skills-list]
-run = "bunx skills add rebuildup/project-init --list"
+run = "bunx skills add rebuildup/aude-skills --list"
 
 [tasks.skills-bootstrap]
-run = "bunx skills add rebuildup/project-init --skill '*' --agent claude-code --agent codex -y"
+run = "bunx skills add rebuildup/aude-skills --skill agent-delivery-estimation agent-recovery correctness-assurance design-refinement engineering-decisions github-delivery herdr-runtime interaction-discipline linear-release-control onboarding parallel-orchestration policy-evaluation quality-gate sandbox-runtime secrets-management security-audit security-maintenance worktree-workflow --agent claude-code --agent codex -y"
 
 [tasks.skills-update]
 run = "bunx skills update -p -y"
